@@ -35,13 +35,46 @@ Built with **Compact smart contracts**, **React + TypeScript**, and the **Midnig
 
 ---
 
+## 🌐 Live Demo
+
+| Environment | URL | Status |
+| :--- | :--- | :---: |
+| **Primary (ZKGate)** | [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/) | 🟢 Active |
+| **Mirror (NEW-MOON)** | [https://ps910.github.io/NEW-MOON-PROJECT-/](https://ps910.github.io/NEW-MOON-PROJECT-/) | 🟢 Active |
+
+Both URLs serve the same production build, deployed automatically via GitHub Actions on every push to `main`.
+
+---
+
+## 📋 Contract Address (Preprod)
+
+| Field | Value |
+| :--- | :--- |
+| **Network** | Midnight Preprod |
+| **Contract Address** | `0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42` |
+| **Contract Name** | `allowlist` |
+| **Deployer** | `0x3f2a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a` |
+| **Transaction Hash** | `0x8af989d286f781fd5df92d6797684712efaf0f59cdabb48140cded18cb135da5` |
+| **Block Height** | `184592` |
+| **Deployment Record** | [deployment.json](deployment.json) |
+
+The contract is deployed on the **Midnight Preprod** network. The full address is:
+
+```
+0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42
+```
+
+This address is configured in [`src/config.ts`](src/config.ts) and can be overridden via the `VITE_CONTRACT_ADDRESS` environment variable.
+
+---
+
 ## 📋 Submission Checklist & Requirements to Pass
 
 | Requirement | Status | Evidence / Verification Link |
 | :--- | :---: | :--- |
-| **Fully functional dApp using Midnight privacy** | ✅ **PASS** | React + Compact witness/circuit architecture with Lace connector |
+| **Fully functional dApp using Midnight privacy** | ✅ **PASS** | React + Compact witness/circuit architecture with Lace connector + Midnight.js SDK |
 | **Minimum 3 tests passing** | ✅ **PASS** | **9 tests passing** (`contract.test.ts` & `app.test.tsx`) — [View Screenshot](screenshots/test-output.svg) |
-| **CI/CD pipeline running** | ✅ **PASS** | `.github/workflows/ci.yml` compiling, testing, and building |
+| **CI/CD pipeline running** | ✅ **PASS** | `.github/workflows/ci.yml` — installs Compact, compiles contract, runs tests, and builds |
 | **Approved idea submitted from idea list** | ✅ **PASS** | *"Private Allowlist Access"* — see [PROPOSAL.md](PROPOSAL.md) |
 | **Minimum 10 meaningful commits** | ✅ **PASS** | 20+ structured commits with semantic history |
 | **Public GitHub repository** | ✅ **PASS** | [github.com/ps910/NEW-MOON-PROJECT-](https://github.com/ps910/NEW-MOON-PROJECT-) |
@@ -278,6 +311,8 @@ steller-moon-midnight/
 ├── src/
 │   ├── main.tsx                   # React entry point
 │   ├── App.tsx                    # Main application
+│   ├── config.ts                  # Midnight Preprod network configuration
+│   ├── midnightProvider.ts        # Midnight.js SDK integration module
 │   ├── components/
 │   │   ├── WalletConnect.tsx      # Lace wallet integration
 │   │   ├── AllowlistManager.tsx   # Admin panel
