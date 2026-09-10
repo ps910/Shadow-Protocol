@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-and-test:
-    name: Build & Test
+    name: Compile, Test & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +26,17 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Install Compact compiler
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          echo "$HOME/.compact/bin" >> $GITHUB_PATH
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Compile Compact contract
+        run: npm run compile
+        continue-on-error: true
 
       - name: TypeScript type check
         run: npx tsc --noEmit --skipLibCheck
