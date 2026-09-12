@@ -20,9 +20,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@midnight-ntwrk/midnight-js-network-provider": ["packages/midnight-js-network-provider/index.d.ts"]
     },
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "contract", "scripts", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "contract", "scripts", "packages", "vite.config.ts", "vitest.config.ts"]
 }

@@ -4,8 +4,10 @@ node_modules/
 .yarn/
 
 # Build output
-dist/
+/dist/
 *.js.map
+!packages/**
+!packages/**/dist/
 
 # Environment
 .env
