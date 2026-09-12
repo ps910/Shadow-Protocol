@@ -40,21 +40,15 @@ export function useWallet() {
           error: null,
         });
       } else {
-        // Fallback / Simulation mode for development without Lace extension installed
-        const simulatedAddress =
-          '0x' +
-          Array.from(crypto.getRandomValues(new Uint8Array(20)))
-            .map((b) => b.toString(16).padStart(2, '0'))
-            .join('');
-
-        await new Promise((r) => setTimeout(r, 600));
-
-        setWallet({
-          connected: true,
-          address: `${simulatedAddress.slice(0, 8)}...${simulatedAddress.slice(-6)}`,
-          networkId: NETWORK_CONFIG.networkId,
-          error: null,
-        });
+        // Missing wallet: Display explicit error to user — no silent fallback
+        setWallet((prev) => ({
+          ...prev,
+          connected: false,
+          address: null,
+          networkId: null,
+          error:
+            'Midnight Lace wallet extension not detected. Please install the Midnight Lace wallet extension and connect to Midnight Preprod.',
+        }));
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Wallet connection failed';
