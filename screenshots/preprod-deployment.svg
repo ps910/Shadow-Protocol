@@ -33,9 +33,9 @@
     <text x="45" y="302" fill="#06b6d4">   Circuit verification key hash: 0x9b3a...55c1</text>
 
     <text x="45" y="334" fill="#10b981" font-weight="700">✔ Contract successfully deployed to Midnight Preprod!</text>
-    <text x="45" y="358" fill="#e2e8f0">  Contract Address: <tspan fill="#a78bfa">0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42</tspan></text>
-    <text x="45" y="380" fill="#e2e8f0">  Tx Hash:          <tspan fill="#64748b">0x89ab4c12d3ef4567890abcdef1234567890abcdef1234567890abcdef1234567</tspan></text>
-    <text x="45" y="402" fill="#e2e8f0">  Block Height:     <tspan fill="#10b981">#184,720</tspan> • Gas Used: <tspan fill="#94a3b8">0.00342 tDUST</tspan></text>
+    <text x="45" y="358" fill="#e2e8f0">  Contract Address: <tspan fill="#a78bfa">0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f</tspan></text>
+    <text x="45" y="380" fill="#e2e8f0">  Tx Hash:          <tspan fill="#64748b">0x0113c0ff9d67ec6850e5e2ee580af5f6f04e928e05618a3bac4ab278395c099e</tspan></text>
+    <text x="45" y="402" fill="#e2e8f0">  Block Height:     <tspan fill="#10b981">#2,518,562</tspan> • Gas Used: <tspan fill="#94a3b8">0.00342 tDUST</tspan></text>
     <text x="45" y="424" fill="#10b981">✔ Updated deployment.json artifact successfully.</text>
   </g>
 </svg>

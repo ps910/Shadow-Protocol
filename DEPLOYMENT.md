@@ -100,7 +100,7 @@ npm run deploy
 
 ### Definition of Done (DoD)
 - Contract is deployed on Midnight Preprod at address:
-  `0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42`
+  `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f`
 - Initial ledger state reads back from indexer: `memberCount: 0`, `verifiedCount: 0`.
 - Deployment record written to `deployment.json`.
 
@@ -246,9 +246,9 @@ export circuit getVerifiedCount(): Uint<64> {
 
 ### Step 6.2 — Indexer Query
 ```bash
-curl -X POST https://indexer.preprod.midnight.network/graphql \
+curl -X POST https://indexer.preprod.midnight.network/api/v4/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query": "{ contract(address: \"0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42\") { state } }"}'
+  -d '{"query": "{ contractAction(address: \"cc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f\") { address state __typename } }"}'
 ```
 
 ### Definition of Done (DoD)

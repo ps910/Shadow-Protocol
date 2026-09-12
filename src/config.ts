@@ -14,5 +14,5 @@ export const NETWORK_CONFIG = {
     'http://localhost:6300',
   contractAddress:
     (import.meta.env.VITE_CONTRACT_ADDRESS as string) ||
-    '0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42',
+    '0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f',
 };

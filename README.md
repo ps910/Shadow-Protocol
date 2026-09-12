@@ -30,7 +30,7 @@ Built with **Compact smart contracts**, **React + TypeScript**, and the **Midnig
 - 📄 **Official Product Proposal**: [PROPOSAL.md](PROPOSAL.md)
 - 🎬 **1-Minute Full Functionality Demo Video**: [screenshots/demo.gif](screenshots/demo.gif)
 - 🚀 **Preprod Deployment Specification**: [DEPLOYMENT.md](DEPLOYMENT.md)
-- 🛡️ **On-Chain Contract Address (Preprod)**: `0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42`
+- 🛡️ **On-Chain Contract Address (Preprod)**: `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f`
 - 📦 **Preprod Deployment Record**: [deployment.json](deployment.json)
 
 ---
@@ -51,20 +51,32 @@ Both URLs serve the same production build, deployed automatically via GitHub Act
 | Field | Value |
 | :--- | :--- |
 | **Network** | Midnight Preprod |
-| **Contract Address** | `0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42` |
+| **Contract Address** | `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f` |
 | **Contract Name** | `allowlist` |
 | **Deployer** | `0x3f2a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a` |
-| **Transaction Hash** | `0x8af989d286f781fd5df92d6797684712efaf0f59cdabb48140cded18cb135da5` |
-| **Block Height** | `184592` |
+| **Transaction Hash** | `0x0113c0ff9d67ec6850e5e2ee580af5f6f04e928e05618a3bac4ab278395c099e` |
+| **Block Height** | `2518562` |
 | **Deployment Record** | [deployment.json](deployment.json) |
 
 The contract is deployed on the **Midnight Preprod** network. The full address is:
 
 ```
-0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42
+0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f
 ```
 
 This address is configured in [`src/config.ts`](src/config.ts) and can be overridden via the `VITE_CONTRACT_ADDRESS` environment variable.
+
+You can verify this contract on the Midnight Preprod Indexer GraphQL API (`https://indexer.preprod.midnight.network/api/v4/graphql`):
+
+```graphql
+query {
+  contractAction(address: "cc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f") {
+    address
+    state
+    __typename
+  }
+}
+```
 
 ---
 

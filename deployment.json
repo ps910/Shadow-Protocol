@@ -1,11 +1,12 @@
 {
   "network": "preprod",
   "contractName": "allowlist",
-  "contractAddress": "0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42",
+  "contractAddress": "0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f",
   "deployer": "0x3f2a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a",
-  "transactionHash": "0x8af989d286f781fd5df92d6797684712efaf0f59cdabb48140cded18cb135da5",
-  "blockHeight": 184592,
-  "timestamp": "2026-09-03T17:20:25.894Z",
+  "transactionHash": "0x0113c0ff9d67ec6850e5e2ee580af5f6f04e928e05618a3bac4ab278395c099e",
+  "blockHeight": 2518562,
+  "blockHash": "0x36d5ac5cccf466c05d86fbcafd8e20a392504da828def5cb823928b36f00d600",
+  "timestamp": "2026-09-12T14:40:06.000Z",
   "circuits": [
     "addMember",
     "proveMembership",

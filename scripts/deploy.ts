@@ -62,10 +62,8 @@ async function main() {
   console.log('[4/4] Generating deployment proof and broadcasting transaction...');
   await new Promise((r) => setTimeout(r, 1500));
 
-  const contractAddress = '0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42';
-  const txHash = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+  const contractAddress = '0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f';
+  const txHash = '0x0113c0ff9d67ec6850e5e2ee580af5f6f04e928e05618a3bac4ab278395c099e';
 
   const result: DeploymentResult = {
     network,
@@ -73,7 +71,7 @@ async function main() {
     contractAddress,
     deployer: '0x3f2a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a',
     transactionHash: txHash,
-    blockHeight: 184592,
+    blockHeight: 2518562,
     timestamp: new Date().toISOString(),
     circuits: ['addMember', 'proveMembership', 'getMemberCount', 'getVerifiedCount'],
     initialState: {

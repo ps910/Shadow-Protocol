@@ -293,7 +293,7 @@ steller-moon-midnight/
 1. **Toolchain & Preprod Verification**: Node 22, Compact compiler, Docker proof server running, and Lace funded on Preprod.
 2. **Compact Contract Compilation**: `allowlist.compact` compiled without warnings; WASM and TypeScript bindings generated in `managed/`.
 3. **Cryptographic Test Suite**: 9 unit tests passing, covering commitment generation, one-way collision resistance, nullifier derivation, and double-proof prevention.
-4. **Preprod On-Chain Deployment**: Contract deployed to `0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42` on Midnight Preprod with transaction recorded.
+4. **Preprod On-Chain Deployment**: Contract deployed to `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f` on Midnight Preprod with transaction recorded.
 5. **Interactive UI Implementation**: React dApp integrating Lace DApp connector, commitment admin panel, real-time proof generator, and public metrics display.
 6. **Live GitHub Pages Hosting**: Automated build and hosting at `https://ps910.github.io/NEW-MOON-PROJECT-/`.
 7. **Complete Submission Packaging**: 20 meaningful commits pushed to `ps910/NEW-MOON-PROJECT-`, visual SVG screenshots, proposal, and demo video script.
@@ -351,7 +351,7 @@ Rule for the agent: **do not treat this as "build ZKGate" in one pass.** Complet
 ### Phase 1 — Contract Skeleton & First Real Preprod Address
 - Write `constructor` and initial ledger state (`allowlistName`, `memberCount`, `verifiedCount`, `usedNullifiers`).
 - Compile with `compact compile`, generate initial bindings, deploy to Preprod.
-- **DoD**: Real Preprod contract address exists (`0x7c5cfc42b94a87e38a9d15c0e148281fa78bfa42`), initial counters read back 0 from the indexer. Recorded in `deployment.json`.
+- **DoD**: Real Preprod contract address exists (`0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f`), initial counters read back 0 from the indexer. Recorded in `deployment.json`.
 
 ### Phase 2 — Member Registration & Commitment Ingestion
 - Implement `addMember(commitment: Bytes<32>)` circuit.
