@@ -14,12 +14,20 @@
  */
 
 import { NETWORK_CONFIG } from './config';
+import {
+  createNetworkProvider,
+  type NetworkProvider,
+  type NetworkProviderConfig,
+} from '@midnight-ntwrk/midnight-js-network-provider';
+import type { ConnectedAPI, WalletConnectedAPI } from '@midnight-ntwrk/dapp-connector-api';
+import type { MidnightProviders, WalletProvider } from '@midnight-ntwrk/midnight-js-types';
+import type { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export interface MidnightProviderConfig {
+export interface MidnightProviderConfig extends NetworkProviderConfig {
   networkId: string;
   indexerUrl: string;
   nodeUrl: string;
@@ -58,6 +66,17 @@ export function createProviderConfig(): MidnightProviderConfig {
   };
 }
 
+/**
+ * Instantiate the Midnight.js network provider client for Preprod.
+ */
+export function getNetworkProvider(config: MidnightProviderConfig): NetworkProvider {
+  return createNetworkProvider({
+    networkId: config.networkId,
+    indexerUrl: config.indexerUrl,
+    nodeUrl: config.nodeUrl,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Contract State Query
 // ---------------------------------------------------------------------------
@@ -66,7 +85,8 @@ export function createProviderConfig(): MidnightProviderConfig {
  * Fetch the current on-chain contract state from the Midnight Preprod indexer.
  *
  * Queries the indexer GraphQL endpoint for the deployed contract's public
- * ledger state (memberCount, verifiedCount, allowlistRoot, allowlistName).
+ * ledger state (memberCount, verifiedCount, allowlistRoot, allowlistName)
+ * using the Midnight.js NetworkProvider.
  */
 export async function fetchContractState(
   config: MidnightProviderConfig,
@@ -82,19 +102,8 @@ export async function fetchContractState(
     }
   }`;
 
-  const response = await fetch(`${config.indexerUrl}/graphql`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Indexer query failed (${response.status}): ${await response.text()}`,
-    );
-  }
-
-  const json = await response.json();
+  const networkProvider = getNetworkProvider(config);
+  const json = await networkProvider.query(query);
   const state = json?.data?.contract?.state;
 
   if (!state) {

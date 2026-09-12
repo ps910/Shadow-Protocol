@@ -1,0 +1,17 @@
+{
+  "name": "@midnight-ntwrk/midnight-js-network-provider",
+  "version": "4.1.1",
+  "description": "Network provider for Midnight.js SDK on Midnight Preprod",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "author": "Midnight Network",
+  "license": "Apache-2.0"
+}
