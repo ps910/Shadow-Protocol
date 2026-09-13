@@ -80,23 +80,6 @@ query {
 
 ---
 
-## 📋 Submission Checklist & Requirements to Pass
-
-| Requirement | Status | Evidence / Verification Link |
-| :--- | :---: | :--- |
-| **Fully functional dApp using Midnight privacy** | ✅ **PASS** | React + Compact witness/circuit architecture with Lace connector + Midnight.js SDK |
-| **Minimum 3 tests passing** | ✅ **PASS** | **9 tests passing** (`contract.test.ts` & `app.test.tsx`) — [View Screenshot](screenshots/test-output.svg) |
-| **CI/CD pipeline running** | ✅ **PASS** | `.github/workflows/ci.yml` — installs Compact, compiles contract, runs tests, and builds |
-| **Approved idea submitted from idea list** | ✅ **PASS** | *"Private Allowlist Access"* — see [PROPOSAL.md](PROPOSAL.md) |
-| **Minimum 10 meaningful commits** | ✅ **PASS** | 20+ structured commits with semantic history |
-| **Public GitHub repository** | ✅ **PASS** | [github.com/ps910/NEW-MOON-PROJECT-](https://github.com/ps910/NEW-MOON-PROJECT-) |
-| **Live demo link** | ✅ **PASS** | [ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/) |
-| **Screenshot: test output (3+ tests passing)** | ✅ **PASS** | [screenshots/test-output.svg](screenshots/test-output.svg) |
-| **Demo video (1 minute) showing full functionality** | ✅ **PASS** | [screenshots/demo.gif](screenshots/demo.gif) |
-| **README "privacy model" section** | ✅ **PASS** | [Privacy Model Section](#-privacy-model) detailing observer vs private witness |
-
----
-
 ## ✨ Features
 
 - 🔐 **True ZK Privacy**: Individual membership proofs are private using ZK-SNARKs
