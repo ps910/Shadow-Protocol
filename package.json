@@ -1,13 +1,13 @@
 {
-  "name": "midnight-private-allowlist",
+  "name": "shadow-protocol",
   "version": "1.0.0",
-  "description": "Private Allowlist Access DApp on Midnight Network — prove membership without revealing identity using ZK proofs",
+  "description": "Shadow Protocol — Privacy-first multiplayer social deduction game on Midnight Network where hidden roles, secret actions, and private votes are cryptographically verified",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "compile": "compact compile contract/allowlist.compact --output managed/",
+    "compile": "compact compile contract/shadow_protocol.compact --output managed/",
     "test": "vitest run",
     "test:watch": "vitest",
     "deploy": "tsx scripts/deploy.ts",
@@ -17,8 +17,10 @@
     "midnight",
     "zk",
     "privacy",
-    "allowlist",
-    "zero-knowledge"
+    "social-deduction",
+    "zero-knowledge",
+    "hidden-roles",
+    "game"
   ],
   "author": "pramo",
   "license": "MIT",

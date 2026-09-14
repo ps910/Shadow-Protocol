@@ -1,4 +1,4 @@
-name: CI — Compile, Test & Build
+name: Shadow Protocol — CI Pipeline
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-and-test:
-    name: Compile, Test & Build
+    name: Shadow Protocol — Compile, Test & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +41,7 @@ jobs:
       - name: TypeScript type check
         run: npx tsc --noEmit --skipLibCheck
 
-      - name: Run test suite (9 tests)
+      - name: Run test suite (20+ tests)
         run: npm test
 
       - name: Build production bundle
