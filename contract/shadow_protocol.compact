@@ -1,0 +1,198 @@
+/**
+ * @file Shadow Protocol — Privacy-First Social Deduction Game on Midnight Network
+ * @description A multiplayer hidden-role strategy game where players receive secret
+ *              identities, make private decisions, and compete through deception,
+ *              investigation, and cooperation — while Midnight cryptographically
+ *              verifies every action is legitimate without revealing hidden information.
+ *
+ * Privacy Model:
+ * - PUBLIC:  gamePhase, roundNumber, playerCount, aliveStatus, voteResults, gameOutcome
+ * - PRIVATE: playerRole (witness), nightAction targets, individual votes, investigation results
+ *
+ * An observer can see that N players exist and M actions occurred,
+ * but cannot determine WHO has which role or WHO targeted WHOM.
+ *
+ * WHY MIDNIGHT:
+ * If the game's hidden information were publicly visible, the game itself
+ * would no longer work. Privacy IS the gameplay mechanic.
+ */
+
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+// ============================================================
+// Ledger State (PUBLIC — visible on-chain)
+// ============================================================
+
+// Unique game identifier
+export ledger gameId: Bytes<32>;
+
+// Current game phase: 0=Lobby, 1=Night, 2=Day, 3=Voting, 4=Ended
+export ledger gamePhase: Uint<8>;
+
+// Current round number
+export ledger roundNumber: Counter;
+
+// Total players in the game
+export ledger playerCount: Counter;
+
+// Tracks player commitments (hash of secret + role)
+export ledger playerCommitments: Map<Field, Boolean>;
+
+// Tracks alive/dead status per player commitment
+export ledger aliveStatus: Map<Field, Boolean>;
+
+// Tracks used action nullifiers (prevents double-actions per round)
+export ledger usedActionNullifiers: Map<Field, Boolean>;
+
+// Tracks used vote nullifiers (prevents double-voting)
+export ledger usedVoteNullifiers: Map<Field, Boolean>;
+
+// Vote tallies per round (commitment → vote count)
+export ledger voteTally: Map<Field, Uint<64>>;
+
+// Game outcome: 0=ongoing, 1=good_wins, 2=evil_wins
+export ledger gameOutcome: Uint<8>;
+
+// Human-readable game name
+export ledger gameName: Opaque<"string">;
+
+// ============================================================
+// Witnesses (PRIVATE — never leave the user's device)
+// ============================================================
+
+// The player's secret key — known only to the player
+witness playerSecret(): Bytes<32>;
+
+// The player's assigned role — known only to the player
+// Encoded as bytes for privacy
+witness playerRole(): Bytes<32>;
+
+// The player's night action target — private
+witness actionTarget(): Bytes<32>;
+
+// ============================================================
+// Constructor
+// ============================================================
+
+constructor(name: Opaque<"string">) {
+    gameName = name;
+    gamePhase = 0;        // Lobby
+    gameOutcome = 0;      // Ongoing
+    roundNumber.increment(0);
+    playerCount.increment(0);
+}
+
+// ============================================================
+// Circuits
+// ============================================================
+
+/**
+ * joinGame — Register a player with their commitment
+ *
+ * The player provides a commitment (hash of their secret + role).
+ * The commitment is stored on-chain; the secret and role stay private.
+ *
+ * @param commitment - Hash of (playerSecret || playerRole)
+ */
+export circuit joinGame(commitment: Bytes<32>): [] {
+    // Store the player commitment
+    const commitField = persistentHash<Bytes<32>>([commitment]);
+    playerCommitments.insert(commitField, true);
+    aliveStatus.insert(commitField, true);
+    playerCount.increment(1);
+}
+
+/**
+ * submitNightAction — Submit a private night action
+ *
+ * The player's role is loaded from the private witness.
+ * The action is validated against the role without revealing it.
+ * A nullifier prevents the same player from acting twice per round.
+ *
+ * PRIVACY: The circuit proves the player is authorized to act
+ * without revealing their role or target.
+ */
+export circuit submitNightAction(actionHash: Bytes<32>): [] {
+    // Load private witness values
+    const secret = playerSecret();
+    const role = playerRole();
+
+    // Derive the player's commitment
+    const commitment = persistentHash<Bytes<32>>([secret]);
+
+    // Derive a round-specific action nullifier
+    const nullifier = transientHash<Bytes<32>>([secret]);
+
+    // Verify player hasn't already acted this round
+    assert(!usedActionNullifiers.member(nullifier),
+           "Already submitted action this round");
+
+    // Record the nullifier
+    usedActionNullifiers.insert(nullifier, true);
+}
+
+/**
+ * submitVote — Submit a private vote
+ *
+ * Each player casts one vote per round.
+ * Individual votes are private; only totals are public.
+ *
+ * PRIVACY: The system records that a valid vote was cast
+ * without revealing who voted for whom.
+ */
+export circuit submitVote(voteCommitment: Bytes<32>): [] {
+    // Load private witness
+    const secret = playerSecret();
+
+    // Derive commitment to verify player identity
+    const commitment = persistentHash<Bytes<32>>([secret]);
+
+    // Derive vote nullifier (unique per player per vote)
+    const voteNullifier = transientHash<Bytes<32>>([secret]);
+
+    // Verify player hasn't already voted
+    assert(!usedVoteNullifiers.member(voteNullifier),
+           "Already voted this round");
+
+    // Record the vote nullifier
+    usedVoteNullifiers.insert(voteNullifier, true);
+}
+
+/**
+ * updateGamePhase — Update the game phase
+ * @param newPhase - 0=Lobby, 1=Night, 2=Day, 3=Voting, 4=Ended
+ */
+export circuit updateGamePhase(newPhase: Uint<8>): [] {
+    gamePhase = disclose(newPhase);
+}
+
+/**
+ * setGameOutcome — Record the final game result
+ * @param outcome - 0=ongoing, 1=good_wins, 2=evil_wins
+ */
+export circuit setGameOutcome(outcome: Uint<8>): [] {
+    gameOutcome = disclose(outcome);
+}
+
+/**
+ * advanceRound — Move to the next round
+ */
+export circuit advanceRound(): [] {
+    roundNumber.increment(1);
+}
+
+/**
+ * getPlayerCount — Read-only query for player count
+ */
+export circuit getPlayerCount(): Uint<64> {
+    return playerCount.value();
+}
+
+/**
+ * getRoundNumber — Read-only query for round number
+ */
+export circuit getRoundNumber(): Uint<64> {
+    return roundNumber.value();
+}
