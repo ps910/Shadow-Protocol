@@ -1,46 +1,41 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-describe('App Component', () => {
-  /**
-   * Test 7: App renders with all major sections
-   */
-  it('renders the main application with all sections', () => {
+describe('Shadow Protocol — App Component', () => {
+  it('renders the game lobby with Shadow Protocol branding', () => {
     render(<App />);
-
-    // Header
-    expect(screen.getByText('ZKGate')).toBeDefined();
-    expect(screen.getByText('Private Allowlist on Midnight')).toBeDefined();
-
-    // Hero
-    expect(screen.getByText('Private Allowlist Access')).toBeDefined();
-
-    // Connect button
-    expect(screen.getByText(/Connect Lace Wallet/)).toBeDefined();
+    const elements = screen.getAllByText('Shadow Protocol');
+    expect(elements.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Privacy-First Social Deduction')).toBeDefined();
   });
 
-  /**
-   * Test 8: Privacy model section displays correctly
-   */
-  it('displays the privacy model section', () => {
+  it('displays all 6 player agents in the lobby', () => {
     render(<App />);
-
-    expect(screen.getByText('Privacy Model')).toBeDefined();
-    expect(screen.getByText(/What an observer can and cannot learn/)).toBeDefined();
-    expect(screen.getByText(/Privacy Guarantee/)).toBeDefined();
+    expect(screen.getByText('Alice')).toBeDefined();
+    expect(screen.getByText('Bob')).toBeDefined();
+    expect(screen.getByText('Charlie')).toBeDefined();
+    expect(screen.getByText('David')).toBeDefined();
+    expect(screen.getByText('Emma')).toBeDefined();
+    expect(screen.getByText('Frank')).toBeDefined();
   });
 
-  /**
-   * Test 9: Stats display shows initial zero values
-   */
-  it('shows initial stats with zero values', () => {
+  it('shows the start game button in lobby', () => {
     render(<App />);
+    const startBtn = screen.getByText(/Begin Shadow Protocol/);
+    expect(startBtn).toBeDefined();
+  });
 
-    // Check for stat labels
-    expect(screen.getByText('Members Added')).toBeDefined();
-    expect(screen.getByText('Verifications')).toBeDefined();
-    expect(screen.getByText('Contract Status')).toBeDefined();
-    expect(screen.getByText('Privacy Level')).toBeDefined();
+  it('displays the mission briefing with role descriptions', () => {
+    render(<App />);
+    expect(screen.getByText(/Assassin/)).toBeDefined();
+    expect(screen.getByText(/Guardian/)).toBeDefined();
+    expect(screen.getByText(/Investigator/)).toBeDefined();
+    expect(screen.getByText(/Civilians/)).toBeDefined();
+  });
+
+  it('shows privacy indicator in the hero section', () => {
+    render(<App />);
+    expect(screen.getByText(/Privacy is the gameplay mechanic/)).toBeDefined();
   });
 });
