@@ -194,17 +194,18 @@ describe('Shadow Protocol — Game Engine', () => {
     expect(assigned.round).toBe(1);
 
     // Every player should have a role
-    assigned.players.forEach(p => {
+    assigned.players.forEach((p: any) => {
       expect(p.role).not.toBeNull();
       expect(p.commitment).toBeTruthy();
     });
 
-    // Check role distribution: 1 assassin, 1 guardian, 1 investigator, 3 civilians
-    const roles = assigned.players.map(p => p.role);
-    expect(roles.filter(r => r === Role.Assassin).length).toBe(1);
-    expect(roles.filter(r => r === Role.Guardian).length).toBe(1);
-    expect(roles.filter(r => r === Role.Investigator).length).toBe(1);
-    expect(roles.filter(r => r === Role.Civilian).length).toBe(3);
+    // Check role distribution: 1 assassin, 1 spy, 1 guardian, 1 investigator, 2 civilians
+    const roles = assigned.players.map((p: any) => p.role);
+    expect(roles.filter((r: any) => r === Role.Assassin).length).toBe(1);
+    expect(roles.filter((r: any) => r === Role.Guardian).length).toBe(1);
+    expect(roles.filter((r: any) => r === Role.Investigator).length).toBe(1);
+    expect(roles.filter((r: any) => r === Role.Spy).length).toBe(1);
+    expect(roles.filter((r: any) => r === Role.Civilian).length).toBe(2);
   });
 
   it('detects win condition when assassin is eliminated', () => {
@@ -254,9 +255,9 @@ describe('Shadow Protocol — Public vs Private State', () => {
     const publicState = getPublicGameState(assigned);
 
     // Public state should NOT contain role information
-    publicState.players.forEach(p => {
+    publicState.players.forEach((p: any) => {
       expect(p).not.toHaveProperty('secret');
-      expect((p as any).role).toBeUndefined();
+      expect(p.role).toBeUndefined();
     });
   });
 
@@ -283,7 +284,7 @@ describe('Shadow Protocol — Public vs Private State', () => {
     const publicState = getPublicGameState(gameOver);
 
     // At game over, roles are revealed
-    publicState.players.forEach(p => {
+    publicState.players.forEach((p: any) => {
       expect(p.role).toBeDefined();
     });
   });

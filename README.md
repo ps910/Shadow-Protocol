@@ -4,7 +4,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/ZKGate/)
 [![Build Spec](https://img.shields.io/badge/Spec-Level%204%20Build%20Spec-8b5cf6?style=flat)](BUILD_SPEC.md)
 [![Network](https://img.shields.io/badge/Network-Midnight%20Preprod-7c5cfc?style=flat)](https://indexer.preprod.midnight.network)
-[![Tests](https://img.shields.io/badge/Tests-25%20Passing-10b981?style=flat)](#run-tests)
+[![Tests](https://img.shields.io/badge/Tests-38%20Passing-10b981?style=flat)](#run-tests)
 [![Proposal](https://img.shields.io/badge/Product-Proposal%20Document-blue)](PROPOSAL.md)
 
 > **A privacy-first multiplayer social deduction game on Midnight Network — where hidden roles, secret actions, and private votes are cryptographically verified without revealing the hidden information behind them.**
@@ -19,53 +19,68 @@
 |----------|--------------------------------------------------------------------|
 | Preprod  | `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f` |
 
-> The contract supports both the original ZKGate allowlist and the new Shadow Protocol game circuits.
+> The contract supports both the original ZKGate allowlist and the new Shadow Protocol game circuits (8 circuits including task nullifiers & sabotage triggers).
 
 ## What This Product Does
 
-Shadow Protocol is a **6-player hidden-role strategy game** where:
+Shadow Protocol is a **6-player Among Us-style hidden-role strategy game** set aboard **Aegis Station**:
 
-1. **Each player receives a secret role** (Assassin, Guardian, Investigator, or Civilian) — assigned using cryptographic randomness and stored as a private witness that never appears on-chain.
+1. **Secret Role Assignment**: Each player receives a secret role (Civilian, Guardian, Investigator, Assassin, or Spy) — bound to cryptographic secrets stored as private witnesses that never appear on-chain.
 
-2. **Night phase**: Players perform role-specific actions in secret. The Assassin targets a player for elimination, the Guardian protects someone, and the Investigator uncovers allegiances. Midnight verifies each action is legitimate for the player's role **without revealing the role itself**.
+2. **Aegis Station Free-Roam Map**: Players navigate 7 interconnected compartments (Command, Central Hub, Reactor Core, Research Lab, Engineering, Security, and Communications) to perform interactive terminal tasks or execute clandestine operations.
 
-3. **Day phase**: The results of the night are announced publicly ("someone was attacked"), but the actors remain anonymous. Players discuss and debate.
+3. **Interactive Task Mini-Games with ZK Receipts**:
+   - **Reactor Calibration**: Hexadecimal frequency matching
+   - **Power Routing**: Dynamic conduit grid redirection
+   - **Signal Tuning**: Carrier wave frequency & amplitude synchronization
+   - **Chemical Mixing**: Stoichiometric coolant synthesis
+   - *Each task completion generates a single-use ZK nullifier that increments global station readiness on Midnight without revealing who completed it or where.*
 
-4. **Voting phase**: Each player casts a private vote. Only the aggregate vote counts are revealed — individual votes stay hidden. The player with the most votes is eliminated.
+4. **Shadow Team Sabotages**:
+   - **Reactor Meltdown**: 45-second emergency countdown requiring dual-key stabilization.
+   - **Communications Blackout**: Scrambles radar feeds and room sensors until repaired.
 
-5. **Game ends** when either the Assassin is eliminated (good wins) or the Assassin gains numerical majority (evil wins).
+5. **Casualty Discovery & Emergency Meetings**: Discovering a dead body or pressing the Command Center emergency beacon calls an Emergency Meeting.
+
+6. **Cryptographic Alibi Verification & Shielded Voting**:
+   - Players present deterministic room beacons ($T_{\text{room}} = \text{Poseidon}(s_i, \text{RoomId}, t)$) to prove their presence in specific compartments during casualty timestamps without revealing their identity or role.
+   - Each player casts a shielded ballot. Only aggregate vote totals are revealed; ties result in no ejection, and ejections declassify the target's role dossier.
 
 ### Why Midnight?
 
-**If the game's hidden information were publicly visible, the game would break.** On a transparent blockchain, anyone could see who the Assassin is, making the game unplayable. Midnight's private state and zero-knowledge proofs are what make the game possible — **privacy isn't an add-on, privacy IS the gameplay mechanic.**
+**If the game's hidden information were publicly visible, the game would break.** On a transparent blockchain, anyone could see who the Assassin is, who is in which room, and who cast which vote, making the game unplayable. Midnight's private state and zero-knowledge proofs are what make the game possible — **privacy isn't an add-on, privacy IS the gameplay mechanic.**
 
 ## Privacy Model
 
 ### What is PUBLIC (on-chain, anyone can see):
-- Game phase (Lobby, Night, Day, Voting, Game Over)
-- Round number
+- Game phase (Lobby, FreeRoam, EmergencyMeeting, Voting, GameOver)
+- Round number & Station Task Progress counter
 - Player count and alive/dead status
+- Active sabotage state (Meltdown / Blackout timer)
 - Vote totals (aggregate counts only)
-- Game outcome (who won)
-- Event log (public announcements)
+- Game outcome (Protocol vs Shadow victory)
+- Public event announcements
 
 ### What is PRIVATE (private witness, never on-chain):
-- Player role assignments (Assassin, Guardian, Investigator, Civilian)
-- Night action targets (who the Assassin attacked, who the Guardian protected)
+- Player role assignments (Assassin, Spy, Guardian, Investigator, Civilian)
+- Station coordinates & player movement trajectory
+- Single-use task nullifiers before submission
+- Room beacon secrets for alibi generation
 - Individual vote choices (who voted for whom)
-- Investigation results (only the Investigator sees their findings)
-- Player secret keys (32-byte cryptographic secrets)
+- Investigation findings & Phantom Pings
+- 32-byte player cryptographic seed keys
 
 ### What the user PROVES without revealing:
-- "I am authorized to perform this action" (without revealing my role)
+- "I am authorized to perform this role action" (without revealing my role)
+- "I was in the Research Lab during round 1" (cryptographic room alibi without disclosing secret keys)
+- "I completed a designated station task" (nullifier receipt without exposing player identity)
 - "I have cast a valid vote" (without revealing my vote target)
-- "The game outcome is legitimate" (without exposing individual roles)
 
 ## Privacy Claim
 
-> **An on-chain observer** can see: 6 players joined, night actions were submitted, 3 votes were cast for Player X, and the good team won.
+> **An on-chain observer** can see: 6 crew joined Aegis Station, task progress reached 100%, 3 votes were cast for Player 3, and Protocol secured victory.
 >
-> **An on-chain observer CANNOT see**: who is the Assassin, who the Guardian protected, who the Investigator investigated, or which individual cast which vote.
+> **An on-chain observer CANNOT see**: who is the Assassin/Spy, what path players navigated through compartments, who completed which task, or which individual cast which vote.
 
 ## Tech Stack
 
@@ -73,10 +88,10 @@ Shadow Protocol is a **6-player hidden-role strategy game** where:
 - **Contract Language**: Compact (compiles to ZK circuits)
 - **Frontend**: React 18 + TypeScript + Vite
 - **Wallet**: Lace (Midnight DApp Connector API)
-- **Styling**: Custom CSS with glassmorphism, micro-animations
-- **Testing**: Vitest + React Testing Library
+- **Styling**: Custom Vanilla CSS with glassmorphism, micro-animations
+- **Testing**: Vitest + React Testing Library (38 tests)
 - **CI/CD**: GitHub Actions → GitHub Pages
-- **Crypto**: Web Crypto API (SHA-256 commitments, nullifiers)
+- **Crypto**: Web Crypto API (SHA-256 commitments, nullifiers, room beacons)
 
 ## Prerequisites
 
@@ -110,7 +125,7 @@ The app will be available at `http://localhost:3000`.
 ## Run Tests
 
 ```bash
-# Run all tests (25 tests covering game logic, privacy, and UI)
+# Run all tests (38 tests covering game logic, Aegis Station, privacy, and UI)
 npm test
 
 # Run tests in watch mode
@@ -119,15 +134,11 @@ npm run test:watch
 
 ### Test Coverage
 
-| Suite                          | Tests | Description                                           |
-|-------------------------------|-------|-------------------------------------------------------|
-| Player Identity & Commitments | 4     | Secret generation, deterministic commitments          |
-| Role Privacy                  | 4     | Role-commitment binding, action validation, teams     |
-| Night Action Privacy          | 3     | Action hashes, target uniqueness, nullifier tracking  |
-| Vote Privacy                  | 2     | Per-round uniqueness, vote-action unlinkability       |
-| Game Engine                   | 4     | Initialization, role distribution, win conditions     |
-| Public vs Private State       | 3     | State separation, player views, game-over reveal      |
-| App Component                 | 5     | Branding, players, UI elements, privacy indicator     |
+| Suite                          | Tests | Description                                                    |
+|-------------------------------|-------|----------------------------------------------------------------|
+| Aegis Station Mechanics       | 13    | Station layout, room movement, tasks, sabotages, alibis, bodies|
+| Player Identity & Contract    | 20    | Role privacy, action nullifiers, vote unlinkability, circuits  |
+| App & UI Orchestration        | 5     | Station map rendering, mini-games, meeting triggers, dashboard |
 
 ## CI/CD
 
@@ -138,7 +149,7 @@ The CI pipeline runs automatically on every push to `main` and on pull requests:
 3. **Install** npm dependencies
 4. **Compile** Compact contract
 5. **Type check** TypeScript
-6. **Run tests** (25 tests)
+6. **Run tests** (38 tests)
 7. **Build** production bundle
 8. **Deploy** to GitHub Pages
 

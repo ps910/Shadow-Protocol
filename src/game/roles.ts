@@ -13,6 +13,7 @@
 // ─── Role Enum ───────────────────────────────────────────────────────
 export enum Role {
   Assassin = 'ASSASSIN',
+  Spy = 'SPY',
   Guardian = 'GUARDIAN',
   Investigator = 'INVESTIGATOR',
   Civilian = 'CIVILIAN',
@@ -23,6 +24,9 @@ export enum ActionType {
   Assassinate = 'ASSASSINATE',
   Protect = 'PROTECT',
   Investigate = 'INVESTIGATE',
+  Sabotage = 'SABOTAGE',
+  PhantomPing = 'PHANTOM_PING',
+  CompleteTask = 'COMPLETE_TASK',
   Hide = 'HIDE',         // Civilian night action
   Skip = 'SKIP',         // No action
 }
@@ -45,60 +49,71 @@ export const ROLE_METADATA: Record<Role, RoleMeta> = {
     role: Role.Assassin,
     name: 'Assassin',
     emoji: '🗡️',
-    description: 'A deadly agent working in the shadows. Eliminate key players without being discovered.',
-    objective: 'Eliminate all Guardians or reach numerical majority.',
+    description: 'A deadly Shadow operative aboard Aegis Station. Stalk and eliminate crew members without being caught.',
+    objective: 'Eliminate Protocol members until Shadow achieves numerical parity or critical sabotage succeeds.',
     nightAction: ActionType.Assassinate,
     nightActionLabel: 'Choose a player to eliminate',
     team: 'evil',
-    color: '#dc2626',
+    color: '#ef4444',
+  },
+  [Role.Spy]: {
+    role: Role.Spy,
+    name: 'Spy',
+    emoji: '🕵️',
+    description: 'A covert operative specializing in electronic disruption. Trigger sabotages and emit false task signals.',
+    objective: 'Destabilize station systems, disrupt crew communication, and shield the Assassin.',
+    nightAction: ActionType.PhantomPing,
+    nightActionLabel: 'Deploy a phantom task ping or trigger sabotage',
+    team: 'evil',
+    color: '#f97316',
   },
   [Role.Guardian]: {
     role: Role.Guardian,
     name: 'Guardian',
     emoji: '🛡️',
-    description: 'A protector of the innocent. Shield players from assassination attempts.',
-    objective: 'Identify and eliminate the Assassin through voting.',
+    description: 'A station defender with protective counter-measures. Cast a cryptographic shield over a crew member each cycle.',
+    objective: 'Shield vulnerable targets and identify the Shadow agents through discussion and voting.',
     nightAction: ActionType.Protect,
     nightActionLabel: 'Choose a player to protect',
     team: 'good',
-    color: '#2563eb',
+    color: '#10b981',
   },
   [Role.Investigator]: {
     role: Role.Investigator,
     name: 'Investigator',
     emoji: '🔎',
-    description: 'A keen observer who gathers intelligence. Investigate players to uncover their allegiance.',
-    objective: 'Identify suspicious players and guide the town to victory.',
+    description: 'Security officer with clearance to access the Security Station scanner. Privately inspect suspect allegiances.',
+    objective: 'Scan suspect players, gather verifiable evidence, and guide the crew to exile Shadow operatives.',
     nightAction: ActionType.Investigate,
-    nightActionLabel: 'Choose a player to investigate',
+    nightActionLabel: 'Choose a player to scan',
     team: 'good',
-    color: '#7c3aed',
+    color: '#8b5cf6',
   },
   [Role.Civilian]: {
     role: Role.Civilian,
-    name: 'Civilian',
-    emoji: '👤',
-    description: 'An ordinary citizen. Stay alive and help identify the threat through discussion and voting.',
-    objective: 'Survive and vote to eliminate the Assassin.',
-    nightAction: ActionType.Hide,
-    nightActionLabel: 'You hide and hope for the best',
+    name: 'Civilian / Crew',
+    emoji: '👨‍🔧',
+    description: 'Station maintenance engineer. Complete assigned mini-game tasks, repair sabotaged systems, and uncover impostors.',
+    objective: 'Survive, push Protocol Task Completion to 100%, and vote out the Shadow team.',
+    nightAction: ActionType.CompleteTask,
+    nightActionLabel: 'Complete assigned station tasks',
     team: 'good',
-    color: '#64748b',
+    color: '#38bdf8',
   },
 };
 
 // ─── Role Distribution ──────────────────────────────────────────────
 /**
- * Default role distribution for a 6-player game.
- * 1 Assassin, 1 Guardian, 1 Investigator, 3 Civilians
+ * Role distribution for a 6-player Aegis Station match:
+ * 1 Assassin, 1 Spy, 1 Guardian, 1 Investigator, 2 Civilians
  */
 export const DEFAULT_ROLE_DISTRIBUTION: Role[] = [
-  Role.Assassin,
-  Role.Guardian,
-  Role.Investigator,
-  Role.Civilian,
-  Role.Civilian,
-  Role.Civilian,
+  Role.Civilian,      // Player 0: Alice
+  Role.Assassin,      // Player 1: Bob
+  Role.Guardian,      // Player 2: Charlie
+  Role.Investigator,  // Player 3: David
+  Role.Civilian,      // Player 4: Emma
+  Role.Spy,           // Player 5: Frank
 ];
 
 // ─── Action Validation ──────────────────────────────────────────────
@@ -110,24 +125,26 @@ export const DEFAULT_ROLE_DISTRIBUTION: Role[] = [
  */
 export function isActionValid(role: Role, action: ActionType): boolean {
   const validActions: Record<Role, ActionType[]> = {
-    [Role.Assassin]: [ActionType.Assassinate, ActionType.Skip],
-    [Role.Guardian]: [ActionType.Protect, ActionType.Skip],
-    [Role.Investigator]: [ActionType.Investigate, ActionType.Skip],
-    [Role.Civilian]: [ActionType.Hide, ActionType.Skip],
+    [Role.Assassin]: [ActionType.Assassinate, ActionType.Sabotage, ActionType.Skip],
+    [Role.Spy]: [ActionType.PhantomPing, ActionType.Sabotage, ActionType.CompleteTask, ActionType.Skip],
+    [Role.Guardian]: [ActionType.Protect, ActionType.CompleteTask, ActionType.Skip],
+    [Role.Investigator]: [ActionType.Investigate, ActionType.CompleteTask, ActionType.Skip],
+    [Role.Civilian]: [ActionType.CompleteTask, ActionType.Hide, ActionType.Skip],
   };
 
   return validActions[role]?.includes(action) ?? false;
 }
 
 /**
- * Get the allowed night actions for a role.
+ * Get the allowed actions for a role.
  */
 export function getAllowedActions(role: Role): ActionType[] {
   const actions: Record<Role, ActionType[]> = {
-    [Role.Assassin]: [ActionType.Assassinate],
-    [Role.Guardian]: [ActionType.Protect],
-    [Role.Investigator]: [ActionType.Investigate],
-    [Role.Civilian]: [ActionType.Hide],
+    [Role.Assassin]: [ActionType.Assassinate, ActionType.Sabotage],
+    [Role.Spy]: [ActionType.PhantomPing, ActionType.Sabotage],
+    [Role.Guardian]: [ActionType.Protect, ActionType.CompleteTask],
+    [Role.Investigator]: [ActionType.Investigate, ActionType.CompleteTask],
+    [Role.Civilian]: [ActionType.CompleteTask, ActionType.Hide],
   };
   return actions[role] ?? [];
 }
@@ -142,13 +159,15 @@ export function getRoleDescription(role: Role): RoleMeta {
 /**
  * Check if a role belongs to the evil team.
  */
-export function isEvil(role: Role): boolean {
+export function isEvil(role?: Role | null): boolean {
+  if (!role || !ROLE_METADATA[role]) return false;
   return ROLE_METADATA[role].team === 'evil';
 }
 
 /**
  * Check if a role belongs to the good team.
  */
-export function isGood(role: Role): boolean {
+export function isGood(role?: Role | null): boolean {
+  if (!role || !ROLE_METADATA[role]) return false;
   return ROLE_METADATA[role].team === 'good';
 }

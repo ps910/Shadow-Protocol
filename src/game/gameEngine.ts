@@ -1,15 +1,12 @@
 /**
  * Shadow Protocol — Core Game Engine
  *
- * Manages the complete game lifecycle:
- * Lobby → Role Assignment → Night Phase → Day Phase → Voting → Resolution
+ * Manages the complete game lifecycle aboard Aegis Station:
+ * Lobby → Role Reveal → Free Roam & Tasks → Emergency Meeting → Shielded Voting → Resolution
  *
  * PRIVACY MODEL:
- * - PUBLIC: Round number, alive/dead status, game outcome, vote counts, events
- * - PRIVATE: Player roles, night actions, investigation results, vote targets
- *
- * The game engine processes all state transitions while keeping sensitive
- * information compartmentalized. Each player only sees their own private data.
+ * - PUBLIC: Round, alive status, task progress percentage, active sabotage, public events, final vote tallies
+ * - PRIVATE: Player roles, task nullifiers, night actions, individual votes, room beacon alibis
  */
 
 import {
@@ -21,16 +18,45 @@ import {
   isEvil,
 } from './roles';
 
+import {
+  RoomId,
+  AEGIS_STATION_ROOMS,
+  canMoveBetween,
+  generateRoomBeacon,
+} from './stationMap';
+
+import {
+  PlayerTask,
+  generateTasksForPlayer,
+  calculateTaskProgress,
+  generateTaskNullifier,
+} from './tasks';
+
+import {
+  SabotageState,
+  SabotageType,
+  createSabotage,
+} from './sabotage';
+
+import {
+  AlibiReceipt,
+  generateAlibiProof,
+  verifyAlibiClaim,
+} from './privacyVerifier';
+
 // ─── Game Phase Enum ─────────────────────────────────────────────────
 export enum GamePhase {
   Lobby = 'LOBBY',
   RoleReveal = 'ROLE_REVEAL',
-  Night = 'NIGHT',
-  DayReport = 'DAY_REPORT',
-  Discussion = 'DISCUSSION',
+  FreeRoam = 'FREE_ROAM',
+  EmergencyMeeting = 'EMERGENCY_MEETING',
   Voting = 'VOTING',
   VoteResult = 'VOTE_RESULT',
   GameOver = 'GAME_OVER',
+  // Backwards compatibility aliases:
+  Night = 'NIGHT',
+  DayReport = 'DAY_REPORT',
+  Discussion = 'DISCUSSION',
 }
 
 // ─── Player State ────────────────────────────────────────────────────
@@ -44,37 +70,32 @@ export interface Player {
   secret: Uint8Array | null; // PRIVATE — never leaves the client
   hasActed: boolean;         // Per-round action tracking
   hasVoted: boolean;         // Per-round vote tracking
+  currentRoom: RoomId;       // Current location aboard Aegis Station
+  tasks: PlayerTask[];       // Assigned mini-game tasks
 }
 
-// ─── Night Action ────────────────────────────────────────────────────
+// ─── Night / Free Roam Action ────────────────────────────────────────
 export interface NightAction {
   playerId: string;
   action: ActionType;
   targetId: string | null;
-  actionHash: string;        // Commitment of the action (public)
+  actionHash: string;
   round: number;
 }
 
 // ─── Vote ────────────────────────────────────────────────────────────
 export interface Vote {
   voterId: string;
-  targetId: string;
-  voteHash: string;          // Commitment of the vote (public)
+  targetId: string;          // 'skip' or player ID
+  voteHash: string;
   round: number;
 }
 
-// ─── Night Report ────────────────────────────────────────────────────
-export interface NightReport {
-  round: number;
-  events: GameEvent[];
-  investigationResults: Map<string, { targetId: string; isEvil: boolean }>; // PRIVATE per investigator
-}
-
-// ─── Game Event (Public) ─────────────────────────────────────────────
+// ─── Game Event ──────────────────────────────────────────────────────
 export interface GameEvent {
   id: string;
   round: number;
-  type: 'attack_survived' | 'attack_killed' | 'no_attack' | 'player_eliminated' | 'game_start' | 'phase_change' | 'vote_result';
+  type: 'attack_survived' | 'attack_killed' | 'no_attack' | 'player_eliminated' | 'game_start' | 'phase_change' | 'vote_result' | 'task_completed' | 'sabotage_triggered' | 'sabotage_resolved' | 'body_reported' | 'emergency_called';
   message: string;
   isPublic: boolean;
   timestamp: Date;
@@ -83,10 +104,38 @@ export interface GameEvent {
 // ─── Vote Result ─────────────────────────────────────────────────────
 export interface VoteResult {
   round: number;
-  votes: Record<string, number>;  // targetId → count (PUBLIC)
+  votes: Record<string, number>;  // targetId → count
   eliminatedId: string | null;
   isTie: boolean;
 }
+
+// ─── Dead Body Record ────────────────────────────────────────────────
+export interface DeadBody {
+  victimId: string;
+  victimName: string;
+  victimAvatar: string;
+  roomId: RoomId;
+  timestamp: number;
+  reported: boolean;
+}
+
+// ─── Emergency State ─────────────────────────────────────────────────
+export interface EmergencyState {
+  reporterId: string;
+  reporterName: string;
+  reporterAvatar: string;
+  reason: 'body' | 'button';
+  roomFound?: RoomId;
+  deadBody?: DeadBody;
+  discussionTranscript: Array<{
+    senderName: string;
+    senderAvatar: string;
+    text: string;
+    isEvidence?: boolean;
+  }>;
+}
+
+export type GameOutcome = 'ongoing' | 'good_wins' | 'evil_wins';
 
 // ─── Game State ──────────────────────────────────────────────────────
 export interface GameState {
@@ -98,44 +147,92 @@ export interface GameState {
   nightActions: NightAction[];
   votes: Vote[];
   events: GameEvent[];
-  nightReports: NightReport[];
   voteResults: VoteResult[];
+  outcome: GameOutcome;
   winner: 'good' | 'evil' | null;
-  winMessage: string | null;
-  currentPlayerId: string | null;  // Which player view is active
-  investigationLog: Map<string, Array<{ targetId: string; isEvil: boolean; round: number }>>;
+  winReason?: string;
+  winMessage?: string;
+  // Aegis Station states:
+  deadBodies: DeadBody[];
+  activeSabotage: SabotageState | null;
+  taskProgress: { completed: number; total: number; percentage: number };
+  emergencyState: EmergencyState | null;
+  alibiReceipts: Record<string, AlibiReceipt>;
 }
 
-// ─── Player Avatars ──────────────────────────────────────────────────
-const PLAYER_AVATARS = ['🦊', '🐺', '🦉', '🐱', '🦅', '🐻'];
-const PLAYER_NAMES = ['Alice', 'Bob', 'Charlie', 'David', 'Emma', 'Frank'];
+// ─── Default Players Setup ───────────────────────────────────────────
+const DEFAULT_PLAYER_NAMES = [
+  { name: 'Alice', avatar: '👩‍🚀' },
+  { name: 'Bob', avatar: '👨‍🚀' },
+  { name: 'Charlie', avatar: '🕵️' },
+  { name: 'David', avatar: '🧑‍💻' },
+  { name: 'Emma', avatar: '👩‍🔬' },
+  { name: 'Frank', avatar: '🧑‍🚀' },
+];
 
-// ─── Game Engine Functions ───────────────────────────────────────────
+const STARTING_ROOMS: RoomId[] = ['command', 'hub', 'engine', 'security', 'reactor', 'lab'];
 
 /**
- * Initialize a new game with the given number of players.
+ * Generate a cryptographically secure random 32-byte secret
  */
-export function initializeGame(playerCount: number = 6): GameState {
-  const gameId = generateGameId();
-  const players: Player[] = [];
+function generateSecret(): Uint8Array {
+  const secret = new Uint8Array(32);
+  crypto.getRandomValues(secret);
+  return secret;
+}
 
-  for (let i = 0; i < playerCount; i++) {
-    const secret = generatePlayerSecret();
-    players.push({
-      id: `player-${i}`,
-      name: PLAYER_NAMES[i] || `Player ${i + 1}`,
-      avatar: PLAYER_AVATARS[i] || '👤',
+/**
+ * Generate a simulated commitment hash
+ */
+function generateCommitment(secret: Uint8Array, role: Role): string {
+  let hash = 0;
+  for (let i = 0; i < secret.length; i++) {
+    hash = (hash << 5) - hash + secret[i];
+    hash |= 0;
+  }
+  for (let i = 0; i < role.length; i++) {
+    hash = (hash << 5) - hash + role.charCodeAt(i);
+    hash |= 0;
+  }
+  return `0x${Math.abs(hash).toString(16).padStart(16, '0')}`;
+}
+
+// ─── Game Initialization ─────────────────────────────────────────────
+export function initializeGame(playerCount = 6): GameState {
+  const roles = [...DEFAULT_ROLE_DISTRIBUTION].slice(0, playerCount);
+
+  const players: Player[] = DEFAULT_PLAYER_NAMES.slice(0, playerCount).map((p, index) => {
+    const secret = generateSecret();
+    const role = roles[index];
+    const commitment = generateCommitment(secret, role);
+    const isShadow = isEvil(role);
+    const assignedTasks = generateTasksForPlayer(`player-${index}`, isShadow);
+    const startingRoom = STARTING_ROOMS[index % STARTING_ROOMS.length];
+
+    return {
+      id: `player-${index}`,
+      name: p.name,
+      avatar: p.avatar,
       role: null,
       isAlive: true,
-      commitment: '',
+      commitment,
       secret,
       hasActed: false,
       hasVoted: false,
-    });
-  }
+      currentRoom: startingRoom,
+      tasks: assignedTasks,
+    };
+  });
+
+  // Calculate initial task progress
+  const initialTaskDict: Record<string, PlayerTask[]> = {};
+  players.forEach(p => {
+    initialTaskDict[p.id] = p.tasks;
+  });
+  const taskProgress = calculateTaskProgress(initialTaskDict);
 
   return {
-    gameId,
+    gameId: `aegis-${Date.now().toString(36)}`,
     phase: GamePhase.Lobby,
     round: 0,
     maxRounds: 5,
@@ -143,652 +240,580 @@ export function initializeGame(playerCount: number = 6): GameState {
     nightActions: [],
     votes: [],
     events: [{
-      id: crypto.randomUUID(),
+      id: `evt-${Date.now()}`,
       round: 0,
       type: 'game_start',
-      message: `Shadow Protocol initialized. ${playerCount} agents assembled.`,
+      message: 'Aegis Station mission initialized. 6 crew agents connected.',
       isPublic: true,
       timestamp: new Date(),
     }],
-    nightReports: [],
     voteResults: [],
+    outcome: 'ongoing',
     winner: null,
-    winMessage: null,
-    currentPlayerId: players[0]?.id || null,
-    investigationLog: new Map(),
+    deadBodies: [],
+    activeSabotage: null,
+    taskProgress,
+    emergencyState: null,
+    alibiReceipts: {},
   };
 }
 
-/**
- * Assign roles to all players using cryptographic randomness.
- * Returns the game state with roles assigned and commitments generated.
- *
- * PRIVACY: Roles are stored in local state only.
- * The commitment (hash of secret+role) goes on-chain.
- */
-export async function assignRoles(state: GameState): Promise<GameState> {
-  const roles = shuffleArray([...DEFAULT_ROLE_DISTRIBUTION]);
-
-  // Ensure we have enough roles
-  while (roles.length < state.players.length) {
-    roles.push(Role.Civilian);
-  }
-
-  const updatedPlayers = await Promise.all(
-    state.players.map(async (player, index) => {
-      const role = roles[index];
-      const commitment = await deriveRoleCommitment(player.secret!, role);
-      return {
-        ...player,
-        role,
-        commitment,
-      };
-    })
-  );
-
-  return {
-    ...state,
-    players: updatedPlayers,
-    phase: GamePhase.RoleReveal,
-    round: 1,
-    events: [
-      ...state.events,
-      {
-        id: crypto.randomUUID(),
-        round: 1,
-        type: 'phase_change' as const,
-        message: 'Roles have been secretly assigned. Each agent knows only their own identity.',
-        isPublic: true,
-        timestamp: new Date(),
-      },
-    ],
-  };
-}
-
-/**
- * Transition from role reveal to the first night phase.
- */
-export function startNightPhase(state: GameState): GameState {
-  return {
-    ...state,
-    phase: GamePhase.Night,
-    nightActions: [],
-    events: [
-      ...state.events,
-      {
-        id: crypto.randomUUID(),
-        round: state.round,
-        type: 'phase_change',
-        message: `Night ${state.round} falls. The shadows come alive...`,
-        isPublic: true,
-        timestamp: new Date(),
-      },
-    ],
-    players: state.players.map(p => ({ ...p, hasActed: false })),
-  };
-}
-
-/**
- * Submit a night action for a player.
- * Validates that the action is legal for the player's role.
- *
- * PRIVACY: The action type and target are kept private.
- * Only the action hash (commitment) is recorded publicly.
- */
-export async function submitNightAction(
-  state: GameState,
+// ─── Station Movement ────────────────────────────────────────────────
+export function movePlayer(
+  gameState: GameState,
   playerId: string,
-  action: ActionType,
-  targetId: string | null,
-): Promise<GameState> {
-  const player = state.players.find(p => p.id === playerId);
-  if (!player) throw new Error('Player not found');
-  if (!player.isAlive) throw new Error('Dead players cannot act');
-  if (!player.role) throw new Error('Player has no role assigned');
-  if (player.hasActed) throw new Error('Player has already acted this round');
+  targetRoom: RoomId,
+): GameState {
+  const player = gameState.players.find(p => p.id === playerId);
+  if (!player || !player.isAlive) return gameState;
 
-  // Validate action is legal for this role
-  if (!isActionValid(player.role, action)) {
-    throw new Error(`Action ${action} is not valid for role ${player.role}`);
+  if (!canMoveBetween(player.currentRoom, targetRoom)) {
+    return gameState;
   }
 
-  // Validate target
-  if (action !== ActionType.Hide && action !== ActionType.Skip) {
-    if (!targetId) throw new Error('Action requires a target');
-    const target = state.players.find(p => p.id === targetId);
-    if (!target) throw new Error('Target not found');
-    if (!target.isAlive) throw new Error('Cannot target a dead player');
-    if (targetId === playerId && action === ActionType.Assassinate) {
-      throw new Error('Cannot assassinate yourself');
-    }
-  }
-
-  // Generate action hash (commitment)
-  const actionHash = await deriveActionHash(
-    player.secret!,
-    action,
-    targetId || '',
-    state.round,
+  const updatedPlayers = gameState.players.map(p =>
+    p.id === playerId ? { ...p, currentRoom: targetRoom } : p
   );
 
-  const nightAction: NightAction = {
-    playerId,
-    action,
-    targetId,
-    actionHash,
-    round: state.round,
-  };
-
   return {
-    ...state,
-    nightActions: [...state.nightActions, nightAction],
-    players: state.players.map(p =>
-      p.id === playerId ? { ...p, hasActed: true } : p
-    ),
+    ...gameState,
+    players: updatedPlayers,
   };
 }
 
-/**
- * Check if all alive players have submitted their night actions.
- */
-export function allPlayersActed(state: GameState): boolean {
-  return state.players
-    .filter(p => p.isAlive)
-    .every(p => p.hasActed);
-}
+// ─── Task Completion ─────────────────────────────────────────────────
+export function completePlayerTask(
+  gameState: GameState,
+  playerId: string,
+  taskId: string,
+): GameState {
+  const player = gameState.players.find(p => p.id === playerId);
+  if (!player || !player.isAlive) return gameState;
 
-/**
- * Process all night actions and generate the night report.
- * Returns the updated game state with results.
- *
- * PRIVACY:
- * - PUBLIC: "A player was attacked" / "A player was protected"
- * - PRIVATE: Who attacked, who protected, investigation results
- */
-export function processNightActions(state: GameState): GameState {
-  const roundActions = state.nightActions.filter(a => a.round === state.round);
-  const events: GameEvent[] = [];
-  const investigationResults = new Map<string, { targetId: string; isEvil: boolean }>();
+  const nullifier = generateTaskNullifier(playerId, taskId, gameState.round);
 
-  // Find assassination target
-  const assassinateAction = roundActions.find(a => a.action === ActionType.Assassinate);
+  const updatedTasks = player.tasks.map(t =>
+    t.id === taskId ? { ...t, isCompleted: true, completedAtRound: gameState.round, taskNullifier: nullifier } : t
+  );
 
-  // Find protection target
-  const protectAction = roundActions.find(a => a.action === ActionType.Protect);
+  const updatedPlayers = gameState.players.map(p =>
+    p.id === playerId ? { ...p, tasks: updatedTasks } : p
+  );
 
-  // Find investigation target
-  const investigateAction = roundActions.find(a => a.action === ActionType.Investigate);
+  // Recalculate progress
+  const taskDict: Record<string, PlayerTask[]> = {};
+  updatedPlayers.forEach(p => {
+    taskDict[p.id] = p.tasks;
+  });
+  const taskProgress = calculateTaskProgress(taskDict);
 
-  let updatedPlayers = [...state.players];
-
-  // Process assassination
-  if (assassinateAction && assassinateAction.targetId) {
-    const targetId = assassinateAction.targetId;
-    const isProtected = protectAction?.targetId === targetId;
-
-    if (isProtected) {
-      events.push({
-        id: crypto.randomUUID(),
-        round: state.round,
-        type: 'attack_survived',
-        message: 'Someone was targeted for elimination last night, but a mysterious guardian intervened. The target survived.',
-        isPublic: true,
-        timestamp: new Date(),
-      });
-    } else {
-      // Player is eliminated
-      updatedPlayers = updatedPlayers.map(p =>
-        p.id === targetId ? { ...p, isAlive: false } : p
-      );
-      const victim = state.players.find(p => p.id === targetId);
-      events.push({
-        id: crypto.randomUUID(),
-        round: state.round,
-        type: 'attack_killed',
-        message: `${victim?.name || 'A player'} was found eliminated this morning. Their role was: ${ROLE_METADATA[victim?.role || Role.Civilian].emoji} ${ROLE_METADATA[victim?.role || Role.Civilian].name}`,
-        isPublic: true,
-        timestamp: new Date(),
-      });
-    }
-  } else {
-    events.push({
-      id: crypto.randomUUID(),
-      round: state.round,
-      type: 'no_attack',
-      message: 'The night passed peacefully. No one was attacked.',
+  const newEvents = [
+    ...gameState.events,
+    {
+      id: `evt-${Date.now()}`,
+      round: gameState.round,
+      type: 'task_completed' as const,
+      message: `A station task was completed. Global protocol completion: ${taskProgress.percentage}%.`,
       isPublic: true,
       timestamp: new Date(),
-    });
-  }
-
-  // Process investigation (PRIVATE result — only the investigator sees this)
-  if (investigateAction && investigateAction.targetId) {
-    const target = state.players.find(p => p.id === investigateAction.targetId);
-    if (target && target.role) {
-      investigationResults.set(investigateAction.playerId, {
-        targetId: investigateAction.targetId,
-        isEvil: isEvil(target.role),
-      });
     }
+  ];
+
+  // Win condition: Tasks 100%
+  if (taskProgress.percentage >= 100) {
+    return {
+      ...gameState,
+      players: updatedPlayers,
+      taskProgress,
+      events: newEvents,
+      phase: GamePhase.GameOver,
+      outcome: 'good_wins',
+      winner: 'good',
+      winReason: 'Protocol Victory! All critical station tasks have been completed and verified.',
+    };
   }
 
-  // Update investigation log
-  const newInvestigationLog = new Map(state.investigationLog);
-  investigationResults.forEach((result, investigatorId) => {
-    const existing = newInvestigationLog.get(investigatorId) || [];
-    existing.push({ ...result, round: state.round });
-    newInvestigationLog.set(investigatorId, existing);
-  });
-
-  const nightReport: NightReport = {
-    round: state.round,
-    events,
-    investigationResults,
-  };
-
-  // Check win condition after night
-  const winCheck = checkWinCondition({ ...state, players: updatedPlayers });
-
   return {
-    ...state,
+    ...gameState,
     players: updatedPlayers,
-    phase: winCheck.winner ? GamePhase.GameOver : GamePhase.DayReport,
-    events: [...state.events, ...events],
-    nightReports: [...state.nightReports, nightReport],
-    investigationLog: newInvestigationLog,
-    winner: winCheck.winner,
-    winMessage: winCheck.message,
+    taskProgress,
+    events: newEvents,
   };
 }
 
-/**
- * Transition to discussion phase.
- */
-export function startDiscussionPhase(state: GameState): GameState {
+// ─── Sabotage Actions ────────────────────────────────────────────────
+export function triggerSabotageAction(
+  gameState: GameState,
+  type: SabotageType,
+): GameState {
+  if (gameState.activeSabotage) return gameState; // already active
+
+  const sabotage = createSabotage(type);
+  const newEvents = [
+    ...gameState.events,
+    {
+      id: `evt-${Date.now()}`,
+      round: gameState.round,
+      type: 'sabotage_triggered' as const,
+      message: `⚠️ CRITICAL ALERT: ${sabotage.name} triggered in ${sabotage.requiredRoom.toUpperCase()}!`,
+      isPublic: true,
+      timestamp: new Date(),
+    }
+  ];
+
   return {
-    ...state,
-    phase: GamePhase.Discussion,
-    events: [
-      ...state.events,
-      {
-        id: crypto.randomUUID(),
-        round: state.round,
-        type: 'phase_change',
-        message: `Day ${state.round} begins. Players discuss and debate who they suspect.`,
-        isPublic: true,
-        timestamp: new Date(),
-      },
-    ],
+    ...gameState,
+    activeSabotage: sabotage,
+    events: newEvents,
   };
 }
 
-/**
- * Transition to voting phase.
- */
-export function startVotingPhase(state: GameState): GameState {
+export function resolveSabotageAction(gameState: GameState): GameState {
+  if (!gameState.activeSabotage) return gameState;
+
+  const resolvedName = gameState.activeSabotage.name;
+  const newEvents = [
+    ...gameState.events,
+    {
+      id: `evt-${Date.now()}`,
+      round: gameState.round,
+      type: 'sabotage_resolved' as const,
+      message: `✓ Station systems stabilized. ${resolvedName} defused.`,
+      isPublic: true,
+      timestamp: new Date(),
+    }
+  ];
+
   return {
-    ...state,
-    phase: GamePhase.Voting,
-    votes: state.votes.filter(v => v.round !== state.round), // Clear current round votes
-    players: state.players.map(p => ({ ...p, hasVoted: false })),
-    events: [
-      ...state.events,
-      {
-        id: crypto.randomUUID(),
-        round: state.round,
-        type: 'phase_change',
-        message: 'Voting has begun. Each player casts a private vote to eliminate a suspect.',
-        isPublic: true,
-        timestamp: new Date(),
-      },
-    ],
+    ...gameState,
+    activeSabotage: null,
+    events: newEvents,
   };
 }
 
-/**
- * Submit a vote for a player.
- *
- * PRIVACY: Individual votes are private.
- * Only the aggregate result is revealed.
- */
-export async function submitVote(
-  state: GameState,
+// ─── Elimination in Room ─────────────────────────────────────────────
+export function eliminatePlayerInRoom(
+  gameState: GameState,
+  assassinId: string,
+  targetId: string,
+): GameState {
+  const assassin = gameState.players.find(p => p.id === assassinId);
+  const target = gameState.players.find(p => p.id === targetId);
+
+  if (!assassin || !target || !target.isAlive) return gameState;
+  if (assassin.currentRoom !== target.currentRoom) return gameState;
+
+  const updatedPlayers = gameState.players.map(p =>
+    p.id === targetId ? { ...p, isAlive: false } : p
+  );
+
+  const newBody: DeadBody = {
+    victimId: target.id,
+    victimName: target.name,
+    victimAvatar: target.avatar,
+    roomId: target.currentRoom,
+    timestamp: Date.now(),
+    reported: false,
+  };
+
+  return {
+    ...gameState,
+    players: updatedPlayers,
+    deadBodies: [...gameState.deadBodies, newBody],
+  };
+}
+
+// ─── Emergency Meeting Triggering ────────────────────────────────────
+export function reportDeadBodyAction(
+  gameState: GameState,
+  reporterId: string,
+): GameState {
+  const reporter = gameState.players.find(p => p.id === reporterId);
+  if (!reporter || !reporter.isAlive) return gameState;
+
+  const bodyInRoom = gameState.deadBodies.find(b => b.roomId === reporter.currentRoom && !b.reported);
+  if (!bodyInRoom) return gameState;
+
+  // Mark body as reported
+  const updatedBodies = gameState.deadBodies.map(b =>
+    b.victimId === bodyInRoom.victimId ? { ...b, reported: true } : b
+  );
+
+  // Warp all living players to Command Center for the meeting
+  const updatedPlayers = gameState.players.map(p =>
+    p.isAlive ? { ...p, currentRoom: 'command' as RoomId, hasVoted: false } : p
+  );
+
+  // Build dynamic discussion transcript
+  const transcript = [
+    {
+      senderName: reporter.name,
+      senderAvatar: reporter.avatar,
+      text: `🚨 I found ${bodyInRoom.victimName}'s body in the ${AEGIS_STATION_ROOMS[bodyInRoom.roomId].name}!`,
+    },
+    {
+      senderName: 'Charlie',
+      senderAvatar: '🛡️',
+      text: `Where was everyone during the incident window? Present your cryptographic beacon alibis!`,
+    },
+    {
+      senderName: 'David',
+      senderAvatar: '🧑‍💻',
+      text: `I was at the Communications array completing signal calibration. My room beacon is logged.`,
+      isEvidence: true,
+    },
+  ];
+
+  return {
+    ...gameState,
+    phase: GamePhase.EmergencyMeeting,
+    deadBodies: updatedBodies,
+    players: updatedPlayers,
+    emergencyState: {
+      reporterId: reporter.id,
+      reporterName: reporter.name,
+      reporterAvatar: reporter.avatar,
+      reason: 'body',
+      roomFound: bodyInRoom.roomId,
+      deadBody: bodyInRoom,
+      discussionTranscript: transcript,
+    },
+  };
+}
+
+export function callEmergencyButtonAction(
+  gameState: GameState,
+  callerId: string,
+): GameState {
+  const caller = gameState.players.find(p => p.id === callerId);
+  if (!caller || !caller.isAlive || caller.currentRoom !== 'command') return gameState;
+
+  // Warp all living players to Command Center
+  const updatedPlayers = gameState.players.map(p =>
+    p.isAlive ? { ...p, currentRoom: 'command' as RoomId, hasVoted: false } : p
+  );
+
+  const transcript = [
+    {
+      senderName: caller.name,
+      senderAvatar: caller.avatar,
+      text: `🚨 EMERGENCY MEETING called from the Command Console! Suspicious activity detected on the station.`,
+    },
+    {
+      senderName: 'David',
+      senderAvatar: '🧑‍💻',
+      text: `Let's compare room beacon tokens and review who was wandering without completing tasks.`,
+      isEvidence: true,
+    },
+  ];
+
+  return {
+    ...gameState,
+    phase: GamePhase.EmergencyMeeting,
+    players: updatedPlayers,
+    emergencyState: {
+      reporterId: caller.id,
+      reporterName: caller.name,
+      reporterAvatar: caller.avatar,
+      reason: 'button',
+      discussionTranscript: transcript,
+    },
+  };
+}
+
+// ─── Voting & Ejection ───────────────────────────────────────────────
+export function submitShieldedVote(
+  gameState: GameState,
   voterId: string,
   targetId: string,
-): Promise<GameState> {
-  const voter = state.players.find(p => p.id === voterId);
-  if (!voter) throw new Error('Voter not found');
-  if (!voter.isAlive) throw new Error('Dead players cannot vote');
-  if (voter.hasVoted) throw new Error('Player has already voted this round');
-  if (voterId === targetId) throw new Error('Cannot vote for yourself');
+): GameState {
+  const voter = gameState.players.find(p => p.id === voterId);
+  if (!voter || !voter.isAlive || voter.hasVoted) return gameState;
 
-  const target = state.players.find(p => p.id === targetId);
-  if (!target) throw new Error('Target not found');
-  if (!target.isAlive) throw new Error('Cannot vote for a dead player');
-
-  // Generate vote hash (commitment)
-  const voteHash = await deriveVoteHash(voter.secret!, targetId, state.round);
-
-  const vote: Vote = {
+  const voteHash = `0xVOTE-${Date.now().toString(16)}`;
+  const newVote: Vote = {
     voterId,
     targetId,
     voteHash,
-    round: state.round,
+    round: gameState.round,
   };
+
+  const updatedPlayers = gameState.players.map(p =>
+    p.id === voterId ? { ...p, hasVoted: true } : p
+  );
 
   return {
-    ...state,
-    votes: [...state.votes, vote],
-    players: state.players.map(p =>
-      p.id === voterId ? { ...p, hasVoted: true } : p
-    ),
+    ...gameState,
+    players: updatedPlayers,
+    votes: [...gameState.votes, newVote],
   };
 }
 
-/**
- * Check if all alive players have voted.
- */
-export function allPlayersVoted(state: GameState): boolean {
-  return state.players
-    .filter(p => p.isAlive)
-    .every(p => p.hasVoted);
-}
+export function resolveEmergencyVote(gameState: GameState): GameState {
+  const tallies: Record<string, number> = {};
+  gameState.players.filter(p => p.isAlive).forEach(p => {
+    tallies[p.id] = 0;
+  });
+  tallies['skip'] = 0;
 
-/**
- * Process votes and determine elimination.
- *
- * PRIVACY:
- * - PUBLIC: Vote counts per target, who is eliminated
- * - PRIVATE: Which player voted for whom
- */
-export function processVotes(state: GameState): GameState {
-  const roundVotes = state.votes.filter(v => v.round === state.round);
+  gameState.votes
+    .filter(v => v.round === gameState.round)
+    .forEach(v => {
+      tallies[v.targetId] = (tallies[v.targetId] || 0) + 1;
+    });
 
-  // Tally votes
-  const tally: Record<string, number> = {};
-  roundVotes.forEach(vote => {
-    tally[vote.targetId] = (tally[vote.targetId] || 0) + 1;
+  let highestVotes = 0;
+  let eliminatedId: string | null = null;
+  let isTie = false;
+
+  Object.entries(tallies).forEach(([targetId, count]) => {
+    if (targetId === 'skip') return;
+    if (count > highestVotes) {
+      highestVotes = count;
+      eliminatedId = targetId;
+      isTie = false;
+    } else if (count === highestVotes && count > 0) {
+      isTie = true;
+    }
   });
 
-  // Find highest vote count
-  const maxVotes = Math.max(...Object.values(tally), 0);
-  const topTargets = Object.entries(tally).filter(([, count]) => count === maxVotes);
-  const isTie = topTargets.length > 1;
-
-  let eliminatedId: string | null = null;
-  const events: GameEvent[] = [];
-
-  if (isTie || maxVotes === 0) {
-    events.push({
-      id: crypto.randomUUID(),
-      round: state.round,
-      type: 'vote_result',
-      message: 'The vote ended in a tie. No one was eliminated.',
-      isPublic: true,
-      timestamp: new Date(),
-    });
-  } else {
-    eliminatedId = topTargets[0][0];
-    const eliminated = state.players.find(p => p.id === eliminatedId);
-    events.push({
-      id: crypto.randomUUID(),
-      round: state.round,
-      type: 'player_eliminated',
-      message: `The town has voted. ${eliminated?.name || 'A player'} has been eliminated. Their role was: ${ROLE_METADATA[eliminated?.role || Role.Civilian].emoji} ${ROLE_METADATA[eliminated?.role || Role.Civilian].name}`,
-      isPublic: true,
-      timestamp: new Date(),
-    });
+  const skipVotes = tallies['skip'] || 0;
+  if (skipVotes >= highestVotes) {
+    eliminatedId = null; // Skipped
+  } else if (isTie) {
+    eliminatedId = null; // Tie
   }
 
-  const voteResult: VoteResult = {
-    round: state.round,
-    votes: tally,
-    eliminatedId,
-    isTie,
-  };
-
-  let updatedPlayers = state.players;
+  let updatedPlayers = gameState.players;
   if (eliminatedId) {
-    updatedPlayers = updatedPlayers.map(p =>
+    updatedPlayers = gameState.players.map(p =>
       p.id === eliminatedId ? { ...p, isAlive: false } : p
     );
   }
 
-  // Check win condition after voting
-  const winCheck = checkWinCondition({ ...state, players: updatedPlayers });
-
-  return {
-    ...state,
-    players: updatedPlayers,
-    phase: winCheck.winner ? GamePhase.GameOver : GamePhase.VoteResult,
-    events: [...state.events, ...events],
-    voteResults: [...state.voteResults, voteResult],
-    winner: winCheck.winner,
-    winMessage: winCheck.message,
+  const voteResult: VoteResult = {
+    round: gameState.round,
+    votes: tallies,
+    eliminatedId,
+    isTie,
   };
-}
 
-/**
- * Start the next round (night phase).
- */
-export function nextRound(state: GameState): GameState {
-  const newRound = state.round + 1;
+  // Check Win Conditions
+  const livingPlayers = updatedPlayers.filter(p => p.isAlive);
+  const livingShadow = livingPlayers.filter(p => isEvil(p.role!));
+  const livingProtocol = livingPlayers.filter(p => !isEvil(p.role!));
 
-  if (newRound > state.maxRounds) {
-    // Max rounds exceeded — good team wins by default
+  if (livingShadow.length === 0) {
     return {
-      ...state,
+      ...gameState,
       phase: GamePhase.GameOver,
+      players: updatedPlayers,
+      voteResults: [...gameState.voteResults, voteResult],
+      outcome: 'good_wins',
       winner: 'good',
-      winMessage: 'Time has run out! The Guardians and Civilians win by surviving.',
+      winReason: 'Protocol Victory! All Shadow agents have been exiled from Aegis Station.',
     };
   }
 
-  return {
-    ...state,
-    round: newRound,
-    phase: GamePhase.Night,
-    nightActions: state.nightActions, // Keep history
-    players: state.players.map(p => ({ ...p, hasActed: false, hasVoted: false })),
-    events: [
-      ...state.events,
-      {
-        id: crypto.randomUUID(),
-        round: newRound,
-        type: 'phase_change',
-        message: `Night ${newRound} falls. The shadows come alive once more...`,
-        isPublic: true,
-        timestamp: new Date(),
-      },
-    ],
-  };
-}
-
-// ─── Win Condition ───────────────────────────────────────────────────
-/**
- * Check if the game has reached a win condition.
- *
- * Evil wins if: Assassin is alive and alive evil >= alive good
- * Good wins if: All evil players are eliminated
- */
-export function checkWinCondition(state: GameState): { winner: 'good' | 'evil' | null; message: string | null } {
-  const alivePlayers = state.players.filter(p => p.isAlive);
-  const aliveEvil = alivePlayers.filter(p => p.role && isEvil(p.role));
-  const aliveGood = alivePlayers.filter(p => p.role && !isEvil(p.role));
-
-  // Evil eliminated
-  if (aliveEvil.length === 0) {
+  if (livingProtocol.length <= livingShadow.length) {
     return {
-      winner: 'good',
-      message: '🛡️ The Assassin has been unmasked! Guardians and Civilians win!',
-    };
-  }
-
-  // Evil majority (or equal)
-  if (aliveEvil.length >= aliveGood.length) {
-    return {
+      ...gameState,
+      phase: GamePhase.GameOver,
+      players: updatedPlayers,
+      voteResults: [...gameState.voteResults, voteResult],
+      outcome: 'evil_wins',
       winner: 'evil',
-      message: '🗡️ The Assassin has seized control! The shadows consume all...',
+      winReason: 'Shadow Victory! The Shadow team has achieved parity or majority control.',
     };
   }
 
-  return { winner: null, message: null };
-}
-
-// ─── Public Game State ───────────────────────────────────────────────
-/**
- * Get the public game state — information visible to ALL players.
- * Strips all private data (roles, secrets, action details).
- */
-export interface PublicGameState {
-  gameId: string;
-  phase: GamePhase;
-  round: number;
-  players: Array<{
-    id: string;
-    name: string;
-    avatar: string;
-    isAlive: boolean;
-    hasActed: boolean;
-    hasVoted: boolean;
-    // Role is NOT included unless game is over
-    role?: Role;
-  }>;
-  events: GameEvent[];
-  voteResults: VoteResult[];
-  winner: 'good' | 'evil' | null;
-  winMessage: string | null;
-}
-
-export function getPublicGameState(state: GameState): PublicGameState {
   return {
-    gameId: state.gameId,
-    phase: state.phase,
-    round: state.round,
-    players: state.players.map(p => ({
-      id: p.id,
-      name: p.name,
-      avatar: p.avatar,
-      isAlive: p.isAlive,
-      hasActed: p.hasActed,
-      hasVoted: p.hasVoted,
-      // Only reveal roles when game is over
-      ...(state.phase === GamePhase.GameOver ? { role: p.role || undefined } : {}),
-    })),
-    events: state.events.filter(e => e.isPublic),
-    voteResults: state.voteResults,
-    winner: state.winner,
-    winMessage: state.winMessage,
+    ...gameState,
+    phase: GamePhase.VoteResult,
+    players: updatedPlayers,
+    voteResults: [...gameState.voteResults, voteResult],
   };
 }
 
-/**
- * Get a player's private view of the game.
- * Includes their role, investigation results, etc.
- */
-export interface PlayerView {
-  playerId: string;
-  role: Role | null;
-  roleMeta: typeof ROLE_METADATA[Role] | null;
-  investigationResults: Array<{ targetId: string; isEvil: boolean; round: number }>;
-  publicState: PublicGameState;
-}
-
-export function getPlayerView(state: GameState, playerId: string): PlayerView {
-  const player = state.players.find(p => p.id === playerId);
-  const publicState = getPublicGameState(state);
+// ─── Transition Helpers ──────────────────────────────────────────────
+export function startGame(gameState: GameState): GameState {
+  const roles = [...DEFAULT_ROLE_DISTRIBUTION].slice(0, gameState.players.length);
+  const updatedPlayers = gameState.players.map((p, index) => {
+    const role = roles[index];
+    const commitment = generateCommitment(p.secret!, role);
+    return {
+      ...p,
+      role,
+      commitment,
+    };
+  });
 
   return {
-    playerId,
-    role: player?.role || null,
-    roleMeta: player?.role ? ROLE_METADATA[player.role] : null,
-    investigationResults: state.investigationLog.get(playerId) || [],
-    publicState,
+    ...gameState,
+    phase: GamePhase.RoleReveal,
+    round: Math.max(gameState.round, 1),
+    players: updatedPlayers,
   };
 }
 
-// ─── Utility Functions ──────────────────────────────────────────────
-
-function generateGameId(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+export function proceedToFreeRoam(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.FreeRoam,
+  };
 }
 
-function generatePlayerSecret(): Uint8Array {
-  const secret = new Uint8Array(32);
-  crypto.getRandomValues(secret);
-  return secret;
+export function startVotingFromEmergency(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.Voting,
+  };
 }
 
-/**
- * Cryptographically shuffle an array using Fisher-Yates with crypto.getRandomValues.
- */
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  const randomValues = new Uint32Array(shuffled.length);
-  crypto.getRandomValues(randomValues);
+export function nextRound(gameState: GameState): GameState {
+  const nextRnd = gameState.round + 1;
+  const updatedPlayers = gameState.players.map(p => ({
+    ...p,
+    hasActed: false,
+    hasVoted: false,
+  }));
 
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = randomValues[i] % (i + 1);
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  return {
+    ...gameState,
+    phase: GamePhase.FreeRoam,
+    round: nextRnd,
+    players: updatedPlayers,
+    emergencyState: null,
+  };
+}
+
+// ─── Legacy Night & Day Adapters (Keeps existing views working) ──────
+export function checkWinCondition(gameState: GameState): { winner: 'good' | 'evil' | null; message?: string } {
+  const living = gameState.players.filter(p => p.isAlive);
+  const evilCount = living.filter(p => isEvil(p.role!)).length;
+  const goodCount = living.filter(p => !isEvil(p.role!)).length;
+
+  if (evilCount === 0) {
+    return { winner: 'good', message: 'Guardians and Protocol agents prevail!' };
   }
-  return shuffled;
+  if (goodCount <= evilCount) {
+    return { winner: 'evil', message: 'Assassin and Shadow operatives take control!' };
+  }
+  return { winner: null };
 }
 
-/**
- * Derive a commitment from a player's secret and role.
- * commitment = SHA-256(secret || role)
- */
-async function deriveRoleCommitment(secret: Uint8Array, role: Role): Promise<string> {
-  const roleBytes = new TextEncoder().encode(role);
-  const combined = new Uint8Array(secret.length + roleBytes.length);
-  combined.set(secret);
-  combined.set(roleBytes, secret.length);
-  const hash = await crypto.subtle.digest('SHA-256', combined);
-  return '0x' + Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+export function getPlayerView(gameState: GameState, playerId: string) {
+  const player = gameState.players.find(p => p.id === playerId);
+  return {
+    player,
+    role: player?.role || null,
+    publicState: getPublicGameState(gameState),
+    investigationResults: new Map<string, { targetId: string; isEvil: boolean }>(),
+  };
 }
 
-/**
- * Derive an action hash from components.
- * actionHash = SHA-256(secret || action || target || round)
- */
-async function deriveActionHash(
-  secret: Uint8Array,
+export function getPublicGameState(gameState: GameState) {
+  const isOver = gameState.phase === GamePhase.GameOver;
+  return {
+    gameId: gameState.gameId,
+    phase: gameState.phase,
+    round: gameState.round,
+    players: gameState.players.map(p => {
+      const base: any = {
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        isAlive: p.isAlive,
+        commitment: p.commitment,
+      };
+      if (isOver) {
+        base.role = p.role;
+      }
+      return base;
+    }),
+    events: gameState.events,
+    outcome: gameState.outcome,
+    taskProgress: gameState.taskProgress,
+  };
+}
+
+export function submitNightAction(
+  gameState: GameState,
+  playerId: string,
   action: ActionType,
-  targetId: string,
-  round: number,
-): Promise<string> {
-  const payload = new TextEncoder().encode(`${action}:${targetId}:${round}`);
-  const combined = new Uint8Array(secret.length + payload.length);
-  combined.set(secret);
-  combined.set(payload, secret.length);
-  const hash = await crypto.subtle.digest('SHA-256', combined);
-  return '0x' + Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+  targetId: string | null,
+): GameState {
+  const actionHash = `0xACT-${Date.now().toString(16)}`;
+  const newAction: NightAction = {
+    playerId,
+    action,
+    targetId,
+    actionHash,
+    round: gameState.round,
+  };
+
+  const updatedPlayers = gameState.players.map(p =>
+    p.id === playerId ? { ...p, hasActed: true } : p
+  );
+
+  return {
+    ...gameState,
+    players: updatedPlayers,
+    nightActions: [...gameState.nightActions, newAction],
+  };
 }
 
-/**
- * Derive a vote hash from components.
- * voteHash = SHA-256(secret || "vote:" || targetId || round)
- */
-async function deriveVoteHash(
-  secret: Uint8Array,
-  targetId: string,
-  round: number,
-): Promise<string> {
-  const payload = new TextEncoder().encode(`vote:${targetId}:${round}`);
-  const combined = new Uint8Array(secret.length + payload.length);
-  combined.set(secret);
-  combined.set(payload, secret.length);
-  const hash = await crypto.subtle.digest('SHA-256', combined);
-  return '0x' + Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+export function submitVote(gameState: GameState, voterId: string, targetId: string): GameState {
+  return submitShieldedVote(gameState, voterId, targetId);
 }
 
-// Re-export utility functions for testing
-export {
-  generatePlayerSecret as _generatePlayerSecret,
-  deriveRoleCommitment as _deriveRoleCommitment,
-  deriveActionHash as _deriveActionHash,
-  deriveVoteHash as _deriveVoteHash,
-  shuffleArray as _shuffleArray,
-};
+export async function assignRoles(gameState: GameState): Promise<GameState> {
+  return startGame(gameState);
+}
+
+export function processNightActions(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.FreeRoam,
+  };
+}
+
+export function processVotes(gameState: GameState): GameState {
+  return resolveEmergencyVote(gameState);
+}
+
+export function allPlayersActed(gameState: GameState): boolean {
+  const living = gameState.players.filter(p => p.isAlive);
+  return living.every(p => p.hasActed);
+}
+
+export function allPlayersVoted(gameState: GameState): boolean {
+  const living = gameState.players.filter(p => p.isAlive);
+  return living.every(p => p.hasVoted);
+}
+
+export function startNightPhase(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.FreeRoam,
+  };
+}
+
+export function startVotingPhase(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.Voting,
+  };
+}
+
+export function startDiscussionPhase(gameState: GameState): GameState {
+  return {
+    ...gameState,
+    phase: GamePhase.EmergencyMeeting,
+  };
+}
+
+export function tallyVotes(gameState: GameState): GameState {
+  return resolveEmergencyVote(gameState);
+}
+

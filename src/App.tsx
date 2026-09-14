@@ -1,30 +1,30 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { WalletConnect } from './components/WalletConnect';
 import { GameLobby } from './components/GameLobby';
 import { RoleReveal } from './components/RoleReveal';
-import { NightPhase } from './components/NightPhase';
-import { DayPhase } from './components/DayPhase';
+import { AegisStationView } from './components/AegisStationView';
+import { MiniGameModal } from './components/minigames/MiniGameModal';
+import { EmergencyMeeting } from './components/EmergencyMeeting';
 import { VotingPhase } from './components/VotingPhase';
 import { GameOver } from './components/GameOver';
 import { PrivacyDashboard } from './components/PrivacyDashboard';
 import {
   initializeGame,
-  assignRoles,
-  startNightPhase,
-  submitNightAction,
-  processNightActions,
-  allPlayersActed,
-  startDiscussionPhase,
-  startVotingPhase,
-  submitVote,
-  allPlayersVoted,
-  processVotes,
+  movePlayer,
+  completePlayerTask,
+  triggerSabotageAction,
+  resolveSabotageAction,
+  eliminatePlayerInRoom,
+  reportDeadBodyAction,
+  callEmergencyButtonAction,
+  submitShieldedVote,
+  resolveEmergencyVote,
   nextRound,
-  getPlayerView,
   GamePhase,
 } from './game/gameEngine';
 import type { GameState } from './game/gameEngine';
-import { ActionType } from './game/roles';
+import type { RoomId } from './game/stationMap';
+import type { PlayerTask } from './game/tasks';
 
 export interface WalletState {
   connected: boolean;
@@ -39,144 +39,143 @@ export default function App() {
     networkId: null,
   });
 
-  const [gameState, setGameState] = useState<GameState>(initializeGame(6));
+  const [gameState, setGameState] = useState<GameState>(() => initializeGame(6));
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const [activeTask, setActiveTask] = useState<PlayerTask | null>(null);
+
+  // Sabotage countdown timer
+  useEffect(() => {
+    if (!gameState.activeSabotage) return;
+    const timer = setInterval(() => {
+      setGameState(prev => {
+        if (!prev.activeSabotage) return prev;
+        const remaining = prev.activeSabotage.secondsRemaining - 1;
+        if (remaining <= 0) {
+          // Critical sabotage timeout -> Shadow Victory!
+          return {
+            ...prev,
+            phase: GamePhase.GameOver,
+            outcome: 'evil_wins',
+            winner: 'evil',
+            winReason: `Shadow Victory! ${prev.activeSabotage.name} was not stabilized in time. The station was destroyed!`,
+            activeSabotage: null,
+          };
+        }
+        return {
+          ...prev,
+          activeSabotage: {
+            ...prev.activeSabotage,
+            secondsRemaining: remaining,
+          },
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameState.activeSabotage]);
 
   // ─── Game Actions ──────────────────────────────────────────────────
 
-  const handleStartGame = useCallback(async () => {
-    const withRoles = await assignRoles(gameState);
-    setGameState(withRoles);
+  const handleStartGame = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      phase: GamePhase.RoleReveal,
+    }));
     setActivePlayerIndex(0);
-  }, [gameState]);
+  }, []);
 
   const handleRoleContinue = useCallback(() => {
-    setGameState(prev => startNightPhase(prev));
+    setGameState(prev => ({
+      ...prev,
+      phase: GamePhase.FreeRoam,
+    }));
   }, []);
 
-  const handleSubmitAction = useCallback(async (action: ActionType, targetId: string | null) => {
+  const handleMovePlayer = useCallback((targetRoom: RoomId) => {
     const currentPlayer = gameState.players[activePlayerIndex];
-    try {
-      let updated = await submitNightAction(gameState, currentPlayer.id, action, targetId);
-      setGameState(updated);
+    if (!currentPlayer) return;
+    setGameState(prev => movePlayer(prev, currentPlayer.id, targetRoom));
+  }, [gameState.players, activePlayerIndex]);
 
-      // Auto-advance other players (simulated multiplayer)
-      // We'll auto-submit for NPCs after the current player acts
-      for (let i = 0; i < updated.players.length; i++) {
-        if (i === activePlayerIndex) continue;
-        const player = updated.players[i];
-        if (!player.isAlive || player.hasActed) continue;
-
-        // AI-controlled action based on role
-        let aiAction = ActionType.Skip;
-        let aiTarget: string | null = null;
-        const alivePlayers = updated.players.filter(p => p.isAlive && p.id !== player.id);
-
-        if (player.role) {
-          switch (player.role) {
-            case 'ASSASSIN':
-              aiAction = ActionType.Assassinate;
-              aiTarget = alivePlayers[Math.floor(Math.random() * alivePlayers.length)]?.id || null;
-              break;
-            case 'GUARDIAN':
-              aiAction = ActionType.Protect;
-              aiTarget = alivePlayers[Math.floor(Math.random() * alivePlayers.length)]?.id || null;
-              break;
-            case 'INVESTIGATOR':
-              aiAction = ActionType.Investigate;
-              aiTarget = alivePlayers[Math.floor(Math.random() * alivePlayers.length)]?.id || null;
-              break;
-            default:
-              aiAction = ActionType.Hide;
-              break;
-          }
-        }
-
-        try {
-          updated = await submitNightAction(updated, player.id, aiAction, aiTarget);
-        } catch {
-          // Skip if action fails
-        }
-      }
-
-      // If all have acted, process night
-      if (allPlayersActed(updated)) {
-        const processed = processNightActions(updated);
-        setGameState(processed);
-      } else {
-        setGameState(updated);
-      }
-    } catch (err) {
-      console.error('Action failed:', err);
-    }
-  }, [gameState, activePlayerIndex]);
-
-  const handleStartVoting = useCallback(() => {
-    setGameState(prev => startVotingPhase(prev));
+  const handleOpenTask = useCallback((task: PlayerTask) => {
+    setActiveTask(task);
   }, []);
 
-  const handleSubmitVote = useCallback(async (targetId: string) => {
+  const handleTaskComplete = useCallback(() => {
+    if (!activeTask) return;
     const currentPlayer = gameState.players[activePlayerIndex];
-    try {
-      let updated = await submitVote(gameState, currentPlayer.id, targetId);
+    if (!currentPlayer) return;
 
-      // Auto-vote for other players (simulated multiplayer)
-      for (let i = 0; i < updated.players.length; i++) {
-        if (i === activePlayerIndex) continue;
-        const player = updated.players[i];
-        if (!player.isAlive || player.hasVoted) continue;
+    setGameState(prev => completePlayerTask(prev, currentPlayer.id, activeTask.id));
+    setActiveTask(null);
+  }, [activeTask, gameState.players, activePlayerIndex]);
 
-        const validTargets = updated.players.filter(p =>
-          p.isAlive && p.id !== player.id
-        );
-        const randomTarget = validTargets[Math.floor(Math.random() * validTargets.length)];
-        if (randomTarget) {
-          try {
-            updated = await submitVote(updated, player.id, randomTarget.id);
-          } catch {
-            // Skip if vote fails
-          }
-        }
-      }
+  const handleTriggerSabotage = useCallback((type: 'reactor' | 'comms') => {
+    setGameState(prev => triggerSabotageAction(prev, type));
+  }, []);
 
-      // If all voted, process votes
-      if (allPlayersVoted(updated)) {
-        const processed = processVotes(updated);
-        setGameState(processed);
-      } else {
-        setGameState(processed => processed); // trigger re-render
-        setGameState(updated);
-      }
-    } catch (err) {
-      console.error('Vote failed:', err);
-    }
+  const handleResolveSabotage = useCallback(() => {
+    setGameState(prev => resolveSabotageAction(prev));
+  }, []);
+
+  const handleEliminate = useCallback((targetId: string) => {
+    const currentPlayer = gameState.players[activePlayerIndex];
+    if (!currentPlayer) return;
+    setGameState(prev => eliminatePlayerInRoom(prev, currentPlayer.id, targetId));
+  }, [gameState.players, activePlayerIndex]);
+
+  const handleReportBody = useCallback(() => {
+    const currentPlayer = gameState.players[activePlayerIndex];
+    if (!currentPlayer) return;
+    setGameState(prev => reportDeadBodyAction(prev, currentPlayer.id));
+  }, [gameState.players, activePlayerIndex]);
+
+  const handleCallEmergency = useCallback(() => {
+    const currentPlayer = gameState.players[activePlayerIndex];
+    if (!currentPlayer) return;
+    setGameState(prev => callEmergencyButtonAction(prev, currentPlayer.id));
+  }, [gameState.players, activePlayerIndex]);
+
+  const handleProceedToVoting = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      phase: GamePhase.Voting,
+    }));
+  }, []);
+
+  const handleSubmitVote = useCallback((targetId: string) => {
+    const currentPlayer = gameState.players[activePlayerIndex];
+    if (!currentPlayer) return;
+
+    let updated = submitShieldedVote(gameState, currentPlayer.id, targetId);
+
+    // Auto-simulate votes for other living NPC players
+    const livingPlayers = updated.players.filter(p => p.isAlive && p.id !== currentPlayer.id);
+    livingPlayers.forEach(p => {
+      const candidates = updated.players.filter(cand => cand.isAlive && cand.id !== p.id).map(c => c.id);
+      candidates.push('skip');
+      const randomTarget = candidates[Math.floor(Math.random() * candidates.length)];
+      updated = submitShieldedVote(updated, p.id, randomTarget);
+    });
+
+    // Resolve tallies
+    const resolved = resolveEmergencyVote(updated);
+    setGameState(resolved);
   }, [gameState, activePlayerIndex]);
 
-  const handleNextRound = useCallback(() => {
+  const handleProceedNextRound = useCallback(() => {
     setGameState(prev => nextRound(prev));
   }, []);
 
   const handlePlayAgain = useCallback(() => {
     setGameState(initializeGame(6));
     setActivePlayerIndex(0);
-  }, []);
-
-  const handleDayProceedToDiscussion = useCallback(() => {
-    setGameState(prev => startDiscussionPhase(prev));
+    setActiveTask(null);
   }, []);
 
   // ─── Current Player View ──────────────────────────────────────────
 
-  const currentPlayer = gameState.players[activePlayerIndex];
-  const playerView = currentPlayer ? getPlayerView(gameState, currentPlayer.id) : null;
-
-  // Find the first alive player index for auto-switching
-  const findFirstAliveIndex = () => {
-    const idx = gameState.players.findIndex(p => p.isAlive);
-    return idx >= 0 ? idx : 0;
-  };
-
-  // ─── Render ────────────────────────────────────────────────────────
+  const currentPlayer = gameState.players[activePlayerIndex] || gameState.players[0];
 
   return (
     <div className="app-container">
@@ -209,9 +208,17 @@ export default function App() {
         </div>
       </header>
 
-      {/* Player Selector (visible during gameplay) */}
+      {/* Player Selector (visible during live gameplay) */}
       {gameState.phase !== GamePhase.Lobby && gameState.phase !== GamePhase.GameOver && (
         <div className="section animate-fade-in">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              SIMULATED MULTIPLAYER · SWITCH ACTIVE CREW VIEW:
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--protocol-cyan)' }}>
+              ROUND {gameState.round} · SECTOR: {currentPlayer?.currentRoom.toUpperCase()}
+            </span>
+          </div>
           <div className="player-selector">
             {gameState.players.map((player, index) => (
               <button
@@ -222,13 +229,14 @@ export default function App() {
               >
                 <span>{player.avatar}</span>
                 <span>{player.name}</span>
+                <span style={{ fontSize: '0.6875rem', opacity: 0.7 }}>({player.currentRoom})</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Phase-specific Content */}
+      {/* Phase-specific Views */}
       {gameState.phase === GamePhase.Lobby && (
         <GameLobby gameState={gameState} onStartGame={handleStartGame} />
       )}
@@ -242,22 +250,25 @@ export default function App() {
         />
       )}
 
-      {gameState.phase === GamePhase.Night && currentPlayer && (
-        <NightPhase
-          round={gameState.round}
+      {(gameState.phase === GamePhase.FreeRoam || gameState.phase === GamePhase.Night) && currentPlayer && (
+        <AegisStationView
+          gameState={gameState}
           currentPlayer={currentPlayer}
-          allPlayers={gameState.players}
-          onSubmitAction={handleSubmitAction}
-          hasActed={currentPlayer.hasActed}
+          onMovePlayer={handleMovePlayer}
+          onOpenTask={handleOpenTask}
+          onTriggerSabotage={handleTriggerSabotage}
+          onResolveSabotage={handleResolveSabotage}
+          onEliminate={handleEliminate}
+          onReportBody={handleReportBody}
+          onCallEmergency={handleCallEmergency}
         />
       )}
 
-      {(gameState.phase === GamePhase.DayReport || gameState.phase === GamePhase.Discussion) && currentPlayer && playerView && (
-        <DayPhase
+      {gameState.phase === GamePhase.EmergencyMeeting && currentPlayer && (
+        <EmergencyMeeting
           gameState={gameState}
-          currentPlayerId={currentPlayer.id}
-          investigationResults={playerView.investigationResults}
-          onStartVoting={handleStartVoting}
+          currentPlayer={currentPlayer}
+          onProceedToVoting={handleProceedToVoting}
         />
       )}
 
@@ -267,7 +278,7 @@ export default function App() {
           currentPlayerId={currentPlayer.id}
           hasVoted={currentPlayer.hasVoted}
           onSubmitVote={handleSubmitVote}
-          onProceed={handleNextRound}
+          onProceed={handleProceedNextRound}
           voteResult={
             gameState.phase === GamePhase.VoteResult
               ? gameState.voteResults[gameState.voteResults.length - 1] || null
@@ -280,7 +291,16 @@ export default function App() {
         <GameOver gameState={gameState} onPlayAgain={handlePlayAgain} />
       )}
 
-      {/* Privacy Dashboard (visible during gameplay) */}
+      {/* Mini-Game Modal Overlay */}
+      {activeTask && (
+        <MiniGameModal
+          task={activeTask}
+          onComplete={handleTaskComplete}
+          onClose={() => setActiveTask(null)}
+        />
+      )}
+
+      {/* Privacy Dashboard (visible during live game) */}
       {gameState.phase !== GamePhase.Lobby && gameState.phase !== GamePhase.GameOver && (
         <section className="section animate-slide-up animate-delay-4">
           <PrivacyDashboard gameState={gameState} />
@@ -294,8 +314,7 @@ export default function App() {
           <a href="https://midnight.network" target="_blank" rel="noopener">
             Midnight Network
           </a>{' '}
-          · Privacy-First Social Deduction ·{' '}
-          If the hidden information were public, the game breaks.
+          · Privacy-First Social Deduction · Powered by Aegis Station Telemetry
         </p>
       </footer>
     </div>

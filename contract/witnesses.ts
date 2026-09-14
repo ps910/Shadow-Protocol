@@ -31,6 +31,8 @@ export interface GameLocalState {
   playerRole: Role;
   /** The current action target (player ID encoded as bytes) */
   actionTarget: string;
+  /** Active task secret for verifiable mini-game completion */
+  taskSecret?: Uint8Array;
 }
 
 // ─── ZKGate Witness Provider (Original) ─────────────────────────────
@@ -67,10 +69,11 @@ export function createWitnessProvider(localState: LocalState) {
 /**
  * Create a witness provider for Shadow Protocol game circuits.
  *
- * Provides three private witnesses:
+ * Provides private witnesses:
  * 1. playerSecret — 32-byte identity key (NEVER on-chain)
  * 2. playerRole   — Encoded role assignment (NEVER on-chain)
- * 3. actionTarget — Night action target (NEVER on-chain)
+ * 3. actionTarget — Action target (NEVER on-chain)
+ * 4. taskSecret   — Task authorization witness (NEVER on-chain)
  *
  * @param gameState - The player's local private game state
  */
@@ -109,6 +112,14 @@ export function createGameWitnessProvider(gameState: GameLocalState) {
       return new TextEncoder().encode(
         gameState.actionTarget.padEnd(32, '\0')
       ).slice(0, 32);
+    },
+
+    /**
+     * taskSecret witness — the private task preimage.
+     * Used to generate task completion nullifiers.
+     */
+    taskSecret: (): Uint8Array => {
+      return gameState.taskSecret || gameState.playerSecret;
     },
   };
 }
