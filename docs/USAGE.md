@@ -34,62 +34,48 @@ You'll see a dramatic role reveal card showing:
 
 > 🤫 **Don't share your role!** The game only works if roles stay private.
 
-### 5. Night Phase 🌙
+### 5. Free-Roam Map & Terminal Tasks 🚀
 
-During the night, each player performs a secret action based on their role:
+Once roles are revealed, crew members enter **Aegis Station**:
+- **Move between compartments**: Click connected rooms (Command, Central Hub, Reactor, Lab, Engineering, Security, Comms)
+- **Launch terminal mini-games**: When standing in rooms with terminals, open the mini-game interface:
+  - Hex Calibration (Reactor)
+  - Power Conduit Routing (Engineering)
+  - Carrier Signal Tuning (Communications)
+  - Coolant Synthesis (Research Lab)
+- Completing a task mints a single-use ZK nullifier that increments global station readiness on Midnight without revealing who solved it.
 
-| Role          | Night Action                              |
-|--------------|-------------------------------------------|
-| 🗡️ Assassin   | Choose a player to eliminate              |
-| 🛡️ Guardian   | Choose a player to protect from attack    |
-| 🔎 Investigator| Choose a player to investigate            |
-| 👤 Civilian   | Hide and hope for the best                |
+### 6. Sabotages & Casualties 🚨
 
-Select your target (if applicable) and submit. A **zero-knowledge proof** verifies your action is valid for your role without revealing the role itself.
+- **Shadow Sabotages**: The Shadow team can trigger a **Reactor Meltdown** (45s countdown) or **Communications Blackout**. Crew members must rush to the designated terminals to avert disaster.
+- **Casualty Reports**: Discovering a dead body or pressing the Command Deck emergency button summons all players to an Emergency Meeting.
 
-### 6. Day Phase ☀️
+### 7. Emergency Assembly, Alibis & Shielded Voting 🗳️
 
-When dawn breaks, the night results are announced:
-- *"Someone was targeted for elimination but a guardian intervened"* (protected)
-- *"Player X was found eliminated this morning"* (killed)
-- *"The night passed peacefully"* (no attack)
+During the emergency assembly:
+1. **Debate the incident**: Review procedural transcripts and casualty location.
+2. **Furnish room beacon alibis**: Players can generate and verify a zero-knowledge room beacon ($T_{\text{room}} = \text{Poseidon}(s_i, \text{RoomId}, t)$) proving their location during the murder timestamp without revealing their secret key or role.
+3. **Cast shielded ballot**: Every player casts a sealed vote. Only the aggregate totals are decrypted on Midnight. Ties result in no ejection, while ejections declassify the suspect's dossier.
 
-The **Investigator** also privately sees their investigation result (🚨 SUSPICIOUS or ✅ CLEAR).
+### 8. Cadet Flight Manual & Community Feedback 📖
 
-### 7. Voting Phase 🗳️
-
-All surviving players cast a **private vote** to eliminate a suspect:
-1. Select the player you want to vote against
-2. Click **"Cast Private Vote"**
-3. Your vote is encrypted — only the aggregate totals are revealed
-
-The player with the most votes is eliminated. Their role is revealed upon elimination.
-
-### 8. Next Round 🔄
-
-The game cycles: Night → Day → Voting → Night → Day → ...
-
-### 9. Game Over 🏆
-
-The game ends when:
-- **Guardians win** 🛡️: The Assassin is eliminated through voting
-- **Assassin wins** 🗡️: The Assassin survives until evil equals or outnumbers good
-
-A full **role reveal** shows everyone's identity, and a **Privacy Report** summarizes what Midnight kept private.
+- **Flight Manual**: Click **"📖 Flight Manual"** in the navigation header anytime to view a 4-step interactive onboarding tutorial.
+- **Give Feedback**: Click **"✍️ Give Feedback"** in the header to submit ratings, bug reports, and UX suggestions with cryptographic nullifiers.
+- **Preprod Directory**: Scroll to the **Preprod Directory** section to inspect all 50 verified testers, transaction hashes, and live community telemetry.
 
 ## What Gets Proved (and What Stays Private)
 
 ### ✅ What gets proved on-chain:
-- Player actions are valid (the right role performed the right action)
-- Votes are from real, alive players
-- Each player acted/voted only once per round
-- The game outcome is legitimate
+- Player actions and task completions are legitimate (valid ZK nullifiers)
+- Room beacons prove physical presence in a compartment without exposing secrets
+- Votes are cast by real, alive players with no duplicate voting
+- Final station victory state is mathematically enforced
 
 ### 🔒 What stays private:
-- **Your role** — no one knows if you're the Assassin
-- **Your night action** — no one knows who you targeted
-- **Your vote** — no one knows who you voted to eliminate
-- **Investigation results** — only the Investigator sees their findings
+- **Your role** — no one knows if you're the Assassin or Spy
+- **Your room trajectory** — private until selectively revealed via an alibi proof
+- **Your vote** — only aggregate tally totals are decrypted
+- **Investigator pings** — only the investigator learns allegiance findings
 
 ## Troubleshooting
 
@@ -99,15 +85,14 @@ A full **role reveal** shows everyone's identity, and a **Privacy Report** summa
 - Check that Lace is set to **Midnight Preprod** network
 
 ### "Action not valid for role"
-- Each role can only perform specific actions (see Night Phase table above)
+- Each role can only perform specific actions
 - You cannot target yourself with assassination
 - You cannot target dead players
 
 ### "Already acted this round"
-- Each player can only act once per night phase and vote once per voting phase
-- Wait for the next round to act again
+- Each player can only act once per round
+- Wait for the next round or emergency meeting to act again
 
-### Game feels stuck?
-- Switch between player tabs (top of screen) to submit actions for all players
-- In the MVP, you control all 6 players via the tab switcher
-- All alive players must act before the night resolves
+### Feedback submission confirmation
+- When submitting feedback, a local ZK receipt is generated and appended to community telemetry.
+

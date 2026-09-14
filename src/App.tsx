@@ -8,6 +8,10 @@ import { EmergencyMeeting } from './components/EmergencyMeeting';
 import { VotingPhase } from './components/VotingPhase';
 import { GameOver } from './components/GameOver';
 import { PrivacyDashboard } from './components/PrivacyDashboard';
+import { FeedbackModal } from './components/FeedbackModal';
+import { CadetOnboarding } from './components/CadetOnboarding';
+import { PreprodDirectory } from './components/PreprodDirectory';
+import type { FeedbackSubmission } from './data/preprodUsers';
 import {
   initializeGame,
   movePlayer,
@@ -42,6 +46,13 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>(() => initializeGame(6));
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const [activeTask, setActiveTask] = useState<PlayerTask | null>(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showCadetManual, setShowCadetManual] = useState(false);
+  const [, setCommunityFeedback] = useState<FeedbackSubmission[]>([]);
+
+  const handleFeedbackSubmit = useCallback((fb: FeedbackSubmission) => {
+    setCommunityFeedback(prev => [fb, ...prev]);
+  }, []);
 
   // Sabotage countdown timer
   useEffect(() => {
@@ -193,8 +204,25 @@ export default function App() {
           <a href="#security" className="nav-link">SECURITY</a>
           <a href="#victory" className="nav-link">WIN</a>
           <a href="#roadmap" className="nav-link">ROADMAP</a>
+          <a href="#preprod-directory" className="nav-link" style={{ color: 'var(--accent-cyan)' }}>PREPROD (50)</a>
         </nav>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setShowCadetManual(true)}
+            title="Open Aegis Cadet Flight Manual"
+            style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem' }}
+          >
+            📖 Manual
+          </button>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setShowFeedbackModal(true)}
+            title="Give Playtest Feedback"
+            style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem', borderColor: 'rgba(0, 240, 255, 0.4)' }}
+          >
+            ✍️ Feedback
+          </button>
           {gameState.phase === GamePhase.Lobby ? (
             <button className="btn btn-primary btn-sm" onClick={handleStartGame}>
               Play Match →
@@ -307,6 +335,25 @@ export default function App() {
         </section>
       )}
 
+      {/* Level 5: 50 Preprod User Directory & Living Feedback Loop */}
+      <PreprodDirectory
+        onOpenFeedback={() => setShowFeedbackModal(true)}
+        onOpenCadetManual={() => setShowCadetManual(true)}
+      />
+
+      {/* Level 5 Modals */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        onSubmit={handleFeedbackSubmit}
+        playerHandle={currentPlayer?.name || 'cadet_player'}
+      />
+
+      <CadetOnboarding
+        isOpen={showCadetManual}
+        onClose={() => setShowCadetManual(false)}
+      />
+
       {/* Footer */}
       <footer className="app-footer">
         <p>
@@ -314,7 +361,7 @@ export default function App() {
           <a href="https://midnight.network" target="_blank" rel="noopener">
             Midnight Network
           </a>{' '}
-          · Privacy-First Social Deduction · Powered by Aegis Station Telemetry
+          · Level 5 Full Moon Verified · 50 Preprod Testers · Aegis Station Telemetry
         </p>
       </footer>
     </div>

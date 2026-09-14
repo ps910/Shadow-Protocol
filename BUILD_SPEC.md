@@ -43,11 +43,15 @@ PRIVATE WITNESSES:
 | Component          | Purpose                                    |
 |-------------------|--------------------------------------------|
 | App.tsx           | Game flow orchestrator                     |
+| AegisStationView  | 2D spatial station map & room navigation   |
+| MiniGameModal     | Terminal mini-games with ZK nullifier receipts |
+| EmergencyMeeting  | Casualty alerts, room alibis, debate logs  |
+| CadetOnboarding   | Level 5: 4-step interactive Flight Manual  |
+| FeedbackModal     | Level 5: Community feedback widget with ZK nullifiers |
+| PreprodDirectory  | Level 5: 50 Preprod user explorer & telemetry |
 | GameLobby         | Pre-game lobby, player list, rules         |
 | RoleReveal        | Secret role assignment animation           |
-| NightPhase        | Night action panel (role-specific)         |
-| DayPhase          | Night report + discussion                  |
-| VotingPhase       | Private vote submission + result tally     |
+| VotingPhase       | Shielded vote submission + result tally    |
 | GameOver          | Victory screen + full role reveal          |
 | PrivacyDashboard  | Real-time public vs private comparison     |
 | PlayerCard        | Reusable player avatar card                |
@@ -57,6 +61,9 @@ PRIVATE WITNESSES:
 | Module              | Purpose                                  |
 |--------------------|------------------------------------------|
 | roles.ts           | Role definitions, action validation      |
+| stationMap.ts      | Aegis Station 7 rooms, room beacon hashes|
+| tasks.ts           | Mini-games & single-use task nullifiers  |
+| sabotage.ts        | Reactor meltdown & comms blackout timers |
 | gameEngine.ts      | Game state machine, all transitions      |
 | privacyVerifier.ts | Privacy verification simulation          |
 
@@ -67,14 +74,14 @@ npm install          # Install dependencies
 npm run compile      # Compile Compact contract
 npm run dev          # Start dev server
 npm run build        # Production build
-npm test             # Run 20+ tests
-npm run deploy       # Deploy contract to Preprod
+npm test             # Run automated tests
+npx tsx scripts/verify_preprod_users.ts # Run 50-user Preprod audit
 ```
 
 ## Test Coverage
 
-- 20+ tests across 7 test suites
-- Tests cover: crypto primitives, role validation, game logic, win conditions, state separation, UI rendering
+- 40+ tests across multiple test suites
+- Tests cover: Aegis Station mechanics, mini-games, sabotages, room alibis, crypto primitives, role validation, 50 preprod users, feedback loop, UI rendering
 - All tests run in CI on every push
 
 ## Deployment
@@ -84,3 +91,4 @@ npm run deploy       # Deploy contract to Preprod
 3. Deploy: `npm run deploy -- --network preprod`
 4. Fund wallet at faucet when prompted
 5. Update `VITE_CONTRACT_ADDRESS` in `.env` or `config.ts`
+

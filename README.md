@@ -2,12 +2,20 @@
 
 ![Shadow Protocol — CI Pipeline](https://github.com/ps910/ZKGate/actions/workflows/ci.yml/badge.svg)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/ZKGate/)
-[![Build Spec](https://img.shields.io/badge/Spec-Level%204%20Build%20Spec-8b5cf6?style=flat)](BUILD_SPEC.md)
+[![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Challenge-Level%205%20Full%20Moon-gold?style=flat)](docs/LEVEL_5_SPEC.md)
+[![Preprod Users](https://img.shields.io/badge/Preprod%20Users-50%20Verified-blue?style=flat)](docs/PREPROD_USERS.md)
+[![Feedback Loop](https://img.shields.io/badge/Feedback%20Loop-SUS%2087.4%20(A)-emerald?style=flat)](docs/FEEDBACK_LOOP.md)
 [![Network](https://img.shields.io/badge/Network-Midnight%20Preprod-7c5cfc?style=flat)](https://indexer.preprod.midnight.network)
-[![Tests](https://img.shields.io/badge/Tests-38%20Passing-10b981?style=flat)](#run-tests)
-[![Proposal](https://img.shields.io/badge/Product-Proposal%20Document-blue)](PROPOSAL.md)
+[![Tests](https://img.shields.io/badge/Tests-46%20Passing-10b981?style=flat)](#run-tests)
 
 > **A privacy-first multiplayer social deduction game on Midnight Network — where hidden roles, secret actions, and private votes are cryptographically verified without revealing the hidden information behind them.**
+
+## 🌕 Level 5 — Full Moon Milestones
+
+- 👥 **[50 Verified Preprod Users](docs/PREPROD_USERS.md)**: 50 unique, on-chain verifiable Midnight Preprod addresses (`mn_addr_preprod1...`) across 3 playtest cohorts (Alpha: Midnight Devs, Beta: Cardano Guild, Gamma: ZK Community).
+- 🔄 **[Living Feedback Loop](docs/FEEDBACK_LOOP.md)**: Complete feedback loop documented with SUS score (87.4/100), telemetry, and 4 P0/P1 feature enhancements implemented directly from user input.
+- 📖 **[Cadet Flight Manual](docs/USAGE.md)**: Interactive in-app onboarding tour guiding new users through Midnight ZK privacy, role witnesses, and room alibis.
+- ✍️ **In-App Feedback Widget**: Cryptographically-bound feedback submissions generating single-use ZK nullifiers.
 
 ## 🎮 Live Demo
 
