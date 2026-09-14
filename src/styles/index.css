@@ -448,8 +448,6 @@ img { max-width: 100%; }
   min-height: 70vh;
 }
 
-.hero-content {}
-
 .hero-badge {
   display: inline-flex;
   align-items: center;
@@ -809,7 +807,6 @@ img { max-width: 100%; }
 }
 
 .role-card-badge {
-  display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 600;
@@ -1710,7 +1707,6 @@ img { max-width: 100%; }
   border-color: var(--border-glow);
 }
 .mode-badge-live {
-  display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 700;
@@ -1724,7 +1720,6 @@ img { max-width: 100%; }
   float: right;
 }
 .mode-badge-upcoming {
-  display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 600;
