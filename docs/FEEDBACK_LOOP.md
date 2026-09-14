@@ -125,7 +125,7 @@ The following changes were coded, tested, and shipped in direct response to test
           ▼                                              │
 ┌──────────────────────┐                       ┌──────────────────────┐
 │  1. PLAYTEST & LOG   │                       │  4. VERIFY & DEPLOY  │
-│  50 Preprod Testers  │                       │  Pass 38+ Tests,     │
+│  50 Preprod Testers  │                       │  Pass 46+ Tests,     │
 │  join live matches   │                       │  Deploy to Preprod   │
 └──────────────────────┘                       └──────────────────────┘
           │                                              ▲
@@ -137,4 +137,4 @@ The following changes were coded, tested, and shipped in direct response to test
 └──────────────────────┘                       └──────────────────────┘
 ```
 
-The feedback loop remains continuously open. Any visitor to [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/) can click **"Give Feedback"** to submit their playtest observations.
+The feedback loop remains continuously open. Any visitor to [https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/) can click **"Give Feedback"** to submit their playtest observations.

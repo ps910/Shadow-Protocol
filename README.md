@@ -1,7 +1,7 @@
 # 🕵️ Shadow Protocol
 
-![Shadow Protocol — CI Pipeline](https://github.com/ps910/ZKGate/actions/workflows/ci.yml/badge.svg)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/ZKGate/)
+![Shadow Protocol — CI Pipeline](https://github.com/ps910/Shadow-Protocol/actions/workflows/ci.yml/badge.svg)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/Shadow-Protocol/)
 [![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Challenge-Level%205%20Full%20Moon-gold?style=flat)](docs/LEVEL_5_SPEC.md)
 [![Preprod Users](https://img.shields.io/badge/Preprod%20Users-50%20Verified-blue?style=flat)](docs/PREPROD_USERS.md)
 [![Feedback Loop](https://img.shields.io/badge/Feedback%20Loop-SUS%2087.4%20(A)-emerald?style=flat)](docs/FEEDBACK_LOOP.md)
@@ -19,7 +19,8 @@
 
 ## 🎮 Live Demo
 
-**👉 [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/)**
+**👉 [https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/)**
+*(Mirror: [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/))*
 
 ## Contract Address
 
