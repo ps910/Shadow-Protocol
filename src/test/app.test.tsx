@@ -5,9 +5,9 @@ import App from '../App';
 describe('Shadow Protocol — App Component', () => {
   it('renders the game lobby with Shadow Protocol branding', () => {
     render(<App />);
-    const elements = screen.getAllByText('Shadow Protocol');
+    const elements = screen.getAllByText(/SHADOW PROTOCOL/i);
     expect(elements.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText('Privacy-First Social Deduction')).toBeDefined();
+    expect(screen.getAllByText(/Deception you/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it('displays all 6 player agents in the lobby', () => {
@@ -22,20 +22,23 @@ describe('Shadow Protocol — App Component', () => {
 
   it('shows the start game button in lobby', () => {
     render(<App />);
-    const startBtn = screen.getByText(/Begin Shadow Protocol/);
-    expect(startBtn).toBeDefined();
+    const startBtns = screen.getAllByRole('button', { name: /Create a Match/i });
+    expect(startBtns.length).toBeGreaterThanOrEqual(1);
   });
 
   it('displays the mission briefing with role descriptions', () => {
     render(<App />);
-    expect(screen.getByText(/Assassin/)).toBeDefined();
-    expect(screen.getByText(/Guardian/)).toBeDefined();
-    expect(screen.getByText(/Investigator/)).toBeDefined();
-    expect(screen.getByText(/Civilians/)).toBeDefined();
+    expect(screen.getAllByText(/Assassin/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Guardian/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Investigator/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Civilian/i).length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows privacy indicator in the hero section', () => {
+  it('shows privacy indicator and navigation links', () => {
     render(<App />);
-    expect(screen.getByText(/Privacy is the gameplay mechanic/)).toBeDefined();
+    expect(screen.getAllByText(/PRIVACY-NATIVE/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('ROLES')).toBeDefined();
+    expect(screen.getByText('LOOP')).toBeDefined();
+    expect(screen.getByText('PRIVACY')).toBeDefined();
   });
 });

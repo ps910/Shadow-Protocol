@@ -183,13 +183,30 @@ export default function App() {
       {/* Header */}
       <header className="app-header">
         <div className="app-logo">
-          <div className="app-logo-icon">🕵️</div>
-          <div>
-            <div className="app-logo-text">Shadow Protocol</div>
-            <div className="app-logo-subtitle">Privacy-First Social Deduction</div>
-          </div>
+          <div className="app-logo-icon">◉</div>
+          <div className="app-logo-text">SHADOW PROTOCOL</div>
         </div>
-        <WalletConnect wallet={wallet} setWallet={setWallet} onWalletApi={() => {}} />
+        <nav className="nav-links">
+          <a href="#roles" className="nav-link">ROLES</a>
+          <a href="#why-midnight" className="nav-link">PRIVACY</a>
+          <a href="#loop" className="nav-link">LOOP</a>
+          <a href="#screens" className="nav-link">SCREENS</a>
+          <a href="#security" className="nav-link">SECURITY</a>
+          <a href="#victory" className="nav-link">WIN</a>
+          <a href="#roadmap" className="nav-link">ROADMAP</a>
+        </nav>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          {gameState.phase === GamePhase.Lobby ? (
+            <button className="btn btn-primary btn-sm" onClick={handleStartGame}>
+              Play Match →
+            </button>
+          ) : (
+            <button className="btn btn-secondary btn-sm" onClick={handlePlayAgain}>
+              Exit to Lobby
+            </button>
+          )}
+          <WalletConnect wallet={wallet} setWallet={setWallet} onWalletApi={() => {}} />
+        </div>
       </header>
 
       {/* Player Selector (visible during gameplay) */}

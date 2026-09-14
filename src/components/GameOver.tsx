@@ -15,41 +15,101 @@ export function GameOver({ gameState, onPlayAgain }: GameOverProps) {
         {isGoodWin ? '🛡️' : '🗡️'}
       </div>
 
+      {/* Victory Title */}
       <h1 className="game-over-title" style={{
         background: isGoodWin
-          ? 'linear-gradient(135deg, #2563eb, #10b981)'
-          : 'linear-gradient(135deg, #dc2626, #7c3aed)',
+          ? 'linear-gradient(135deg, var(--protocol), var(--protocol-cyan))'
+          : 'linear-gradient(135deg, var(--shadow), var(--primary))',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         backgroundClip: 'text',
       }}>
-        {isGoodWin ? 'Guardians Win!' : 'Assassin Wins!'}
+        {isGoodWin ? 'Protocol Victory' : 'Shadow Victory'}
       </h1>
 
-      <p className="game-over-subtitle">
-        {gameState.winMessage}
-      </p>
+      <p className="game-over-subtitle">{gameState.winMessage}</p>
 
-      {/* Stats */}
-      <div className="stats-grid" style={{ maxWidth: '600px', margin: '0 auto var(--space-2xl)' }}>
-        <div className="stat-card">
-          <div className="stat-value">{gameState.round}</div>
-          <div className="stat-label">Rounds Played</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{gameState.players.filter(p => p.isAlive).length}</div>
-          <div className="stat-label">Survivors</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{gameState.nightActions.length + gameState.votes.length}</div>
-          <div className="stat-label">ZK Proofs</div>
+      {/* Match Complete Card */}
+      <div className="section" style={{ width: '100%', maxWidth: '900px' }}>
+        <div className="card" style={{
+          borderColor: isGoodWin ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-xl)' }}>
+            {/* Stats Column */}
+            <div>
+              <div className="section-tag" style={{
+                color: isGoodWin ? 'var(--protocol)' : 'var(--shadow)',
+              }}>
+                MATCH COMPLETE
+              </div>
+              <h2 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '2rem',
+                fontWeight: 900,
+                textTransform: 'uppercase',
+                color: isGoodWin ? 'var(--protocol)' : 'var(--shadow)',
+                marginBottom: 'var(--space-lg)',
+              }}>
+                {isGoodWin ? 'PROTOCOL VICTORY' : 'SHADOW VICTORY'} 🏆
+              </h2>
+              <div style={{ display: 'flex', gap: 'var(--space-xl)', alignItems: 'baseline' }}>
+                <div>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800 }}>+250</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginLeft: '4px' }}>XP</span>
+                </div>
+                <div>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800 }}>+40</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginLeft: '4px' }}>REPUTATION</span>
+                </div>
+                <div className="badge badge-protocol" style={{ padding: '0.375rem 0.75rem' }}>
+                  🏅 MASTER INVESTIGATOR
+                </div>
+              </div>
+            </div>
+
+            {/* Achievements Column */}
+            <div style={{
+              padding: 'var(--space-lg)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+            }}>
+              <div style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: 'var(--text-muted)',
+                marginBottom: 'var(--space-md)',
+              }}>
+                INDIVIDUAL ACHIEVEMENTS
+              </div>
+              {gameState.players.filter(p => !p.isAlive || p.role === 'ASSASSIN').slice(0, 3).map((player, i) => (
+                <div key={i} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-sm)',
+                  padding: 'var(--space-sm) 0',
+                  fontSize: '0.9375rem',
+                }}>
+                  <span style={{ color: 'var(--protocol)' }}>✓</span>
+                  <span>{player.name} — {
+                    player.role === 'ASSASSIN' ? 'Assassin Identified' :
+                    player.role === 'GUARDIAN' ? `${gameState.round} Players Protected` :
+                    `Survived ${gameState.round} Rounds`
+                  }</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Full Role Reveal */}
-      <div className="section">
-        <h3 style={{ marginBottom: 'var(--space-lg)', color: 'var(--color-text-secondary)' }}>
-          🎭 Full Identity Reveal
+      <div className="section" style={{ width: '100%', maxWidth: '900px' }}>
+        <div className="section-tag tag-purple">IDENTITY DECLASSIFIED</div>
+        <h3 className="section-heading" style={{ fontSize: '1.5rem', marginBottom: 'var(--space-lg)' }}>
+          Full role reveal.
         </h3>
         <div className="role-reveal-grid">
           {gameState.players.map(player => {
@@ -67,23 +127,23 @@ export function GameOver({ gameState, onPlayAgain }: GameOverProps) {
                   {player.name}
                 </div>
                 {meta && (
-                  <div
-                    className="player-role-badge"
-                    style={{
-                      background: `${meta.color}22`,
-                      color: meta.color,
-                      border: `1px solid ${meta.color}44`,
-                    }}
-                  >
+                  <div className="player-role-badge" style={{
+                    background: `${meta.color}15`,
+                    color: meta.color,
+                    border: `1px solid ${meta.color}33`,
+                  }}>
                     {meta.emoji} {meta.name}
                   </div>
                 )}
                 <div style={{
                   marginTop: 'var(--space-sm)',
-                  fontSize: '0.75rem',
-                  color: player.isAlive ? 'var(--color-success)' : 'var(--color-text-muted)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.625rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: player.isAlive ? 'var(--protocol)' : 'var(--text-muted)',
                 }}>
-                  {player.isAlive ? '🟢 Survived' : '☠️ Eliminated'}
+                  {player.isAlive ? '● SURVIVED' : '☠ ELIMINATED'}
                 </div>
               </div>
             );
@@ -91,71 +151,29 @@ export function GameOver({ gameState, onPlayAgain }: GameOverProps) {
         </div>
       </div>
 
-      {/* Privacy Summary */}
-      <div className="section" style={{ maxWidth: '700px', margin: '0 auto' }}>
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon" style={{ background: 'rgba(124, 58, 237, 0.1)', borderColor: 'rgba(124, 58, 237, 0.2)' }}>
-              🔒
-            </div>
-            <div>
-              <div className="card-title">Privacy Report</div>
-              <div className="card-subtitle">What Midnight kept private during this game</div>
-            </div>
+      {/* Privacy Report */}
+      <div className="section" style={{ width: '100%', maxWidth: '900px' }}>
+        <div className="section-tag tag-red">PRIVACY REPORT</div>
+        <h3 className="section-heading" style={{ fontSize: '1.5rem', marginBottom: 'var(--space-lg)' }}>
+          What Midnight kept private.
+        </h3>
+
+        <div className="privacy-dashboard">
+          <div className="privacy-column public">
+            <div className="privacy-column-title">👁️ What Observers Saw</div>
+            <div className="privacy-item"><span className="privacy-item-icon">✅</span> Round number and game phase</div>
+            <div className="privacy-item"><span className="privacy-item-icon">✅</span> Who was alive or eliminated</div>
+            <div className="privacy-item"><span className="privacy-item-icon">✅</span> Vote totals (not individual votes)</div>
+            <div className="privacy-item"><span className="privacy-item-icon">✅</span> Final game outcome</div>
+            <div className="privacy-item"><span className="privacy-item-icon">✅</span> That actions were valid (ZK verified)</div>
           </div>
-
-          <div className="privacy-dashboard">
-            <div className="privacy-column public">
-              <div className="privacy-column-title">
-                👁️ What Observers Saw
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">✅</span>
-                Round number and game phase
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">✅</span>
-                Who was alive or eliminated
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">✅</span>
-                Vote totals (not individual votes)
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">✅</span>
-                Final game outcome
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">✅</span>
-                That actions were valid (ZK verified)
-              </div>
-            </div>
-
-            <div className="privacy-column private">
-              <div className="privacy-column-title">
-                🔒 What Midnight Protected
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">❌</span>
-                Player role assignments
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">❌</span>
-                Night action targets
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">❌</span>
-                Individual vote choices
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">❌</span>
-                Investigation results
-              </div>
-              <div className="privacy-item">
-                <span className="privacy-item-icon">❌</span>
-                Player secret keys
-              </div>
-            </div>
+          <div className="privacy-column private">
+            <div className="privacy-column-title">🔒 What Midnight Protected</div>
+            <div className="privacy-item"><span className="privacy-item-icon">❌</span> Player role assignments</div>
+            <div className="privacy-item"><span className="privacy-item-icon">❌</span> Night action targets</div>
+            <div className="privacy-item"><span className="privacy-item-icon">❌</span> Individual vote choices</div>
+            <div className="privacy-item"><span className="privacy-item-icon">❌</span> Investigation results</div>
+            <div className="privacy-item"><span className="privacy-item-icon">❌</span> Player secret keys</div>
           </div>
         </div>
       </div>
@@ -163,7 +181,7 @@ export function GameOver({ gameState, onPlayAgain }: GameOverProps) {
       {/* Play Again */}
       <div style={{ marginTop: 'var(--space-2xl)' }}>
         <button className="btn btn-primary btn-xl" onClick={onPlayAgain} id="play-again-btn">
-          🎭 Play Again
+          Create Another Match →
         </button>
       </div>
     </div>
