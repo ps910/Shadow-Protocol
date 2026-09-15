@@ -10,7 +10,7 @@ export interface WalletState {
 }
 
 /**
- * Custom hook for Lace / Midnight Wallet integration
+ * Custom hook for 1AM Wallet / Midnight Wallet integration
  */
 export function useWallet() {
   const [wallet, setWallet] = useState<WalletState>({
@@ -26,16 +26,26 @@ export function useWallet() {
     setWallet((prev) => ({ ...prev, error: null }));
 
     try {
-      const midnight = (window as unknown as { midnight?: { lace?: { connect: (netId: string) => Promise<any> } } })?.midnight;
+      const midnight = (window as unknown as {
+        midnight?: {
+          '1am'?: { connect: (netId: string) => Promise<any> };
+          oneAm?: { connect: (netId: string) => Promise<any> };
+          lace?: { connect: (netId: string) => Promise<any> };
+        };
+        '1am'?: { connect: (netId: string) => Promise<any> };
+      })?.midnight;
 
-      if (midnight?.lace) {
-        // Official Lace wallet DApp connector API
-        const api = await midnight.lace.connect(NETWORK_CONFIG.networkId);
+      const oneAm = midnight?.['1am'] ?? midnight?.oneAm ?? (window as any)['1am'];
+      const provider = oneAm ?? midnight?.lace;
+
+      if (provider) {
+        // Official 1AM Wallet DApp connector API
+        const api = await provider.connect(NETWORK_CONFIG.networkId);
         const address = await api.getUnshieldedAddress?.() || await api.getAddress?.();
 
         setWallet({
           connected: true,
-          address: address || '0x...lace-connected',
+          address: address || '0x...1am-connected',
           networkId: NETWORK_CONFIG.networkId,
           error: null,
         });
@@ -47,7 +57,7 @@ export function useWallet() {
           address: null,
           networkId: null,
           error:
-            'Midnight Lace wallet extension not detected. Please install the Midnight Lace wallet extension and connect to Midnight Preprod.',
+            '1AM Wallet extension not detected. Please install 1AM Wallet (https://1am.xyz) and connect to Midnight Preprod.',
         }));
       }
     } catch (err: unknown) {

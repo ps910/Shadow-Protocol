@@ -37,7 +37,7 @@ To test Shadow Protocol under diverse conditions, we recruited 50 participants a
 │  Midnight Devs    │             │   Cardano Guild   │     │   ZK Community    │
 │    (18 Users)     │             │    (16 Users)     │     │    (16 Users)     │
 ├───────────────────┤             ├───────────────────┤     ├───────────────────┤
-│ • Compact circuit │             │ • Lace connector  │     │ • Deduction &     │
+│ • Compact circuit │             │ • 1AM connector   │     │ • Deduction &     │
 │   verification    │             │   usability       │     │   deception meta  │
 │ • State leakage   │             │ • Gameplay flow   │     │ • Room alibi      │
 │   audit           │             │   and polish      │     │   stress testing  │
@@ -45,7 +45,7 @@ To test Shadow Protocol under diverse conditions, we recruited 50 participants a
 ```
 
 ### Onboarding Steps
-1. **Wallet Preparation:** Testers configured their **Lace Wallet** browser extension with Midnight Preprod testnet endpoints (`https://rpc.preprod.midnight.network`).
+1. **Wallet Preparation:** Testers configured their **1AM Wallet** browser extension (https://1am.xyz) with Midnight Preprod testnet endpoints (`https://rpc.preprod.midnight.network`).
 2. **Testnet Token Faucet:** Each user acquired Preprod tDUST / tADA via the official faucet.
 3. **Cadet Briefing:** Testers read the newly created **Cadet Flight Manual** before joining simulated 6-player matches.
 
@@ -58,7 +58,7 @@ Feedback was gathered through three parallel instruments:
 ### Instrument A: In-App Feedback Widget (`FeedbackModal.tsx`)
 Embedded directly inside the web application, allowing players to submit:
 - Star rating (1 to 5)
-- Category classification (`Gameplay & Navigation`, `ZK Proof Latency`, `Mini-Game Difficulty`, `Station Sabotages`, `Lace Wallet / UX`)
+- Category classification (`Gameplay & Navigation`, `ZK Proof Latency`, `Mini-Game Difficulty`, `Station Sabotages`, `1AM Wallet / UX`)
 - Qualitative recommendations
 - *Privacy guarantee:* Generates a single-use nullifier $\text{Nullifier}_{\text{feedback}} = \text{Poseidon}(s_i, \text{Category}, t)$ so feedback is verifiable without doxxing the player's wallet balance or role.
 

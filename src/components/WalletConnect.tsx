@@ -8,13 +8,13 @@ interface Props {
 }
 
 /**
- * WalletConnect — Handles Lace wallet connection and disconnection
+ * WalletConnect — Handles 1AM Wallet connection and disconnection
  *
- * When running on Midnight Preprod, this connects to the Lace wallet
- * via the DApp Connector API (window.midnight.lace).
+ * When running on Midnight Preprod, this connects to the 1AM Wallet
+ * via the DApp Connector API (window.midnight['1am'] / window.midnight.oneAm).
  *
- * If the Lace extension is not installed, an error message is displayed
- * to the user prompting them to install it — no silent fallback.
+ * If the 1AM Wallet extension is not installed, an error message is displayed
+ * to the user prompting them to install it from https://1am.xyz.
  */
 export function WalletConnect({ wallet, setWallet, onWalletApi }: Props) {
   const [connecting, setConnecting] = useState(false);
@@ -25,16 +25,18 @@ export function WalletConnect({ wallet, setWallet, onWalletApi }: Props) {
     setError(null);
 
     try {
-      // Check if the Midnight DApp connector is available (Lace extension)
+      // Check if the Midnight DApp connector is available (1AM Wallet primary, Lace fallback)
       const midnight = (window as any).midnight;
+      const oneAm = midnight?.['1am'] ?? midnight?.oneAm ?? (window as any)['1am'];
+      const provider = oneAm ?? midnight?.lace;
 
-      if (midnight?.lace) {
-        // Real Lace wallet connection on Midnight Preprod
-        const api = await midnight.lace.connect('preprod');
+      if (provider) {
+        // Real 1AM Wallet connection on Midnight Preprod
+        const api = await provider.connect('preprod');
         const address = await api.getUnshieldedAddress?.() ?? await api.getAddress?.();
 
         if (!address) {
-          throw new Error('Lace wallet connected but returned no address. Ensure Lace is configured for Midnight Preprod.');
+          throw new Error('1AM Wallet connected but returned no address. Ensure 1AM Wallet is configured for Midnight Preprod.');
         }
 
         // Pass the wallet API handle up for circuit calls
@@ -46,10 +48,10 @@ export function WalletConnect({ wallet, setWallet, onWalletApi }: Props) {
           networkId: 'preprod',
         });
       } else {
-        // Lace extension not found — show clear error to user
+        // 1AM Wallet extension not found — show clear error to user with install link
         setError(
-          'Midnight Lace wallet extension not detected. ' +
-          'Please install the Lace wallet (midnight.network/wallet) ' +
+          '1AM Wallet extension not detected. ' +
+          'Please install 1AM Wallet (https://1am.xyz) ' +
           'and switch to the Midnight Preprod network.',
         );
       }
@@ -104,7 +106,7 @@ export function WalletConnect({ wallet, setWallet, onWalletApi }: Props) {
             Connecting...
           </>
         ) : (
-          <>🔗 Connect Lace Wallet</>
+          <>🔗 Connect 1AM Wallet</>
         )}
       </button>
       {error && (
@@ -122,7 +124,22 @@ export function WalletConnect({ wallet, setWallet, onWalletApi }: Props) {
           }}
           id="wallet-error-message"
         >
-          ⚠️ {error}
+          <div>⚠️ {error}</div>
+          <a
+            href="https://1am.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: '#38bdf8',
+              textDecoration: 'underline',
+              fontWeight: 600,
+              display: 'inline-block',
+              marginTop: '0.35rem',
+              fontSize: '0.75rem',
+            }}
+          >
+            Get 1AM Wallet (1am.xyz) ↗
+          </a>
         </div>
       )}
     </div>

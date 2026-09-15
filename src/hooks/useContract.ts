@@ -30,7 +30,7 @@ export interface VerificationLog {
  * on Midnight Preprod via the Midnight.js SDK.
  *
  * All circuit calls are submitted as real on-chain transactions through
- * the Lace wallet DApp connector. Proof generation runs locally in the
+ * the 1AM Wallet DApp connector. Proof generation runs locally in the
  * browser proof server — the member's secret NEVER leaves the client.
  */
 export function useContract() {
@@ -71,10 +71,10 @@ export function useContract() {
    * Flow:
    * 1. Generate or accept a 32-byte member secret
    * 2. Derive the SHA-256 commitment
-   * 3. Submit the commitment on-chain via Lace wallet
+   * 3. Submit the commitment on-chain via 1AM Wallet
    * 4. Log the transaction result
    *
-   * @param walletApi - Connected Lace wallet API handle
+   * @param walletApi - Connected 1AM Wallet API handle
    * @param customCommitmentHex - Optional pre-computed commitment hex
    */
   const addMember = useCallback(async (walletApi: any, customCommitmentHex?: string) => {
@@ -139,7 +139,7 @@ export function useContract() {
    * learns only that "someone on the list proved membership" — it
    * CANNOT determine which member did so.
    *
-   * @param walletApi - Connected Lace wallet API handle
+   * @param walletApi - Connected 1AM Wallet API handle
    */
   const proveMembership = useCallback(async (walletApi: any): Promise<boolean> => {
     setProofStatus('generating');
@@ -162,7 +162,7 @@ export function useContract() {
 
       // Submit the proveMembership circuit call to Midnight Preprod.
       // The proof server generates the ZK-SNARK locally using the secret
-      // as a private witness, then Lace signs and broadcasts the transaction.
+      // as a private witness, then 1AM Wallet signs and broadcasts the transaction.
       const config = createProviderConfig();
       const result: CircuitCallResult = await callProveMembership(walletApi, config, memberSecret);
 

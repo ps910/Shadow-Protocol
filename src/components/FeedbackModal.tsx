@@ -28,7 +28,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     'ZK Proof Latency',
     'Mini-Game Difficulty',
     'Station Sabotages',
-    'Lace Wallet / UX',
+    '1AM Wallet / UX',
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

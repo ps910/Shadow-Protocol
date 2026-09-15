@@ -3,8 +3,8 @@
 ## What You Need
 
 1. **A modern web browser** (Chrome, Firefox, Edge, or Brave)
-2. **Lace wallet** browser extension — [Install here](https://www.lace.io/)
-   - Switch Lace to **Midnight Preprod** network
+2. **1AM Wallet** browser extension — [Install at 1am.xyz](https://1am.xyz)
+   - Switch 1AM Wallet to **Midnight Preprod** network
    - Fund your wallet at the [Preprod faucet](https://faucet.preprod.midnight.network)
 3. **The Shadow Protocol app** — running locally or at the live demo URL
 
@@ -16,7 +16,7 @@ Navigate to the Shadow Protocol app. You'll see the **Game Lobby** with 6 player
 
 ### 2. Connect Your Wallet 🔗
 
-Click **"Connect Lace Wallet"** in the top-right corner. Approve the connection in your Lace extension. Your Midnight Preprod address will appear.
+Click **"Connect 1AM Wallet"** in the top-right corner. Approve the connection in your 1AM Wallet extension. Your Midnight Preprod address will appear.
 
 ### 3. Start the Game 🎭
 
@@ -79,10 +79,10 @@ During the emergency assembly:
 
 ## Troubleshooting
 
-### "Lace wallet not detected"
-- Ensure the Lace extension is installed and enabled
+### "1AM Wallet not detected"
+- Ensure the 1AM Wallet extension is installed and enabled (visit https://1am.xyz)
 - Refresh the page after installing
-- Check that Lace is set to **Midnight Preprod** network
+- Check that 1AM Wallet is set to **Midnight Preprod** network
 
 ### "Action not valid for role"
 - Each role can only perform specific actions

@@ -14,7 +14,7 @@ The 50 playtest participants were onboarded across three dedicated cohorts betwe
 | Cohort | Focus / Profile | Testers | Primary Verification Action |
 |---|---|---|---|
 | **Cohort Alpha** | Midnight Network Core Developers & Ecosystem Builders | 17 | `joinGame`, `proveAlibi`, ZK Witness Auditing |
-| **Cohort Beta** | Cardano Gaming Guild & DApp Enthusiasts | 17 | `submitVote`, `submitNightAction`, Lace Wallet Connector |
+| **Cohort Beta** | Cardano Gaming Guild & DApp Enthusiasts | 17 | `submitVote`, `submitNightAction`, 1AM Wallet Connector |
 | **Cohort Gamma** | Zero-Knowledge Community & Competitive Deduction Players | 16 | `submitTaskCompletion`, Station Sabotage Scenarios |
 | **Total** | **Verified Preprod Testers** | **50** | **38.4 avg txs / player across 12 matches** |
 

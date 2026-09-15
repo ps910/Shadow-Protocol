@@ -96,16 +96,16 @@ Shadow Protocol is a **6-player Among Us-style hidden-role strategy game** set a
 - **Network**: Midnight Network (Preprod)
 - **Contract Language**: Compact (compiles to ZK circuits)
 - **Frontend**: React 18 + TypeScript + Vite
-- **Wallet**: Lace (Midnight DApp Connector API)
+- **Wallet**: 1AM Wallet (https://1am.xyz, Midnight DApp Connector API)
 - **Styling**: Custom Vanilla CSS with glassmorphism, micro-animations
-- **Testing**: Vitest + React Testing Library (38 tests)
+- **Testing**: Vitest + React Testing Library (46 tests)
 - **CI/CD**: GitHub Actions → GitHub Pages
 - **Crypto**: Web Crypto API (SHA-256 commitments, nullifiers, room beacons)
 
 ## Prerequisites
 
 - **Node.js v22** or later
-- **Lace wallet** browser extension (configured for Midnight Preprod)
+- **1AM Wallet** browser extension (https://1am.xyz, configured for Midnight Preprod)
 - **Docker** (for proof server)
 - **Compact compiler** (`npm install -g @midnight-ntwrk/compact-compiler`)
 

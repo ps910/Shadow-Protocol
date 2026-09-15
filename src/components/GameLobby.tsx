@@ -14,7 +14,7 @@ const SCREENS_DATA = [
     title: 'Wallet Connection',
     badge: 'PUBLIC STATE',
     badgeClass: 'tag-public',
-    summary: 'Connect Midnight Lace wallet or pre-funded test identity to authenticate as a player.',
+    summary: 'Connect Midnight 1AM Wallet or pre-funded test identity to authenticate as a player.',
     features: ['Public cryptographic key pair', 'Zero correlation with secret role', 'State proof readiness validation'],
     privacyNote: 'Wallet address is public to the table for turn tracking, but never linked to secret role assignments.'
   },
@@ -81,7 +81,7 @@ const SCREENS_DATA = [
 ];
 
 const LOOP_STEPS = [
-  { num: '01', title: 'Wallet Connect', desc: 'Player connects Lace wallet and registers match session key.', type: 'Public', tagClass: 'tag-public' },
+  { num: '01', title: 'Wallet Connect', desc: 'Player connects 1AM Wallet and registers match session key.', type: 'Public', tagClass: 'tag-public' },
   { num: '02', title: 'Lobby Formation', desc: '6 players join room. On-chain contract initializes match state.', type: 'Public', tagClass: 'tag-public' },
   { num: '03', title: 'Deal Secret Roles', desc: 'Contract seeds randomness; private state witnesses distributed.', type: 'Private', tagClass: 'tag-private' },
   { num: '04', title: 'Private Role Reveal', desc: 'Each client unlocks and views their individual classified role.', type: 'Private', tagClass: 'tag-private' },

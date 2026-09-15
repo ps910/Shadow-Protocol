@@ -32,7 +32,7 @@ This guide documents the complete 11-phase sequence defined in [BUILD_SPEC.md](B
 
 ### Objectives
 1. Stand up the local Compact compiler and Midnight toolchain.
-2. Configure Lace Wallet and connect directly to the Midnight Preprod Network.
+2. Configure 1AM Wallet and connect directly to the Midnight Preprod Network.
 3. Fund deployer and test accounts with test tokens (`tDUST` and `tNIGHT`).
 4. Launch the local Midnight proof server Docker container.
 
@@ -55,14 +55,14 @@ docker run -d --name midnight-proof-server -p 6300:6300 midnightntwrk/proof-serv
 curl http://localhost:6300/health # Returns {"status":"healthy"}
 ```
 
-### Step 0.3 — Lace Wallet Preprod Configuration & Funding
-1. Install [Lace Extension](https://www.lace.io/) (Midnight edition).
+### Step 0.3 — 1AM Wallet Preprod Configuration & Funding
+1. Install [1AM Wallet Extension](https://1am.xyz) (Midnight edition).
 2. Open Settings $\rightarrow$ Network $\rightarrow$ Select **Midnight Preprod**.
 3. Copy your address and request funds from the [Midnight Preprod Faucet](https://faucet.midnight.network).
 
 ### Definition of Done (DoD)
 - Proof server responds `200 OK` on `http://localhost:6300`.
-- Lace wallet displays a positive balance of `tDUST` on the Midnight Preprod Network.
+- 1AM Wallet displays a positive balance of `tDUST` on the Midnight Preprod Network.
 
 ---
 
@@ -288,11 +288,11 @@ npm test
 
 ---
 
-## Phase 8: Frontend Preprod Network Binding & Lace Integration
+## Phase 8: Frontend Preprod Network Binding & 1AM Wallet Integration
 
 ### Objectives
 1. Assemble the React 18 + TypeScript frontend with dark luxury glassmorphism.
-2. Connect directly to Midnight Preprod via the Lace DApp Connector API.
+2. Connect directly to Midnight Preprod via the 1AM Wallet DApp Connector API.
 3. Expose interactive controls: wallet connect, admin allowlist manager, ZK prover, and nullifier event log.
 
 ### Step 8.1 — Launch Local Frontend
@@ -301,12 +301,12 @@ npm run dev
 ```
 Open `http://localhost:3000`.
 
-### Step 8.2 — Lace Connector Handshake
+### Step 8.2 — 1AM Wallet Connector Handshake
 ```typescript
-const dAppConnector = window.midnight?.lace;
+const dAppConnector = window.midnight?.['1am'] ?? window.midnight?.oneAm;
 if (dAppConnector) {
-  const api = await dAppConnector.enable('preprod');
-  const address = await api.getChangeAddress();
+  const api = await dAppConnector.connect('preprod');
+  const address = await api.getUnshieldedAddress();
   setWallet({ connected: true, address, networkId: 'preprod' });
 }
 ```
@@ -379,7 +379,7 @@ git push new-moon main
 
 | Issue | Resolution |
 |---|---|
-| **Lace refuses connection** | Verify Lace network is explicitly set to `Midnight Preprod` in Lace settings. |
+| **1AM Wallet refuses connection** | Verify 1AM Wallet network is explicitly set to `Midnight Preprod` in 1AM Wallet settings. |
 | **Insufficient tDUST / tNIGHT** | Request funds from [faucet.midnight.network](https://faucet.midnight.network). |
 | **Proof generation timeout** | Ensure proof server docker container is running: `docker run -p 6300:6300 midnightntwrk/proof-server:latest`. |
 | **Transaction rejected** | Verify the nullifier has not already been used on the Preprod ledger. |

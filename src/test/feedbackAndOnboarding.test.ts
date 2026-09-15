@@ -83,7 +83,7 @@ describe('Level 5: 50 Preprod Users & Living Feedback Loop', () => {
         'ZK Proof Latency',
         'Mini-Game Difficulty',
         'Station Sabotages',
-        'Lace Wallet / UX',
+        '1AM Wallet / UX',
       ];
 
       PREPROD_USERS.forEach(u => {

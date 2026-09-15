@@ -55,7 +55,7 @@ PRIVATE WITNESSES:
 | GameOver          | Victory screen + full role reveal          |
 | PrivacyDashboard  | Real-time public vs private comparison     |
 | PlayerCard        | Reusable player avatar card                |
-| WalletConnect     | Lace wallet connection                     |
+| WalletConnect     | 1AM Wallet connection                     |
 
 ### Game Engine (src/game/)
 | Module              | Purpose                                  |
