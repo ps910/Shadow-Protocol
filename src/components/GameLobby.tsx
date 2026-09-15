@@ -5,6 +5,8 @@ import { PlayerCard } from './PlayerCard';
 interface GameLobbyProps {
   gameState: GameState;
   onStartGame: () => void;
+  isWalletConnected?: boolean;
+  onConnectWallet?: () => void;
 }
 
 const SCREENS_DATA = [
@@ -95,7 +97,7 @@ const LOOP_STEPS = [
   { num: '12', title: 'Victory Evaluation', desc: 'Contract evaluates win predicates: Protocol saved or Shadow victory.', type: 'Public', tagClass: 'tag-public' },
 ];
 
-export function GameLobby({ gameState, onStartGame }: GameLobbyProps) {
+export function GameLobby({ gameState, onStartGame, isWalletConnected = false }: GameLobbyProps) {
   const playerCount = gameState.players.length;
   const [activeScreenIndex, setActiveScreenIndex] = useState(0);
   const [zkSimulating, setZkSimulating] = useState(false);
@@ -142,12 +144,52 @@ export function GameLobby({ gameState, onStartGame }: GameLobbyProps) {
 
           <div className="hero-actions">
             <button className="btn btn-primary btn-lg" onClick={onStartGame} id="start-game-btn">
-              Create a Match →
+              {isWalletConnected ? 'Create a Match →' : '🔒 Create a Match'}
             </button>
             <a href="#roles" className="btn btn-secondary btn-lg">
               How a round works
             </a>
           </div>
+
+          {!isWalletConnected ? (
+            <div
+              style={{
+                marginTop: '1.25rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                padding: '0.6rem 1rem',
+                background: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.25)',
+                borderRadius: 'var(--radius-md)',
+                color: '#fca5a5',
+                fontSize: '0.85rem',
+              }}
+            >
+              <span style={{ fontSize: '1.1rem' }}>🔒</span>
+              <span>
+                <strong>1AM Wallet Required:</strong> Players cannot enter or create matches without connecting a 1AM Wallet on Midnight Preprod.
+              </span>
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: '1.25rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                padding: '0.4rem 0.85rem',
+                background: 'rgba(34, 197, 94, 0.08)',
+                border: '1px solid rgba(34, 197, 94, 0.25)',
+                borderRadius: 'var(--radius-md)',
+                color: '#86efac',
+                fontSize: '0.85rem',
+              }}
+            >
+              <span>●</span>
+              <span>1AM Wallet Authenticated · Ready to Deploy</span>
+            </div>
+          )}
         </div>
 
         {/* ─── DOSSIER CARD ─── */}
@@ -417,7 +459,7 @@ export function GameLobby({ gameState, onStartGame }: GameLobbyProps) {
               INTERFACE SPECIFICATION #{activeScreen.step}
             </div>
             <button className="btn btn-primary" onClick={onStartGame} style={{ width: '100%' }}>
-              Experience in Match →
+              {isWalletConnected ? 'Experience in Match →' : '🔒 Experience in Match'}
             </button>
           </div>
         </div>
@@ -628,7 +670,7 @@ export function GameLobby({ gameState, onStartGame }: GameLobbyProps) {
           </p>
           <div className="hero-actions" style={{ justifyContent: 'center' }}>
             <button className="btn btn-primary btn-lg" onClick={onStartGame}>
-              Create a Match →
+              {isWalletConnected ? 'Create a Match →' : '🔒 Create a Match'}
             </button>
             <a href="#roles" className="btn btn-secondary btn-lg">
               Meet the Roles

@@ -11,6 +11,7 @@ import { PrivacyDashboard } from './components/PrivacyDashboard';
 import { FeedbackModal } from './components/FeedbackModal';
 import { CadetOnboarding } from './components/CadetOnboarding';
 import { PreprodDirectory } from './components/PreprodDirectory';
+import { WalletRequiredModal } from './components/WalletRequiredModal';
 import type { FeedbackSubmission } from './data/preprodUsers';
 import {
   initializeGame,
@@ -48,6 +49,7 @@ export default function App() {
   const [activeTask, setActiveTask] = useState<PlayerTask | null>(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showCadetManual, setShowCadetManual] = useState(false);
+  const [showWalletRequiredModal, setShowWalletRequiredModal] = useState(false);
   const [, setCommunityFeedback] = useState<FeedbackSubmission[]>([]);
 
   const handleFeedbackSubmit = useCallback((fb: FeedbackSubmission) => {
@@ -85,15 +87,30 @@ export default function App() {
     return () => clearInterval(timer);
   }, [gameState.activeSabotage]);
 
+  // Strict 1AM Wallet requirement: Disconnecting in-match immediately returns to lobby
+  useEffect(() => {
+    if (!wallet.connected && gameState.phase !== GamePhase.Lobby) {
+      setGameState(initializeGame(6));
+      setActivePlayerIndex(0);
+      setActiveTask(null);
+      setShowWalletRequiredModal(true);
+    }
+  }, [wallet.connected, gameState.phase]);
+
   // ─── Game Actions ──────────────────────────────────────────────────
 
   const handleStartGame = useCallback(() => {
+    if (!wallet.connected) {
+      setShowWalletRequiredModal(true);
+      window.dispatchEvent(new CustomEvent('trigger-1am-connect'));
+      return;
+    }
     setGameState(prev => ({
       ...prev,
       phase: GamePhase.RoleReveal,
     }));
     setActivePlayerIndex(0);
-  }, []);
+  }, [wallet.connected]);
 
   const handleRoleContinue = useCallback(() => {
     setGameState(prev => ({
@@ -224,8 +241,13 @@ export default function App() {
             ✍️ Feedback
           </button>
           {gameState.phase === GamePhase.Lobby ? (
-            <button className="btn btn-primary btn-sm" onClick={handleStartGame}>
-              Play Match →
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={handleStartGame}
+              id="header-play-btn"
+              title={!wallet.connected ? '1AM Wallet required to play' : 'Play Match'}
+            >
+              {wallet.connected ? 'Play Match →' : '🔒 Play Match'}
             </button>
           ) : (
             <button className="btn btn-secondary btn-sm" onClick={handlePlayAgain}>
@@ -266,7 +288,15 @@ export default function App() {
 
       {/* Phase-specific Views */}
       {gameState.phase === GamePhase.Lobby && (
-        <GameLobby gameState={gameState} onStartGame={handleStartGame} />
+        <GameLobby
+          gameState={gameState}
+          onStartGame={handleStartGame}
+          isWalletConnected={wallet.connected}
+          onConnectWallet={() => {
+            setShowWalletRequiredModal(true);
+            window.dispatchEvent(new CustomEvent('trigger-1am-connect'));
+          }}
+        />
       )}
 
       {gameState.phase === GamePhase.RoleReveal && currentPlayer && (
@@ -352,6 +382,12 @@ export default function App() {
       <CadetOnboarding
         isOpen={showCadetManual}
         onClose={() => setShowCadetManual(false)}
+      />
+
+      <WalletRequiredModal
+        isOpen={showWalletRequiredModal}
+        onClose={() => setShowWalletRequiredModal(false)}
+        onConnect={() => window.dispatchEvent(new CustomEvent('trigger-1am-connect'))}
       />
 
       {/* Footer */}

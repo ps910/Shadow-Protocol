@@ -41,7 +41,22 @@ export function useWallet() {
       if (provider) {
         // Official 1AM Wallet DApp connector API
         const api = await provider.connect(NETWORK_CONFIG.networkId);
-        const address = await api.getUnshieldedAddress?.() || await api.getAddress?.();
+        let rawAddress: any = null;
+        try {
+          rawAddress = await api.getUnshieldedAddress?.();
+        } catch {
+          rawAddress = await api.getAddress?.();
+        }
+        if (!rawAddress) {
+          rawAddress = await api.getAddress?.();
+        }
+
+        let address = '';
+        if (typeof rawAddress === 'string') {
+          address = rawAddress;
+        } else if (rawAddress && typeof rawAddress === 'object') {
+          address = rawAddress.unshieldedAddress || rawAddress.address || rawAddress.shieldedAddress || '';
+        }
 
         setWallet({
           connected: true,
