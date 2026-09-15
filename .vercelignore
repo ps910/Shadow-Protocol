@@ -1,0 +1,8 @@
+screenshots/
+*.webp
+*.mp4
+*.png
+.git/
+.system_generated/
+.gemini/
+node_modules/
