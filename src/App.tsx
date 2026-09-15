@@ -15,6 +15,7 @@ import { WalletRequiredModal } from './components/WalletRequiredModal';
 import type { FeedbackSubmission } from './data/preprodUsers';
 import {
   initializeGame,
+  startGame,
   movePlayer,
   completePlayerTask,
   triggerSabotageAction,
@@ -105,10 +106,8 @@ export default function App() {
       window.dispatchEvent(new CustomEvent('trigger-1am-connect'));
       return;
     }
-    setGameState(prev => ({
-      ...prev,
-      phase: GamePhase.RoleReveal,
-    }));
+    // startGame() assigns roles to all players before transitioning to RoleReveal
+    setGameState(prev => startGame(prev));
     setActivePlayerIndex(0);
   }, [wallet.connected]);
 
