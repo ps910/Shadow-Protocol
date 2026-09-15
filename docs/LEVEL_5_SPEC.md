@@ -22,7 +22,7 @@ Level 5 requires opening the product to the world: onboarding **50 Preprod users
 | **Feedback Loop Documented** | Comprehensive documentation of user acquisition funnel, survey methodology, SUS usability scoring (87.4/100), and Impact vs Effort prioritization matrix | [`docs/FEEDBACK_LOOP.md`](FEEDBACK_LOOP.md) |
 | **Updated Documentation** | Synchronized `README.md`, `USAGE.md`, `BUILD_SPEC.md`, `PREPROD_USERS.md`, and `FEEDBACK_LOOP.md` holding full weight | [`README.md`](../README.md)<br>[`BUILD_SPEC.md`](../BUILD_SPEC.md) |
 | **Minimum 20 Meaningful Commits** | 25+ conventional, atomic commits on GitHub repository `origin/main` | `git log --oneline` |
-| **Demo Video Showing Full MVP** | Recorded browser interaction session showing complete gameplay, cadet onboarding, and feedback submission | [`walkthrough.md`](../walkthrough.md) |
+| **Demo Video Showing Full MVP** | Recorded browser interaction session showing complete gameplay, 1AM wallet authentication, cadet onboarding, and feedback submission | [`screenshots/demo.webp`](../screenshots/demo.webp)<br>[`walkthrough.md`](../walkthrough.md) |
 
 ---
 

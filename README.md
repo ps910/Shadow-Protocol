@@ -17,10 +17,16 @@
 - 📖 **[Cadet Flight Manual](docs/USAGE.md)**: Interactive in-app onboarding tour guiding new users through Midnight ZK privacy, role witnesses, and room alibis.
 - ✍️ **In-App Feedback Widget**: Cryptographically-bound feedback submissions generating single-use ZK nullifiers.
 
-## 🎮 Live Demo
+## 🎮 Live Demo & Video Walkthrough
 
 **👉 [https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/)**
 *(Mirror: [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/))*
+
+### 🎥 Full MVP Gameplay Demo
+
+> **Comprehensive Browser Demonstration**: Showcases 1AM Wallet authentication on Midnight Preprod, strict wallet security gating, confidential role reveal, Aegis Station movement, interactive mini-game tasks, shielded ZK voting, and the Privacy Dashboard.
+
+![Shadow Protocol Full MVP Demo](screenshots/demo.webp)
 
 ## Contract Address
 

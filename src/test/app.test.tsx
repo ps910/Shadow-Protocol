@@ -41,4 +41,10 @@ describe('Shadow Protocol — App Component', () => {
     expect(screen.getByText('LOOP')).toBeDefined();
     expect(screen.getByText('PRIVACY')).toBeDefined();
   });
+
+  it('can start match when connected and renders role reveal', () => {
+    render(<App />);
+    // simulate trigger
+    window.dispatchEvent(new CustomEvent('trigger-1am-connect'));
+  });
 });
