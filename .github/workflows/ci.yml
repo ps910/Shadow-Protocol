@@ -54,6 +54,11 @@ jobs:
           path: dist/
           retention-days: 7
 
+      - name: Prepare static configuration for GitHub Pages & Vercel
+        run: |
+          echo '{"name":"shadow-protocol-pages","version":"1.0.0","private":true,"scripts":{"build":"echo static build ready"}}' > dist/package.json
+          echo '{"outputDirectory":"."}' > dist/vercel.json
+
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         continue-on-error: true
