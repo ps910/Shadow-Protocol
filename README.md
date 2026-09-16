@@ -30,9 +30,11 @@
 
 ### 🎥 Full MVP Gameplay Demo
 
-> **Comprehensive Browser Demonstration**: Showcases the new AAA Cybernetic UI, particle starfield, 1AM Wallet authentication on Midnight Preprod, confidential role reveal, live ZK proof generation, Aegis Station conduit telemetry, and shielded voting.
+> **Comprehensive Browser Demonstration**: Complete live walkthrough showcasing the new Figma-designed UI, particle starfield, 1AM Wallet authentication on Midnight Preprod, confidential role reveal, live ZK proof verification, station task calibration, emergency meetings, and shielded voting.
 
-![Shadow Protocol Full MVP Demo](screenshots/demo.webp)
+[![Shadow Protocol Full MVP Demo](screenshots/demo.webp)](https://shadow-protocol-delta.vercel.app/demo.mp4)
+
+*🎬 **Direct Video**: [Watch or Download Full MP4 Demo (screenshots/demo.mp4)](screenshots/demo.mp4) · [Live Web Stream](https://shadow-protocol-delta.vercel.app/demo.mp4)*
 
 ## Contract Address
 
