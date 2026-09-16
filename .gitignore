@@ -35,3 +35,4 @@ coverage/
 # Managed directory should be tracked (contains compiled circuits)
 # managed/
 .vercel
+.vite/
