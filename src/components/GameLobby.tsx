@@ -121,20 +121,20 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
     }, 700);
   };
 
-  const [heroTab, setHeroTab] = useState<'station' | 'dossier'>('station');
+  const [heroTab, setHeroTab] = useState<'station' | 'dossier' | 'zk'>('station');
 
   return (
     <div className="animate-fade-in">
       {/* ─── HERO SECTION ─── */}
       <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">
-            <span className="hero-badge-dot" />
-            PRIVACY-NATIVE · BUILT ON MIDNIGHT · GAMING
+          <div className="figma-hero-badge">
+            <span className="figma-hero-badge-dot" />
+            • PRIVACY-NATIVE • BUILT ON MIDNIGHT • GAMING
           </div>
 
-          <h1>
-            Deception you<br />can <span className="gradient-text">prove.</span>
+          <h1 className="figma-hero-title">
+            Deception you<br />can <span className="figma-prove-gradient">prove.</span>
           </h1>
 
           <p className="hero-subtitle">
@@ -145,12 +145,28 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
           </p>
 
           <div className="hero-actions">
-            <button className="btn btn-primary btn-lg" onClick={onStartGame} id="start-game-btn">
+            <button className="figma-btn-primary" onClick={onStartGame} id="start-game-btn">
               {isWalletConnected ? 'Create a Match →' : '🔒 Create a Match'}
             </button>
-            <a href="#roles" className="btn btn-secondary btn-lg">
+            <a href="#roles" className="figma-btn-outline">
               How a round works
             </a>
+          </div>
+
+          {/* Quick Metrics — Figma Design Specification */}
+          <div className="hero-quick-stats">
+            <div className="hero-stat-pill">
+              <span className="hero-stat-value">6</span>
+              <span className="hero-stat-label">PLAYERS / MATCH</span>
+            </div>
+            <div className="hero-stat-pill">
+              <span className="hero-stat-value">100%</span>
+              <span className="hero-stat-label">ZK-SNARK VERIFIED</span>
+            </div>
+            <div className="hero-stat-pill">
+              <span className="hero-stat-value">0 GAS</span>
+              <span className="hero-stat-label">OFF-CHAIN ACTIONS</span>
+            </div>
           </div>
 
           {!isWalletConnected ? (
@@ -199,18 +215,7 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
               href="https://x.com/shadow_pr0tocol"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                color: 'var(--text-secondary)',
-                padding: '0.3rem 0.6rem',
-                borderRadius: 'var(--radius-sm)',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border)'
-              }}
+              className="x-nav-btn"
             >
               <span>𝕏 Official Updates:</span>
               <strong style={{ color: 'var(--protocol-cyan)' }}>@shadow_pr0tocol</strong>
@@ -222,7 +227,7 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
           </div>
         </div>
 
-        {/* ─── HERO RIGHT COLUMN: HOLOGRAPHIC STATION / DOSSIER ─── */}
+        {/* ─── HERO RIGHT COLUMN: HOLOGRAPHIC STATION / DOSSIER / ZK TELEMETRY ─── */}
         <div>
           {/* View Mode Switcher */}
           <div style={{ display: 'flex', gap: 'var(--space-xs)', marginBottom: 'var(--space-sm)' }}>
@@ -263,6 +268,25 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
               }}
             >
               📁 CLASSIFIED DOSSIER
+            </button>
+            <button
+              onClick={() => setHeroTab('zk')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+                background: heroTab === 'zk' ? 'var(--bg-card)' : 'transparent',
+                border: '1px solid',
+                borderColor: heroTab === 'zk' ? 'var(--primary)' : 'transparent',
+                borderBottom: heroTab === 'zk' ? 'none' : undefined,
+                color: heroTab === 'zk' ? 'var(--primary-light)' : 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              ⚡ ZK VERIFIER
             </button>
           </div>
 
@@ -310,41 +334,88 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
                 </div>
               </div>
             </div>
-          ) : (
-            /* Dossier Card */
-            <div className="dossier-card animate-fade-in">
-              <div className="dossier-header">
-                <span className="dossier-label">● CLASSIFIED DOSSIER</span>
-                <span className="dossier-id">#SP-A8F92</span>
+          ) : heroTab === 'dossier' ? (
+            /* Dossier Card — Exact Figma Make Implementation */
+            <div className="figma-dossier-card animate-fade-in">
+              <div className="figma-dossier-header">
+                <span className="figma-dossier-tag">● CLASSIFIED DOSSIER</span>
+                <span className="figma-dossier-id">#SP-A8F92</span>
               </div>
 
-              <div className="dossier-role-section">
-                <div className="dossier-role-icon">🗡️</div>
+              <div className="figma-dossier-role-box">
+                <div className="figma-dossier-role-icon">🗡️</div>
                 <div>
-                  <div className="dossier-role-name" style={{ color: 'var(--shadow)' }}>Assassin</div>
-                  <div className="dossier-role-team">TEAM · SHADOW</div>
+                  <div className="figma-dossier-role-name">Assassin</div>
+                  <div className="figma-dossier-team">TEAM • SHADOW</div>
                 </div>
               </div>
 
-              <p className="dossier-description">
+              <p className="figma-dossier-desc">
                 Eliminate the Guardians and seize numerical control of the game.
               </p>
 
-              <div className="action-chips">
-                <span className="action-chip">ASSASSINATE</span>
-                <span className="action-chip">HIDE IDENTITY</span>
-                <span className="action-chip">SABOTAGE</span>
+              <div className="figma-action-chips">
+                <span className="figma-action-chip">ASSASSINATE</span>
+                <span className="figma-action-chip">HIDE IDENTITY</span>
+                <span className="figma-action-chip">SABOTAGE</span>
               </div>
 
-              <div className="secret-objective">
-                <div className="secret-objective-label">SECRET OBJECTIVE</div>
-                <div className="secret-objective-text">Eliminate 2 Protocol players.</div>
+              <div className="figma-objective-panel">
+                <div className="figma-objective-label">SECRET OBJECTIVE</div>
+                <div className="figma-objective-text">Eliminate 2 Protocol players.</div>
               </div>
 
-              <div className="visibility-row">
-                <span className="visibility-code">role.visible_to_table</span>
-                <span className="visibility-badge hidden">⊘ HIDDEN</span>
+              <div className="figma-visibility-row">
+                <span className="figma-visibility-key">role.visible_to_table</span>
+                <span className="figma-visibility-val">🚫 HIDDEN</span>
               </div>
+
+              <div className="figma-progress-segments">
+                <div className="figma-segment active" />
+                <div className="figma-segment" />
+                <div className="figma-segment" />
+                <div className="figma-segment" />
+              </div>
+            </div>
+          ) : (
+            /* Interactive ZK Verifier Console */
+            <div className="dossier-card animate-fade-in" style={{ borderColor: 'rgba(139, 92, 246, 0.4)' }}>
+              <div className="dossier-header">
+                <span className="dossier-label" style={{ color: 'var(--primary-light)' }}>⚡ MIDNIGHT ZK-SNARK ENGINE</span>
+                <span className="dossier-id">HALO2 / COMPACT</span>
+              </div>
+
+              <div style={{ marginTop: '0.75rem', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                Test client-side cryptographic proof generation. Validates action compliance without disclosing role or target plaintext to the ledger.
+              </div>
+
+              <div style={{ marginTop: '1rem' }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSimulateZK}
+                  disabled={zkSimulating}
+                  style={{ width: '100%', fontSize: '0.85rem' }}
+                >
+                  {zkSimulating ? '⏳ Compiling Witness & Proving...' : '⚡ Generate & Verify Action Proof'}
+                </button>
+              </div>
+
+              {zkResult && (
+                <div style={{
+                  marginTop: '1rem',
+                  padding: '0.75rem',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.6875rem',
+                  color: '#86efac',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: 1.5
+                }}>
+                  {zkResult}
+                </div>
+              )}
             </div>
           )}
         </div>

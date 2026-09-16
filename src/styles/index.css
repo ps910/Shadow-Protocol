@@ -8,6 +8,22 @@
 
 /* ---- CSS Custom Properties ---- */
 :root {
+  /* Figma Make Specification Variables */
+  --color-void: #05060c;
+  --color-panel: #0e101b;
+  --color-panel-2: #151828;
+  --color-midnight: #0a0c16;
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-ink: #f1f3fd;
+  --color-muted: #8a92aa;
+  --color-danger: #e0392b;
+  --color-signal: #33ddd0;
+  --color-cyan: #33ddd0;
+  --color-violet: #9d4edd;
+  --color-violet-dim: #5b21b6;
+  --color-magenta: #f55dc0;
+  --color-gold: #f59e0b;
+
   /* Background — Pitch Black / Deep Navy */
   --bg-primary: #050811;
   --bg-secondary: #0A0D18;
@@ -1735,24 +1751,164 @@ img { max-width: 100%; }
 
 /* ============================================================
    ADVANCED CYBERNETIC & HOLOGRAPHIC UI OVERHAUL (LEVEL 5 AAA)
+   Premium Visual System v2.0
    ============================================================ */
 
-/* --- Cyber Grid & Ambient Starfield Background --- */
+/* --- Cyber Grid & Animated Aurora Background --- */
 body {
-  background-color: #03050c;
+  background-color: #020408;
   background-image: 
     radial-gradient(ellipse 90% 50% at 50% -10%, rgba(139, 92, 246, 0.18), transparent 70%),
     radial-gradient(ellipse 60% 40% at 85% 60%, rgba(6, 182, 212, 0.08), transparent 60%),
     radial-gradient(ellipse 50% 50% at 15% 75%, rgba(16, 185, 129, 0.06), transparent 60%),
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+  background-attachment: fixed;
 }
 
-/* --- Floating Cyber Navigation --- */
+/* ============================================================
+   PARTICLE FIELD SYSTEM — CSS-only animated starfield
+   ============================================================ */
+
+.particle-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: particle-drift linear infinite;
+}
+
+.particle-glow {
+  background: var(--primary-light);
+  box-shadow: 0 0 6px var(--primary-glow);
+}
+
+.particle-large {
+  background: var(--protocol-cyan);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+}
+
+@keyframes particle-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: var(--particle-opacity, 0.3);
+  }
+  25% {
+    transform: translate(30px, -60px) scale(1.2);
+    opacity: calc(var(--particle-opacity, 0.3) * 1.4);
+  }
+  50% {
+    transform: translate(-20px, -120px) scale(0.8);
+    opacity: var(--particle-opacity, 0.3);
+  }
+  75% {
+    transform: translate(40px, -180px) scale(1.1);
+    opacity: calc(var(--particle-opacity, 0.3) * 0.7);
+  }
+  100% {
+    transform: translate(0, -250px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Aurora ambient glow blobs */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: aurora-drift ease-in-out infinite;
+}
+
+.aurora-blob-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.12), transparent 70%);
+  top: -10%;
+  left: 20%;
+  animation-duration: 25s;
+}
+
+.aurora-blob-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent 70%);
+  top: 40%;
+  right: -5%;
+  animation-duration: 30s;
+  animation-delay: -10s;
+}
+
+.aurora-blob-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.06), transparent 70%);
+  bottom: 10%;
+  left: -5%;
+  animation-duration: 35s;
+  animation-delay: -20s;
+}
+
+@keyframes aurora-drift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(60px, -40px) scale(1.15);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+    opacity: 0.5;
+  }
+}
+
+/* ============================================================
+   FLOATING CYBER NAVIGATION — Enhanced
+   ============================================================ */
+
 .app-header {
-  border-bottom: 1px solid rgba(139, 92, 246, 0.25);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 0 60px rgba(139, 92, 246, 0.04);
+  background: rgba(2, 4, 8, 0.88) !important;
+}
+
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.3), transparent);
+  animation: header-line-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes header-line-glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
 }
 
 .network-beacon {
@@ -1760,14 +1916,32 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
-  background: rgba(6, 182, 212, 0.08);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px solid rgba(6, 182, 212, 0.25);
   border-radius: var(--radius-full);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
   color: var(--protocol-cyan);
   letter-spacing: 0.08em;
+  position: relative;
+  overflow: hidden;
+}
+
+.network-beacon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.1), transparent);
+  animation: shimmer-slide 3s ease-in-out infinite;
+}
+
+@keyframes shimmer-slide {
+  0% { left: -100%; }
+  100% { left: 200%; }
 }
 
 .network-beacon-dot {
@@ -1790,44 +1964,565 @@ body {
   gap: 0.45rem;
   padding: 0.35rem 0.75rem;
   background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-full);
   color: #fff;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .x-nav-btn:hover {
   background: #000;
   border-color: var(--protocol-cyan);
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.35);
   color: var(--protocol-cyan);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-/* --- Holographic Artwork Showcase in Hero --- */
+/* ============================================================
+   ENHANCED CARDS — Animated Gradient Borders
+   ============================================================ */
+
+.card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.9), rgba(8, 12, 24, 0.95));
+  border: 1px solid rgba(30, 41, 59, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card:hover {
+  border-color: rgba(139, 92, 246, 0.35);
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(139, 92, 246, 0.08),
+    0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.card:hover::before {
+  opacity: 0.8;
+}
+
+/* ============================================================
+   ENHANCED BUTTONS — Glow & Shimmer
+   ============================================================ */
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 20px var(--primary-glow), 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-dark), #6d28d9);
+  box-shadow:
+    0 0 35px var(--primary-glow),
+    0 0 80px rgba(139, 92, 246, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   GLITCH TEXT EFFECT — For Dramatic Headings
+   ============================================================ */
+
+.glitch-text {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.glitch-text::before {
+  color: var(--primary-light);
+  animation: glitch-shift-1 4s ease-in-out infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+
+.glitch-text::after {
+  color: var(--protocol-cyan);
+  animation: glitch-shift-2 4s ease-in-out infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch-shift-1 {
+  0%, 93%, 100% { transform: translate(0); }
+  94% { transform: translate(-3px, -1px); }
+  95% { transform: translate(3px, 1px); }
+  96% { transform: translate(0); }
+}
+
+@keyframes glitch-shift-2 {
+  0%, 96%, 100% { transform: translate(0); }
+  97% { transform: translate(3px, 1px); }
+  98% { transform: translate(-3px, -1px); }
+  99% { transform: translate(0); }
+}
+
+/* ============================================================
+   HOLOGRAPHIC SHIMMER — Premium Hover Effect
+   ============================================================ */
+
+.holo-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.06) 10%,
+    transparent 20%,
+    rgba(6, 182, 212, 0.06) 30%,
+    transparent 40%,
+    rgba(16, 185, 129, 0.06) 50%,
+    transparent 60%,
+    rgba(139, 92, 246, 0.06) 70%,
+    transparent 80%,
+    rgba(6, 182, 212, 0.06) 90%,
+    transparent 100%
+  );
+  animation: holo-rotate 12s linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.holo-shimmer:hover::after {
+  opacity: 1;
+}
+
+@keyframes holo-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   MORPHING GRADIENT BORDER — For Premium Cards
+   ============================================================ */
+
+.gradient-border {
+  position: relative;
+  border: none !important;
+  background: var(--bg-card);
+  isolation: isolate;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    rgba(139, 92, 246, 0.5),
+    rgba(6, 182, 212, 0.3),
+    rgba(16, 185, 129, 0.3),
+    rgba(139, 92, 246, 0.5)
+  );
+  z-index: -1;
+  animation: border-rotate 6s linear infinite;
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-rotate {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}
+
+/* ============================================================
+   TYPING CURSOR — Terminal Blinking
+   ============================================================ */
+
+.typing-cursor::after {
+  content: '▊';
+  display: inline-block;
+  animation: cursor-blink 1s steps(2) infinite;
+  color: var(--protocol-cyan);
+  margin-left: 2px;
+}
+
+@keyframes cursor-blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ============================================================
+   STAGGER ENTRANCE — Cascading reveal
+   ============================================================ */
+
+@keyframes stagger-up {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.stagger-in { animation: stagger-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.stagger-delay-1 { animation-delay: 0.05s; }
+.stagger-delay-2 { animation-delay: 0.1s; }
+.stagger-delay-3 { animation-delay: 0.15s; }
+.stagger-delay-4 { animation-delay: 0.2s; }
+.stagger-delay-5 { animation-delay: 0.25s; }
+.stagger-delay-6 { animation-delay: 0.3s; }
+.stagger-delay-7 { animation-delay: 0.35s; }
+.stagger-delay-8 { animation-delay: 0.4s; }
+
+/* ============================================================
+   PULSE RING — Interactive Focus Effect
+   ============================================================ */
+
+.pulse-ring {
+  position: relative;
+}
+
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  border: 2px solid var(--primary);
+  transform: translate(-50%, -50%);
+  animation: pulse-expand 2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-expand {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
+}
+
+/* ============================================================
+   HERO SECTION — Enhanced Title Animations
+   ============================================================ */
+
+.hero h1 {
+  text-shadow: 0 0 60px rgba(139, 92, 246, 0.15);
+}
+
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--primary-light), var(--protocol-cyan), var(--protocol));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero-subtitle {
+  animation: stagger-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+}
+
+.hero-actions {
+  animation: stagger-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s both;
+}
+
+/* ============================================================
+   ENHANCED SECTION HEADINGS — Glow Effects
+   ============================================================ */
+
+.section-heading {
+  text-shadow: 0 0 40px rgba(248, 250, 252, 0.05);
+}
+
+.section-heading .accent-gradient {
+  background: linear-gradient(135deg, var(--primary-light), var(--protocol-cyan));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 8s ease-in-out infinite;
+}
+
+/* Hero Quick Stats — Figma Design Specification */
+.hero-quick-stats {
+  display: flex;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat-pill {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 1rem;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-width: 110px;
+}
+
+.hero-stat-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--protocol-cyan);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.15), 0 0 12px rgba(6, 182, 212, 0.2);
+}
+
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 30%, var(--protocol-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.hero-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* ============================================================
+   METRICS BAR — Enhanced with glowing separators
+   ============================================================ */
+
+.metrics-bar {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.5), rgba(8, 12, 24, 0.5));
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.metrics-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.3;
+}
+
+.metric-divider {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+  opacity: 0.4;
+}
+
+/* ============================================================
+   ROLE CARDS — Enhanced with gradient glow
+   ============================================================ */
+
+.role-card-container {
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.role-card-container:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+.role-card-container.role-shadow:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 30px rgba(239, 68, 68, 0.12);
+}
+
+/* ============================================================
+   WHY-CARD — Enhanced hover glow
+   ============================================================ */
+
+.why-card {
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.why-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(139, 92, 246, 0.08);
+}
+
+/* ============================================================
+   LOOP CARDS — Enhanced interaction
+   ============================================================ */
+
+.loop-card {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.loop-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 20px rgba(139, 92, 246, 0.06);
+}
+
+/* ============================================================
+   SCREEN PREVIEW CARD — Enhanced
+   ============================================================ */
+
+.screen-preview-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.9), rgba(8, 12, 24, 0.95));
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ============================================================
+   MODE CARD — Enhanced depth
+   ============================================================ */
+
+.mode-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.85), rgba(8, 12, 24, 0.9));
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mode-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 25px rgba(139, 92, 246, 0.08);
+}
+
+/* ============================================================
+   STAT CARDS — Animated counter glow
+   ============================================================ */
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.85), rgba(8, 12, 24, 0.9));
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.06);
+}
+
+.stat-value {
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   DOSSIER CARD — Enhanced Classified Look
+   ============================================================ */
+
+.dossier-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.95), rgba(5, 8, 17, 0.98));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.06) inset;
+}
+
+/* ============================================================
+   FOOTER — Enhanced with scan-line
+   ============================================================ */
+
+.app-footer {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--protocol-cyan), transparent);
+  opacity: 0.3;
+}
+
+/* ============================================================
+   HOLOGRAPHIC ARTWORK SHOWCASE — Hero
+   ============================================================ */
+
 .hero-holo-container {
   position: relative;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  background: rgba(10, 15, 28, 0.7);
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(8, 12, 24, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   box-shadow: 
     0 0 50px rgba(0, 0, 0, 0.8),
-    0 0 35px rgba(139, 92, 246, 0.2),
-    0 0 15px rgba(6, 182, 212, 0.15) inset;
-  transition: all 0.3s ease;
+    0 0 40px rgba(139, 92, 246, 0.15),
+    0 0 20px rgba(6, 182, 212, 0.1) inset;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .hero-holo-container:hover {
-  border-color: rgba(6, 182, 212, 0.6);
+  border-color: rgba(6, 182, 212, 0.5);
+  transform: scale(1.01);
   box-shadow: 
     0 0 60px rgba(0, 0, 0, 0.9),
-    0 0 45px rgba(139, 92, 246, 0.35),
-    0 0 25px rgba(6, 182, 212, 0.25) inset;
+    0 0 50px rgba(139, 92, 246, 0.25),
+    0 0 30px rgba(6, 182, 212, 0.18) inset;
 }
 
 .hero-holo-img {
@@ -1839,7 +2534,7 @@ body {
 }
 
 .hero-holo-container:hover .hero-holo-img {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 .hero-holo-scanline {
@@ -1851,7 +2546,7 @@ body {
   background: linear-gradient(
     to bottom,
     transparent 50%,
-    rgba(6, 182, 212, 0.04) 51%,
+    rgba(6, 182, 212, 0.03) 51%,
     transparent 52%
   );
   background-size: 100% 4px;
@@ -1864,54 +2559,66 @@ body {
   top: -100%;
   left: 0;
   width: 100%;
-  height: 80px;
+  height: 100px;
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(139, 92, 246, 0.18),
+    rgba(139, 92, 246, 0.14),
+    rgba(6, 182, 212, 0.08),
     transparent
   );
-  animation: scan-sweep 6s linear infinite;
+  animation: scan-sweep 5s linear infinite;
   pointer-events: none;
   z-index: 3;
 }
 
 @keyframes scan-sweep {
-  0% { top: -100px; }
+  0% { top: -120px; }
   100% { top: 100%; }
 }
 
 /* Reticle brackets on four corners */
 .corner-bracket {
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   z-index: 4;
   pointer-events: none;
+  transition: all 0.3s ease;
 }
+
+.hero-holo-container:hover .corner-bracket {
+  width: 24px;
+  height: 24px;
+}
+
 .corner-top-left {
   top: 10px;
   left: 10px;
   border-top: 2px solid var(--protocol-cyan);
   border-left: 2px solid var(--protocol-cyan);
+  box-shadow: -2px -2px 8px rgba(6, 182, 212, 0.2);
 }
 .corner-top-right {
   top: 10px;
   right: 10px;
   border-top: 2px solid var(--protocol-cyan);
   border-right: 2px solid var(--protocol-cyan);
+  box-shadow: 2px -2px 8px rgba(6, 182, 212, 0.2);
 }
 .corner-bottom-left {
   bottom: 10px;
   left: 10px;
   border-bottom: 2px solid var(--protocol-cyan);
   border-left: 2px solid var(--protocol-cyan);
+  box-shadow: -2px 2px 8px rgba(6, 182, 212, 0.2);
 }
 .corner-bottom-right {
   bottom: 10px;
   right: 10px;
   border-bottom: 2px solid var(--protocol-cyan);
   border-right: 2px solid var(--protocol-cyan);
+  box-shadow: 2px 2px 8px rgba(6, 182, 212, 0.2);
 }
 
 .hero-holo-overlay-info {
@@ -1920,21 +2627,24 @@ body {
   left: 0;
   right: 0;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(to top, rgba(3, 5, 12, 0.95) 0%, rgba(3, 5, 12, 0.6) 65%, transparent 100%);
+  background: linear-gradient(to top, rgba(2, 4, 8, 0.97) 0%, rgba(2, 4, 8, 0.65) 65%, transparent 100%);
   z-index: 5;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
-/* --- Station Blueprint & Interconnected Conduits --- */
+/* ============================================================
+   STATION BLUEPRINT — Enhanced with depth
+   ============================================================ */
+
 .station-schematic-wrapper {
   position: relative;
-  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.6) 0%, rgba(5, 8, 17, 0.9) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.5) 0%, rgba(2, 4, 8, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(139, 92, 246, 0.1) inset;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.06) inset;
   overflow: hidden;
 }
 
@@ -1949,17 +2659,17 @@ body {
 }
 
 .conduit-line {
-  stroke: rgba(139, 92, 246, 0.35);
-  stroke-width: 2.5;
+  stroke: rgba(139, 92, 246, 0.3);
+  stroke-width: 2;
   stroke-dasharray: 6 4;
   animation: conduit-flow 25s linear infinite;
 }
 
 .conduit-line.active {
   stroke: var(--protocol-cyan);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 6px var(--protocol-cyan));
-  animation: conduit-flow-fast 8s linear infinite;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px var(--protocol-cyan));
+  animation: conduit-flow-fast 6s linear infinite;
 }
 
 @keyframes conduit-flow {
@@ -1976,53 +2686,57 @@ body {
 .room-card-enhanced {
   position: relative;
   z-index: 2;
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(8, 12, 24, 0.75) !important;
 }
 
 .room-card-enhanced:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.25);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 25px rgba(6, 182, 212, 0.2);
 }
 
 .radar-blip-ring {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--protocol);
-  box-shadow: 0 0 10px var(--protocol);
+  box-shadow: 0 0 12px var(--protocol);
 }
 
 .radar-blip-ring::after {
   content: '';
   position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
   border-radius: 50%;
-  border: 1px solid var(--protocol);
+  border: 1.5px solid var(--protocol);
   animation: radar-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @keyframes radar-ping {
   0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
-/* --- Terminal CRT Screen (Mini-Games & Modals) --- */
+/* ============================================================
+   CRT TERMINAL — Enhanced Retro Screen
+   ============================================================ */
+
 .crt-terminal {
   position: relative;
-  background: #060913;
-  border: 1px solid rgba(6, 182, 212, 0.4);
+  background: #050810;
+  border: 1px solid rgba(6, 182, 212, 0.35);
   border-radius: var(--radius-lg);
   box-shadow: 
-    0 0 35px rgba(6, 182, 212, 0.15),
-    0 0 15px rgba(6, 182, 212, 0.08) inset;
+    0 0 40px rgba(6, 182, 212, 0.12),
+    0 0 20px rgba(6, 182, 212, 0.06) inset;
   overflow: hidden;
 }
 
@@ -2031,238 +2745,897 @@ body {
   display: block;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.008), rgba(0, 0, 255, 0.03));
   z-index: 10;
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
 }
 
 /* ============================================================
-   FIGMA MAKE ANIMATION SPECIFICATIONS & MOTION TOKENS
+   ZK VERIFICATION CHIPS — Enhanced
    ============================================================ */
 
-/* --- Gradient Shimmer for Display Headings --- */
-@keyframes figma-gradient-shimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.gradient-text, .accent-gradient {
-  background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 40%, #34d399 70%, #a78bfa 100%) !important;
-  background-size: 250% auto !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  animation: figma-gradient-shimmer 8s ease infinite !important;
-}
-
-/* --- Floating Animation for Dossier & Feature Cards --- */
-@keyframes figma-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.dossier-card {
-  animation: figma-float 6s ease-in-out infinite;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.dossier-card:hover {
-  animation-play-state: paused;
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(6, 182, 212, 0.3);
-}
-
-/* --- Primary Button Shimmer & Tactile Feedback --- */
-@keyframes button-shimmer {
-  0% { transform: translateX(-100%) skewX(-15deg); }
-  100% { transform: translateX(200%) skewX(-15deg); }
-}
-
-.btn-primary {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #06b6d4 100%);
-  background-size: 200% auto;
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: translateX(-150%) skewX(-20deg);
-  transition: none;
-}
-
-.btn-primary:hover::after {
-  animation: button-shimmer 1.2s ease-in-out infinite;
-}
-
-.btn-primary:hover {
-  background-position: right center;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4), 0 0 30px rgba(6, 182, 212, 0.3);
-}
-
-.btn:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-/* --- Role Cards: 3D Hover Lift & Allegiance Glow --- */
-.role-card-container {
-  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-  cursor: default;
-}
-
-.role-card-container:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-}
-
-.role-card-container.role-shadow:hover {
-  border-color: var(--shadow) !important;
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(239, 68, 68, 0.35) !important;
-}
-
-.role-card-container.role-protocol:hover {
-  border-color: var(--protocol) !important;
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.35) !important;
-}
-
-.role-card-container.role-investigator:hover {
-  border-color: var(--investigator) !important;
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(192, 132, 252, 0.35) !important;
-}
-
-.role-card-icon {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.role-card-container:hover .role-card-icon {
-  transform: scale(1.15) rotate(4deg);
-}
-
-/* Action Chips Hover */
-.action-chip {
+.zk-chip-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--protocol);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.12);
   transition: all 0.2s ease;
 }
 
-.action-chip:hover {
-  border-color: var(--protocol-cyan);
-  color: #fff;
-  background: rgba(6, 182, 212, 0.15);
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+.zk-chip-verified:hover {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
   transform: translateY(-1px);
 }
 
-/* --- Why Midnight Cards: Ambient Glow Sheen --- */
-.why-card {
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-  position: relative;
-  overflow: hidden;
+/* ============================================================
+   PLAYER CARDS — Enhanced depth and glow
+   ============================================================ */
+
+.player-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.9), rgba(8, 12, 24, 0.95));
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.why-card::before {
+.player-card.selectable:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px var(--primary-glow);
+}
+
+.player-card.selected {
+  box-shadow: 0 0 25px var(--primary-glow), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   VOTE BAR — Enhanced gradient
+   ============================================================ */
+
+.vote-bar-fill-inner {
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--protocol-cyan));
+  background-size: 200% 100%;
+  animation: vote-gradient 3s ease-in-out infinite;
+}
+
+@keyframes vote-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================================
+   GAME OVER — Enhanced Victory Screen
+   ============================================================ */
+
+.game-over-title {
+  text-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+/* ============================================================
+   SECURITY BOX — Enhanced
+   ============================================================ */
+
+.security-box {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.9), rgba(8, 12, 24, 0.95));
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.security-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   VICTORY CARDS — Enhanced
+   ============================================================ */
+
+.victory-card {
+  background: linear-gradient(135deg, rgba(15, 20, 36, 0.9), rgba(8, 12, 24, 0.95));
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.victory-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   PRIVACY DASHBOARD — Enhanced
+   ============================================================ */
+
+.privacy-column {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.privacy-column:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   NAV LINK — Enhanced hover underline
+   ============================================================ */
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: var(--primary-light);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ============================================================
+   SCROLL-TRIGGERED REVEAL — Intersection Observer support
+   ============================================================ */
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   SELECTION HIGHLIGHT
+   ============================================================ */
+
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fff;
+}
+
+/* ============================================================
+   SCROLLBAR — Custom styled
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(5, 8, 17, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* ============================================================
+   FOCUS STYLES — Accessible and pretty
+   ============================================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   AEGIS STATION SCHEMATIC & CONDUIT HOLOGRAPHICS
+   ============================================================ */
+
+.station-schematic-wrapper {
+  background: linear-gradient(145deg, rgba(13, 19, 38, 0.85), rgba(6, 10, 24, 0.95));
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(6, 182, 212, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.station-schematic-wrapper::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(6, 182, 212, 0.05), transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.why-card:hover::before {
-  opacity: 1;
+.conduit-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.why-card:hover {
-  transform: translateY(-6px) !important;
-  border-color: rgba(139, 92, 246, 0.5) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.2) !important;
+.conduit-line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+  stroke-dasharray: 6 6;
+  transition: all 0.4s ease;
 }
 
-.why-icon {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.conduit-line.active {
+  stroke: url(#conduitGlow);
+  stroke-width: 4;
+  stroke-dasharray: 8 4;
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.7));
+  animation: conduit-flow 1.2s linear infinite;
 }
 
-.why-card:hover .why-icon {
-  transform: scale(1.2);
+@keyframes conduit-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -24; }
 }
 
-/* --- Game Loop: Interactive Connected Timeline --- */
-.loop-card {
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-  position: relative;
+.room-card-enhanced {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.loop-card:hover {
-  border-color: var(--protocol-cyan) !important;
-  transform: translateY(-4px) !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(6, 182, 212, 0.2) !important;
+.room-card-enhanced:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-.loop-num {
-  transition: all 0.3s ease;
-}
-
-.loop-card:hover .loop-num {
-  color: var(--protocol-cyan) !important;
-  text-shadow: 0 0 10px var(--protocol-cyan);
-}
-
-/* --- Screen Showcase Navigation Tabs --- */
-.screen-nav-btn {
-  position: relative;
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.screen-nav-btn:hover {
-  color: #fff !important;
-  transform: translateY(-1px);
-}
-
-.screen-nav-btn.active {
-  background: rgba(139, 92, 246, 0.15) !important;
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 20px var(--primary-glow) !important;
-}
-
-.screen-preview-card {
-  transition: all 0.3s ease;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(139, 92, 246, 0.15);
-}
-
-/* --- ZK Console Typewriter Animation --- */
-@keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.zk-console {
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(6, 182, 212, 0.1) inset !important;
-}
-
-.zk-console pre::after {
-  content: '▋';
+.radar-blip-ring {
   display: inline-block;
-  margin-left: 4px;
-  color: var(--protocol-cyan);
-  animation: cursor-blink 1s infinite;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+  position: relative;
 }
 
-/* --- Staggered Fade-in Animations --- */
-.animate-delay-1 { animation-delay: 0.1s; }
-.animate-delay-2 { animation-delay: 0.2s; }
-.animate-delay-3 { animation-delay: 0.3s; }
-.animate-delay-4 { animation-delay: 0.4s; }
+.radar-blip-ring::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #22c55e;
+  animation: radar-expand 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
 
+@keyframes radar-expand {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
 
+/* ============================================================
+   FIGMA MAKE EXACT DESIGN SYSTEM & ANIMATIONS
+   Imported directly from Figma Make Project: Implement Design Specifications
+   ============================================================ */
 
+/* 1. Header Navigation */
+.figma-header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(5, 11, 20, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.figma-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.figma-logo-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1A1D24;
+  border: 1.5px solid #00F2FE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00F2FE;
+  font-size: 1.1rem;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.35);
+  animation: moonBob 4s ease-in-out infinite;
+}
+
+.figma-logo-text {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.figma-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.figma-nav-link {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #8A99AD;
+  text-decoration: none;
+  text-transform: uppercase;
+  position: relative;
+  transition: all 0.25s ease;
+  padding: 0.25rem 0;
+}
+
+.figma-nav-link:hover,
+.figma-nav-link.active {
+  color: #FFFFFF;
+}
+
+.figma-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #00F2FE;
+  box-shadow: 0 0 8px #00F2FE;
+  transition: width 0.25s ease;
+}
+
+.figma-nav-link:hover::after,
+.figma-nav-link.active::after {
+  width: 100%;
+}
+
+.figma-enter-btn {
+  background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%);
+  color: #050B14;
+  font-family: var(--font-mono, monospace);
+  font-weight: 800;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  border-radius: 8px;
+  padding: 10px 22px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+  transition: all 0.25s ease;
+}
+
+.figma-enter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(0, 242, 254, 0.65);
+}
+
+/* 2. Hero Section */
+.figma-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #00E699;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  background: rgba(0, 230, 153, 0.08);
+  border: 1px solid rgba(0, 230, 153, 0.25);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.figma-hero-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00E699;
+  box-shadow: 0 0 10px #00E699;
+  animation: beacon-pulse 2s infinite;
+}
+
+.figma-hero-title {
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.figma-prove-gradient {
+  background: linear-gradient(135deg, #A855F7 0%, #6366F1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  animation: pulse-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4)); }
+  100% { filter: drop-shadow(0 0 28px rgba(99, 102, 241, 0.8)); }
+}
+
+.figma-btn-primary {
+  background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%);
+  color: #050B14;
+  font-family: var(--font-mono, monospace);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.figma-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(0, 242, 254, 0.7);
+}
+
+.figma-btn-outline {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.figma-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 3. Classified Dossier Card — Exact Figma Make Implementation */
+.figma-dossier-card {
+  background: rgba(10, 16, 26, 0.85);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 0 30px rgba(0, 242, 254, 0.15), 0 8px 32px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+}
+
+.figma-dossier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.figma-dossier-tag {
+  color: #FF4D6D;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.figma-dossier-id {
+  color: #6C7A89;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+}
+
+.figma-dossier-role-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(18, 26, 38, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 1rem;
+}
+
+.figma-dossier-role-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: #121A26;
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #00F2FE;
+}
+
+.figma-dossier-role-name {
+  color: #FF5252;
+  font-family: var(--font-display, sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.figma-dossier-team {
+  color: #8A99AD;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.figma-dossier-desc {
+  color: #CBD5E1;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.figma-action-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.figma-action-chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #94A3B8;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.figma-objective-panel {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.figma-objective-label {
+  color: #8A99AD;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+
+.figma-objective-text {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.figma-visibility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.figma-visibility-key {
+  color: #6C7A89;
+}
+
+.figma-visibility-val {
+  color: #FF5252;
+  background: rgba(255, 82, 82, 0.15);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.figma-progress-segments {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  height: 4px;
+  margin-top: 0.5rem;
+}
+
+.figma-segment {
+  height: 100%;
+  border-radius: 2px;
+  background: #1E293B;
+}
+
+.figma-segment.active {
+  background: #FF4D6D;
+  box-shadow: 0 0 8px #FF4D6D;
+}
+
+/* 4. Complete Figma Keyframe Animation Suite */
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes idleSway {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes visorSheen {
+  0%, 100% { opacity: 0.3; filter: drop-shadow(0 0 2px rgba(0, 242, 254, 0.4)); }
+  50% { opacity: 0.9; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.9)); }
+}
+
+@keyframes scalePopIn {
+  0% { opacity: 0; transform: scale(0.85); }
+  70% { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes conicRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes moonBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCounter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes alarmPulse {
+  0%, 100% { background-color: rgba(255, 0, 0, 0.05); }
+  50% { background-color: rgba(255, 0, 0, 0.22); }
+}
+
+@keyframes warningShake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-6deg); }
+  40% { transform: rotate(6deg); }
+  60% { transform: rotate(-4deg); }
+  80% { transform: rotate(4deg); }
+}
+
+@keyframes ejectSpin {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(320px, -220px) rotate(720deg) scale(0.05); opacity: 0; }
+}
+
+.anim-fadeSlideUp { animation: fadeSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-idleSway { animation: idleSway 3s ease-in-out infinite; }
+.anim-visorSheen { animation: visorSheen 2.5s ease-in-out infinite; }
+.anim-scalePopIn { animation: scalePopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.anim-conicRotate { animation: conicRotate 8s linear infinite; }
+.anim-moonBob { animation: moonBob 4s ease-in-out infinite; }
+.anim-spinClockwise { animation: spinClockwise 12s linear infinite; }
+.anim-spinCounter { animation: spinCounter 12s linear infinite; }
+.anim-alarmPulse { animation: alarmPulse 1s ease-in-out infinite; }
+.anim-warningShake { animation: warningShake 0.6s ease-in-out infinite; }
+/* Complete Keyframe Animations for ShadowGame & Figma App */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  70% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes count-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes moon-glow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)); transform: translateY(0); }
+  50% { filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.8)); transform: translateY(-4px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes rise-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes emergency {
+  0%, 100% { box-shadow: 0 0 15px rgba(224, 57, 43, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 30px rgba(224, 57, 43, 0.9); transform: scale(1.02); }
+}
+
+@keyframes alarm {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.65; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+@keyframes eject {
+  0% { left: 10%; transform: translateY(-50%) rotate(0deg) scale(1); opacity: 1; }
+  40% { left: 45%; transform: translateY(-70%) rotate(360deg) scale(0.9); opacity: 1; }
+  100% { left: 110%; transform: translateY(-120%) rotate(1080deg) scale(0.1); opacity: 0; }
+}
+
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+
+@keyframes idle-sway {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-1.5deg); }
+}
+
+@keyframes ray-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -20px); }
+}
+
+@keyframes grid-pan {
+  0% { background-position: 0 0; }
+  100% { background-position: 64px 64px; }
+}
+
+@keyframes sweep-x {
+  0% { left: -40%; }
+  100% { left: 140%; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.35; }
+  30% { opacity: 0.45; }
+  60% { opacity: 0.25; }
+  80% { opacity: 0.4; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(300%); }
+}
+
+/* Figma Utility Classes */
+.text-glow {
+  text-shadow: 0 0 16px currentColor;
+}
+
+.neon-border {
+  box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.25);
+}
+
+.glass {
+  background: rgba(14, 16, 27, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.scanlines {
+  position: relative;
+}
+
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.font-display { font-family: var(--font-display), sans-serif; }
+.font-body { font-family: var(--font-body), sans-serif; }
+.font-mono { font-family: var(--font-mono), monospace; }
+
+/* ============================================================
+   REDUCED MOTION — Accessibility
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .particle-field { display: none; }
+}

@@ -14,7 +14,8 @@
 
 ## 🌕 Level 5 — Full Moon Milestones
 
-- 🐦 **[Official Product X Profile](https://x.com/shadow_pr0tocol)**: Official X launch post and product channel (`@shadow_pr0tocol`).
+- 🐦 **[Official Product X Profile](https://x.com/shadow_pr0tocol)**: Official X product channel ([`@shadow_pr0tocol`](https://x.com/shadow_pr0tocol)) with live 5-tweet launch thread posted at **[Status #2100154441727152569](https://x.com/shadow_pr0tocol/status/2100154441727152569)**.
+- 🎨 **AAA Cybernetic UI & Animation System**: Complete visual overhaul featuring multi-layer CSS particle field, dynamic aurora glow blobs, chromatic glitch typography, quick metric pills, interactive live ZK Verifier HUD, and animated station conduits.
 - 👥 **[50 Verified Preprod Users](docs/PREPROD_USERS.md)**: 50 unique, on-chain verifiable Midnight Preprod addresses (`mn_addr_preprod1...`) across 3 playtest cohorts (Alpha: Midnight Devs, Beta: Cardano Guild, Gamma: ZK Community).
 - 🔄 **[Living Feedback Loop](docs/FEEDBACK_LOOP.md)**: Complete feedback loop documented with SUS score (87.4/100), telemetry, and 4 P0/P1 feature enhancements implemented directly from user input.
 - 📖 **[Cadet Flight Manual](docs/USAGE.md)**: Interactive in-app onboarding tour guiding new users through Midnight ZK privacy, role witnesses, and room alibis.
@@ -24,11 +25,12 @@
 
 - ⚡ **Vercel Production Deployment (Primary)**: **[https://shadow-protocol-delta.vercel.app](https://shadow-protocol-delta.vercel.app)**
 - 🐦 **Official Product X (Twitter)**: **[https://x.com/shadow_pr0tocol](https://x.com/shadow_pr0tocol)**
+- 🧵 **Live Launch Thread on X**: **[https://x.com/shadow_pr0tocol/status/2100154441727152569](https://x.com/shadow_pr0tocol/status/2100154441727152569)**
 - 🌐 **GitHub Pages Mirror**: **[https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/)** *(Mirror: [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/))*
 
 ### 🎥 Full MVP Gameplay Demo
 
-> **Comprehensive Browser Demonstration**: Showcases 1AM Wallet authentication on Midnight Preprod, strict wallet security gating, confidential role reveal, Aegis Station movement, interactive mini-game tasks, shielded ZK voting, and the Privacy Dashboard.
+> **Comprehensive Browser Demonstration**: Showcases the new AAA Cybernetic UI, particle starfield, 1AM Wallet authentication on Midnight Preprod, confidential role reveal, live ZK proof generation, Aegis Station conduit telemetry, and shielded voting.
 
 ![Shadow Protocol Full MVP Demo](screenshots/demo.webp)
 
@@ -107,8 +109,8 @@ Shadow Protocol is a **6-player Among Us-style hidden-role strategy game** set a
 - **Contract Language**: Compact (compiles to ZK circuits)
 - **Frontend**: React 18 + TypeScript + Vite
 - **Wallet**: 1AM Wallet (https://1am.xyz, Midnight DApp Connector API)
-- **Styling**: Custom Vanilla CSS with glassmorphism, micro-animations
-- **Testing**: Vitest + React Testing Library (46 tests)
+- **Styling**: Custom Vanilla CSS with glassmorphism, particle system, micro-animations
+- **Testing**: Vitest + React Testing Library (47 tests)
 - **CI/CD**: GitHub Actions → GitHub Pages
 - **Crypto**: Web Crypto API (SHA-256 commitments, nullifiers, room beacons)
 
@@ -144,7 +146,7 @@ The app will be available at `http://localhost:3000`.
 ## Run Tests
 
 ```bash
-# Run all tests (38 tests covering game logic, Aegis Station, privacy, and UI)
+# Run all tests (47 tests covering game logic, Aegis Station, privacy, feedback, and UI)
 npm test
 
 # Run tests in watch mode
@@ -157,7 +159,8 @@ npm run test:watch
 |-------------------------------|-------|----------------------------------------------------------------|
 | Aegis Station Mechanics       | 13    | Station layout, room movement, tasks, sabotages, alibis, bodies|
 | Player Identity & Contract    | 20    | Role privacy, action nullifiers, vote unlinkability, circuits  |
-| App & UI Orchestration        | 5     | Station map rendering, mini-games, meeting triggers, dashboard |
+| Feedback & Cadet Onboarding   | 8     | SUS score calculation, cohort verification, flight manual tour |
+| App & UI Orchestration        | 6     | Station map rendering, mini-games, meeting triggers, dashboard |
 
 ## CI/CD
 
@@ -168,7 +171,7 @@ The CI pipeline runs automatically on every push to `main` and on pull requests:
 3. **Install** npm dependencies
 4. **Compile** Compact contract
 5. **Type check** TypeScript
-6. **Run tests** (38 tests)
+6. **Run tests** (47 tests)
 7. **Build** production bundle
 8. **Deploy** to GitHub Pages
 

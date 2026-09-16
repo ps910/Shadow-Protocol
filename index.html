@@ -12,6 +12,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'void': 'var(--color-void)',
+              'panel': 'var(--color-panel)',
+              'panel-2': 'var(--color-panel-2)',
+              'midnight': 'var(--color-midnight)',
+              'ink': 'var(--color-ink)',
+              'muted': 'var(--color-muted)',
+              'signal': 'var(--color-signal)',
+              'danger': 'var(--color-danger)',
+              'cyan': 'var(--color-cyan)',
+              'violet': 'var(--color-violet)',
+              'magenta': 'var(--color-magenta)',
+              'gold': 'var(--color-gold)',
+            },
+            fontFamily: {
+              display: ['Outfit', 'sans-serif'],
+              body: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
