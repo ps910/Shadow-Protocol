@@ -2,6 +2,7 @@
 
 ![Shadow Protocol — CI Pipeline](https://github.com/ps910/Shadow-Protocol/actions/workflows/ci.yml/badge.svg)
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=flat&logo=vercel)](https://shadow-protocol-delta.vercel.app)
+[![Official X](https://img.shields.io/badge/X%20(Twitter)-@shadow__pr0tocol-000000?style=flat&logo=x&logoColor=white)](https://x.com/shadow_pr0tocol)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/Shadow-Protocol/)
 [![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Challenge-Level%205%20Full%20Moon-gold?style=flat)](docs/LEVEL_5_SPEC.md)
 [![Preprod Users](https://img.shields.io/badge/Preprod%20Users-50%20Verified-blue?style=flat)](docs/PREPROD_USERS.md)
@@ -13,6 +14,7 @@
 
 ## 🌕 Level 5 — Full Moon Milestones
 
+- 🐦 **[Official Product X Profile](https://x.com/shadow_pr0tocol)**: Official X launch post and product channel (`@shadow_pr0tocol`).
 - 👥 **[50 Verified Preprod Users](docs/PREPROD_USERS.md)**: 50 unique, on-chain verifiable Midnight Preprod addresses (`mn_addr_preprod1...`) across 3 playtest cohorts (Alpha: Midnight Devs, Beta: Cardano Guild, Gamma: ZK Community).
 - 🔄 **[Living Feedback Loop](docs/FEEDBACK_LOOP.md)**: Complete feedback loop documented with SUS score (87.4/100), telemetry, and 4 P0/P1 feature enhancements implemented directly from user input.
 - 📖 **[Cadet Flight Manual](docs/USAGE.md)**: Interactive in-app onboarding tour guiding new users through Midnight ZK privacy, role witnesses, and room alibis.
@@ -21,6 +23,7 @@
 ## 🎮 Live Demo & Video Walkthrough
 
 - ⚡ **Vercel Production Deployment (Primary)**: **[https://shadow-protocol-delta.vercel.app](https://shadow-protocol-delta.vercel.app)**
+- 🐦 **Official Product X (Twitter)**: **[https://x.com/shadow_pr0tocol](https://x.com/shadow_pr0tocol)**
 - 🌐 **GitHub Pages Mirror**: **[https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/)** *(Mirror: [https://ps910.github.io/ZKGate/](https://ps910.github.io/ZKGate/))*
 
 ### 🎥 Full MVP Gameplay Demo
