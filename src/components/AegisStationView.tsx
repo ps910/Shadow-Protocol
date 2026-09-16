@@ -153,112 +153,155 @@ export function AegisStationView({
         gap: 'var(--space-lg)'
       }}>
         {/* Left: Interactive Aegis Station Blueprint Map */}
-        <div style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-xl)',
-          padding: 'var(--space-xl)',
-          position: 'relative',
-          minHeight: '480px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
+        <div className="station-schematic-wrapper">
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)', position: 'relative', zIndex: 3 }}>
             <div>
-              <span className="section-tag tag-purple">AEGIS STATION SCHEMATIC · LIVE TELEMETRY</span>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700 }}>
-                Sector Overview
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <span className="network-beacon-dot" />
+                <span className="section-tag tag-purple" style={{ marginBottom: 0 }}>
+                  AEGIS STATION HOLOGRAPHIC SCHEMATIC · SECTOR ORBIT 7
+                </span>
+              </div>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.375rem', fontWeight: 800, letterSpacing: '-0.01em' }}>
+                Tactical Sector Grid
               </h3>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              CLICK ANY ADJACENT ROOM TO NAVIGATE
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <span style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.6875rem',
+                color: 'var(--protocol-cyan)',
+                background: 'rgba(6, 182, 212, 0.08)',
+                padding: '0.3rem 0.6rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid rgba(6, 182, 212, 0.25)'
+              }}>
+                ZK TELEMETRY STREAMING
+              </span>
             </div>
           </div>
 
-          {/* 2D Schematic Compartment Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gridTemplateRows: 'auto auto auto',
-            gap: 'var(--space-md)',
-            position: 'relative'
-          }}>
-            {/* Row 1: Command Center (Centered) */}
-            <div style={{ gridColumn: '2 / 3', display: 'flex', justifyContent: 'center' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['command']}
-                isCurrent={currentPlayer.currentRoom === 'command'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'command')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'command')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'command' && !b.reported)}
-                onClick={() => onMovePlayer('command')}
-              />
-            </div>
+          {/* 2D Schematic Compartment Grid with SVG Conduit Layer */}
+          <div style={{ position: 'relative' }}>
+            {/* SVG Corridors Overlay */}
+            <svg className="conduit-svg-layer" viewBox="0 0 600 400" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="conduitGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.6" />
+                </linearGradient>
+              </defs>
 
-            {/* Row 2: Engine, Hub, Security */}
-            <div style={{ gridColumn: '1 / 2' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['engine']}
-                isCurrent={currentPlayer.currentRoom === 'engine'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'engine')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'engine')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'engine' && !b.reported)}
-                onClick={() => onMovePlayer('engine')}
-              />
-            </div>
-            <div style={{ gridColumn: '2 / 3' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['hub']}
-                isCurrent={currentPlayer.currentRoom === 'hub'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'hub')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'hub')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'hub' && !b.reported)}
-                onClick={() => onMovePlayer('hub')}
-              />
-            </div>
-            <div style={{ gridColumn: '3 / 4' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['security']}
-                isCurrent={currentPlayer.currentRoom === 'security'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'security')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'security')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'security' && !b.reported)}
-                onClick={() => onMovePlayer('security')}
-              />
-            </div>
+              {/* Command (top center: 300, 60) to Hub (middle center: 300, 200) */}
+              <line x1="300" y1="80" x2="300" y2="160" className={`conduit-line ${currentPlayer.currentRoom === 'command' || currentPlayer.currentRoom === 'hub' ? 'active' : ''}`} />
 
-            {/* Row 3: Reactor, Lab, Comms */}
-            <div style={{ gridColumn: '1 / 2' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['reactor']}
-                isCurrent={currentPlayer.currentRoom === 'reactor'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'reactor')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'reactor')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'reactor' && !b.reported)}
-                onClick={() => onMovePlayer('reactor')}
-              />
-            </div>
-            <div style={{ gridColumn: '2 / 3' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['lab']}
-                isCurrent={currentPlayer.currentRoom === 'lab'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'lab')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'lab')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'lab' && !b.reported)}
-                onClick={() => onMovePlayer('lab')}
-              />
-            </div>
-            <div style={{ gridColumn: '3 / 4' }}>
-              <RoomCard
-                room={AEGIS_STATION_ROOMS['comms']}
-                isCurrent={currentPlayer.currentRoom === 'comms'}
-                canMove={canMoveBetween(currentPlayer.currentRoom, 'comms')}
-                players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'comms')}
-                deadBodies={gameState.deadBodies.filter(b => b.roomId === 'comms' && !b.reported)}
-                onClick={() => onMovePlayer('comms')}
-              />
+              {/* Engine (middle left: 100, 200) to Hub (middle center: 300, 200) */}
+              <line x1="170" y1="200" x2="230" y2="200" className={`conduit-line ${currentPlayer.currentRoom === 'engine' || currentPlayer.currentRoom === 'hub' ? 'active' : ''}`} />
+
+              {/* Hub (middle center: 300, 200) to Security (middle right: 500, 200) */}
+              <line x1="370" y1="200" x2="430" y2="200" className={`conduit-line ${currentPlayer.currentRoom === 'hub' || currentPlayer.currentRoom === 'security' ? 'active' : ''}`} />
+
+              {/* Engine (middle left: 100, 200) to Reactor (bottom left: 100, 320) */}
+              <line x1="100" y1="240" x2="100" y2="280" className={`conduit-line ${currentPlayer.currentRoom === 'engine' || currentPlayer.currentRoom === 'reactor' ? 'active' : ''}`} />
+
+              {/* Hub (middle center: 300, 200) to Lab (bottom center: 300, 320) */}
+              <line x1="300" y1="240" x2="300" y2="280" className={`conduit-line ${currentPlayer.currentRoom === 'hub' || currentPlayer.currentRoom === 'lab' ? 'active' : ''}`} />
+
+              {/* Security (middle right: 500, 200) to Comms (bottom right: 500, 320) */}
+              <line x1="500" y1="240" x2="500" y2="280" className={`conduit-line ${currentPlayer.currentRoom === 'security' || currentPlayer.currentRoom === 'comms' ? 'active' : ''}`} />
+
+              {/* Reactor (bottom left: 100, 320) to Lab (bottom center: 300, 320) */}
+              <line x1="170" y1="320" x2="230" y2="320" className={`conduit-line ${currentPlayer.currentRoom === 'reactor' || currentPlayer.currentRoom === 'lab' ? 'active' : ''}`} />
+
+              {/* Lab (bottom center: 300, 320) to Comms (bottom right: 500, 320) */}
+              <line x1="370" y1="320" x2="430" y2="320" className={`conduit-line ${currentPlayer.currentRoom === 'lab' || currentPlayer.currentRoom === 'comms' ? 'active' : ''}`} />
+            </svg>
+
+            {/* Compartment Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gridTemplateRows: 'auto auto auto',
+              gap: 'var(--space-md)',
+              position: 'relative',
+              zIndex: 2
+            }}>
+              {/* Row 1: Command Center (Centered) */}
+              <div style={{ gridColumn: '2 / 3', display: 'flex', justifyContent: 'center' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['command']}
+                  isCurrent={currentPlayer.currentRoom === 'command'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'command')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'command')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'command' && !b.reported)}
+                  onClick={() => onMovePlayer('command')}
+                />
+              </div>
+
+              {/* Row 2: Engine, Hub, Security */}
+              <div style={{ gridColumn: '1 / 2' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['engine']}
+                  isCurrent={currentPlayer.currentRoom === 'engine'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'engine')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'engine')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'engine' && !b.reported)}
+                  onClick={() => onMovePlayer('engine')}
+                />
+              </div>
+              <div style={{ gridColumn: '2 / 3' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['hub']}
+                  isCurrent={currentPlayer.currentRoom === 'hub'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'hub')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'hub')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'hub' && !b.reported)}
+                  onClick={() => onMovePlayer('hub')}
+                />
+              </div>
+              <div style={{ gridColumn: '3 / 4' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['security']}
+                  isCurrent={currentPlayer.currentRoom === 'security'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'security')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'security')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'security' && !b.reported)}
+                  onClick={() => onMovePlayer('security')}
+                />
+              </div>
+
+              {/* Row 3: Reactor, Lab, Comms */}
+              <div style={{ gridColumn: '1 / 2' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['reactor']}
+                  isCurrent={currentPlayer.currentRoom === 'reactor'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'reactor')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'reactor')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'reactor' && !b.reported)}
+                  onClick={() => onMovePlayer('reactor')}
+                />
+              </div>
+              <div style={{ gridColumn: '2 / 3' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['lab']}
+                  isCurrent={currentPlayer.currentRoom === 'lab'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'lab')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'lab')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'lab' && !b.reported)}
+                  onClick={() => onMovePlayer('lab')}
+                />
+              </div>
+              <div style={{ gridColumn: '3 / 4' }}>
+                <RoomCard
+                  room={AEGIS_STATION_ROOMS['comms']}
+                  isCurrent={currentPlayer.currentRoom === 'comms'}
+                  canMove={canMoveBetween(currentPlayer.currentRoom, 'comms')}
+                  players={gameState.players.filter(p => p.isAlive && p.currentRoom === 'comms')}
+                  deadBodies={gameState.deadBodies.filter(b => b.roomId === 'comms' && !b.reported)}
+                  onClick={() => onMovePlayer('comms')}
+                />
+              </div>
             </div>
           </div>
 
@@ -436,83 +479,121 @@ function RoomCard({ room, isCurrent, canMove, players, deadBodies, onClick }: Ro
   return (
     <div
       onClick={canMove ? onClick : undefined}
+      className="room-card-enhanced"
       style={{
         width: '100%',
-        minHeight: '110px',
+        minHeight: '120px',
         padding: 'var(--space-md)',
         background: isCurrent
-          ? `${room.color}18`
+          ? `${room.color}22`
           : canMove
-          ? 'var(--bg-secondary)'
-          : 'rgba(15, 20, 36, 0.4)',
+          ? 'rgba(15, 20, 36, 0.8)'
+          : 'rgba(10, 14, 26, 0.5)',
         border: isCurrent
           ? `2px solid ${room.color}`
           : hasDeadBody
           ? '2px dashed var(--shadow)'
           : canMove
-          ? '1px solid var(--border)'
-          : '1px solid rgba(255, 255, 255, 0.04)',
+          ? '1px solid rgba(6, 182, 212, 0.4)'
+          : '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: 'var(--radius-lg)',
         cursor: canMove && !isCurrent ? 'pointer' : 'default',
-        boxShadow: isCurrent ? `0 0 20px ${room.color}33` : 'none',
-        transition: 'all var(--transition)',
+        boxShadow: isCurrent 
+          ? `0 0 25px ${room.color}44, 0 0 10px ${room.color}22 inset` 
+          : canMove 
+          ? '0 4px 15px rgba(0, 0, 0, 0.4)' 
+          : 'none',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        overflow: 'hidden',
       }}
     >
+      {/* Corner Reticles */}
+      <div style={{ position: 'absolute', top: 4, left: 4, width: 6, height: 6, borderTop: `1px solid ${room.color}`, borderLeft: `1px solid ${room.color}`, opacity: 0.6 }} />
+      <div style={{ position: 'absolute', top: 4, right: 4, width: 6, height: 6, borderTop: `1px solid ${room.color}`, borderRight: `1px solid ${room.color}`, opacity: 0.6 }} />
+      <div style={{ position: 'absolute', bottom: 4, left: 4, width: 6, height: 6, borderBottom: `1px solid ${room.color}`, borderLeft: `1px solid ${room.color}`, opacity: 0.6 }} />
+      <div style={{ position: 'absolute', bottom: 4, right: 4, width: 6, height: 6, borderBottom: `1px solid ${room.color}`, borderRight: `1px solid ${room.color}`, opacity: 0.6 }} />
+
       {/* Top row: icon, code, status */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)' }}>
           <span style={{ fontSize: '1.25rem' }}>{room.icon}</span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: room.color, fontWeight: 700 }}>
-            {room.code}
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: room.color, fontWeight: 700, letterSpacing: '0.08em' }}>
+            [{room.code}]
           </span>
         </div>
-        {isCurrent && (
+        {isCurrent ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span className="radar-blip-ring" />
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.625rem',
+              background: room.color,
+              color: '#fff',
+              padding: '2px 6px',
+              borderRadius: 'var(--radius-sm)',
+              fontWeight: 800,
+              letterSpacing: '0.05em'
+            }}>
+              AGENT HERE
+            </span>
+          </div>
+        ) : canMove ? (
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.625rem',
-            background: room.color,
-            color: '#fff',
+            background: 'rgba(6, 182, 212, 0.15)',
+            border: '1px solid rgba(6, 182, 212, 0.35)',
+            color: 'var(--protocol-cyan)',
             padding: '2px 6px',
             borderRadius: 'var(--radius-sm)',
             fontWeight: 700
           }}>
-            YOU ARE HERE
+            TRANSLOCATE ➔
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Room Name */}
-      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', letterSpacing: '-0.01em', margin: '0.25rem 0' }}>
         {room.name}
       </div>
 
       {/* Occupants or Alerts */}
       <div>
         {hasDeadBody && (
-          <div style={{ color: 'var(--shadow)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 700 }}>
-            ☠️ CASUALTY FOUND!
+          <div style={{ 
+            color: 'var(--shadow)', 
+            fontFamily: 'var(--font-mono)', 
+            fontSize: '0.75rem', 
+            fontWeight: 700,
+            background: 'rgba(239, 68, 68, 0.12)',
+            padding: '2px 6px',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--shadow)'
+          }}>
+            ☠️ CASUALTY DISCOVERED!
           </div>
         )}
         {players.length > 0 && (
-          <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
             {players.map(p => (
               <span
                 key={p.id}
-                title={p.name}
+                title={`${p.name} (${p.id})`}
                 style={{
                   fontSize: '0.875rem',
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'rgba(255, 255, 255, 0.1)',
                   borderRadius: '50%',
-                  width: '24px',
-                  height: '24px',
+                  width: '26px',
+                  height: '26px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '1px solid var(--border)'
+                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)'
                 }}
               >
                 {p.avatar}
@@ -524,3 +605,4 @@ function RoomCard({ room, isCurrent, canMove, players, deadBodies, onClick }: Ro
     </div>
   );
 }
+

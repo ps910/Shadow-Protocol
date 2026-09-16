@@ -121,6 +121,8 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
     }, 700);
   };
 
+  const [heroTab, setHeroTab] = useState<'station' | 'dossier'>('station');
+
   return (
     <div className="animate-fade-in">
       {/* ─── HERO SECTION ─── */}
@@ -190,42 +192,161 @@ export function GameLobby({ gameState, onStartGame, isWalletConnected = false }:
               <span>1AM Wallet Authenticated · Ready to Deploy</span>
             </div>
           )}
+
+          {/* Social Presence Badge */}
+          <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <a
+              href="https://x.com/shadow_pr0tocol"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                padding: '0.3rem 0.6rem',
+                borderRadius: 'var(--radius-sm)',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid var(--border)'
+              }}
+            >
+              <span>𝕏 Official Updates:</span>
+              <strong style={{ color: 'var(--protocol-cyan)' }}>@shadow_pr0tocol</strong>
+            </a>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>·</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              LEVEL 5 FULL MOON
+            </span>
+          </div>
         </div>
 
-        {/* ─── DOSSIER CARD ─── */}
-        <div className="dossier-card">
-          <div className="dossier-header">
-            <span className="dossier-label">● CLASSIFIED DOSSIER</span>
-            <span className="dossier-id">#SP-A8F92</span>
+        {/* ─── HERO RIGHT COLUMN: HOLOGRAPHIC STATION / DOSSIER ─── */}
+        <div>
+          {/* View Mode Switcher */}
+          <div style={{ display: 'flex', gap: 'var(--space-xs)', marginBottom: 'var(--space-sm)' }}>
+            <button
+              onClick={() => setHeroTab('station')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+                background: heroTab === 'station' ? 'var(--bg-card)' : 'transparent',
+                border: '1px solid',
+                borderColor: heroTab === 'station' ? 'var(--protocol-cyan)' : 'transparent',
+                borderBottom: heroTab === 'station' ? 'none' : undefined,
+                color: heroTab === 'station' ? 'var(--protocol-cyan)' : 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              🛰️ AEGIS STATION HUD
+            </button>
+            <button
+              onClick={() => setHeroTab('dossier')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+                background: heroTab === 'dossier' ? 'var(--bg-card)' : 'transparent',
+                border: '1px solid',
+                borderColor: heroTab === 'dossier' ? 'var(--shadow)' : 'transparent',
+                borderBottom: heroTab === 'dossier' ? 'none' : undefined,
+                color: heroTab === 'dossier' ? 'var(--shadow-light)' : 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              📁 CLASSIFIED DOSSIER
+            </button>
           </div>
 
-          <div className="dossier-role-section">
-            <div className="dossier-role-icon">🗡️</div>
-            <div>
-              <div className="dossier-role-name" style={{ color: 'var(--shadow)' }}>Assassin</div>
-              <div className="dossier-role-team">TEAM · SHADOW</div>
+          {heroTab === 'station' ? (
+            /* Holographic Station Command Deck */
+            <div className="hero-holo-container animate-fade-in">
+              <div className="corner-bracket corner-top-left" />
+              <div className="corner-bracket corner-top-right" />
+              <div className="corner-bracket corner-bottom-left" />
+              <div className="corner-bracket corner-bottom-right" />
+              <div className="hero-holo-scanline" />
+              <div className="hero-holo-sweep" />
+
+              <img
+                src="/promo_banner.jpg"
+                alt="Aegis Station Holographic Command Bridge — Shadow Protocol on Midnight Network"
+                className="hero-holo-img"
+              />
+
+              <div className="hero-holo-overlay-info">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <span className="network-beacon-dot" />
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--protocol-cyan)', fontWeight: 700, letterSpacing: '0.1em' }}>
+                      AEGIS STATION COMMAND · 7 SECTORS ACTIVE
+                    </span>
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 800, color: '#fff' }}>
+                    Shielded Witness System
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.625rem',
+                    background: 'rgba(139, 92, 246, 0.25)',
+                    border: '1px solid var(--primary)',
+                    color: 'var(--primary-light)',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: 'var(--radius-sm)',
+                    fontWeight: 700
+                  }}>
+                    MIDNIGHT ZK-VERIFIED
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Dossier Card */
+            <div className="dossier-card animate-fade-in">
+              <div className="dossier-header">
+                <span className="dossier-label">● CLASSIFIED DOSSIER</span>
+                <span className="dossier-id">#SP-A8F92</span>
+              </div>
 
-          <p className="dossier-description">
-            Eliminate the Guardians and seize numerical control of the game.
-          </p>
+              <div className="dossier-role-section">
+                <div className="dossier-role-icon">🗡️</div>
+                <div>
+                  <div className="dossier-role-name" style={{ color: 'var(--shadow)' }}>Assassin</div>
+                  <div className="dossier-role-team">TEAM · SHADOW</div>
+                </div>
+              </div>
 
-          <div className="action-chips">
-            <span className="action-chip">ASSASSINATE</span>
-            <span className="action-chip">HIDE IDENTITY</span>
-            <span className="action-chip">SABOTAGE</span>
-          </div>
+              <p className="dossier-description">
+                Eliminate the Guardians and seize numerical control of the game.
+              </p>
 
-          <div className="secret-objective">
-            <div className="secret-objective-label">SECRET OBJECTIVE</div>
-            <div className="secret-objective-text">Eliminate 2 Protocol players.</div>
-          </div>
+              <div className="action-chips">
+                <span className="action-chip">ASSASSINATE</span>
+                <span className="action-chip">HIDE IDENTITY</span>
+                <span className="action-chip">SABOTAGE</span>
+              </div>
 
-          <div className="visibility-row">
-            <span className="visibility-code">role.visible_to_table</span>
-            <span className="visibility-badge hidden">⊘ HIDDEN</span>
-          </div>
+              <div className="secret-objective">
+                <div className="secret-objective-label">SECRET OBJECTIVE</div>
+                <div className="secret-objective-text">Eliminate 2 Protocol players.</div>
+              </div>
+
+              <div className="visibility-row">
+                <span className="visibility-code">role.visible_to_table</span>
+                <span className="visibility-badge hidden">⊘ HIDDEN</span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

@@ -210,8 +210,14 @@ export default function App() {
       <header className="app-header">
         <div className="app-logo">
           <div className="app-logo-icon">◉</div>
-          <div className="app-logo-text">SHADOW PROTOCOL</div>
+          <div>
+            <div className="app-logo-text">SHADOW PROTOCOL</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.625rem', color: 'var(--text-muted)', letterSpacing: '0.12em' }}>
+              AEGIS STATION · ZK SOCIAL DEDUCTION
+            </div>
+          </div>
         </div>
+
         <nav className="nav-links">
           <a href="#roles" className="nav-link">ROLES</a>
           <a href="#why-midnight" className="nav-link">PRIVACY</a>
@@ -220,9 +226,26 @@ export default function App() {
           <a href="#security" className="nav-link">SECURITY</a>
           <a href="#victory" className="nav-link">WIN</a>
           <a href="#roadmap" className="nav-link">ROADMAP</a>
-          <a href="#preprod-directory" className="nav-link" style={{ color: 'var(--accent-cyan)' }}>PREPROD (50)</a>
+          <a href="#preprod-directory" className="nav-link" style={{ color: 'var(--protocol-cyan)' }}>PREPROD (50)</a>
         </nav>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+          <div className="network-beacon" title="Connected to Midnight Preprod indexer and proof server">
+            <span className="network-beacon-dot" />
+            <span>MIDNIGHT PREPROD</span>
+          </div>
+
+          <a
+            href="https://x.com/shadow_pr0tocol"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="x-nav-btn"
+            title="Official Product Channel on X"
+          >
+            <span>𝕏</span>
+            <span>@shadow_pr0tocol</span>
+          </a>
+
           <button
             className="btn btn-secondary btn-sm"
             onClick={() => setShowCadetManual(true)}
