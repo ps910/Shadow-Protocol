@@ -3603,8 +3603,8 @@ body {
 
 .glass {
   background: rgba(14, 16, 27, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .scanlines {
@@ -3621,6 +3621,108 @@ body {
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
   opacity: 0.6;
+}
+
+/* ============================================================
+   DRIBBLE & PINTEREST CYBERPUNK GAMING STYLING
+   ============================================================ */
+
+.cyber-card {
+  background: linear-gradient(135deg, rgba(17, 22, 40, 0.85), rgba(11, 14, 26, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.cyber-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(51, 221, 208, 0.4);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 30px -8px rgba(51, 221, 208, 0.25);
+}
+
+.cyber-card-danger:hover {
+  border-color: rgba(224, 57, 43, 0.5) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px -5px rgba(224, 57, 43, 0.3) !important;
+}
+
+.cyber-card-signal:hover {
+  border-color: rgba(51, 221, 208, 0.5) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px -5px rgba(51, 221, 208, 0.3) !important;
+}
+
+.cyber-card-violet:hover {
+  border-color: rgba(157, 78, 221, 0.5) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px -5px rgba(157, 78, 221, 0.3) !important;
+}
+
+.cyber-card-gold:hover {
+  border-color: rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px -5px rgba(245, 158, 11, 0.3) !important;
+}
+
+.hud-bracket {
+  position: relative;
+}
+
+.hud-bracket::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--color-cyan);
+  border-left: 2px solid var(--color-cyan);
+  pointer-events: none;
+}
+
+.hud-bracket::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid var(--color-cyan);
+  border-right: 2px solid var(--color-cyan);
+  pointer-events: none;
+}
+
+.hud-bracket-danger::before {
+  border-color: var(--color-danger) !important;
+}
+.hud-bracket-danger::after {
+  border-color: var(--color-danger) !important;
+}
+
+.hud-bracket-violet::before {
+  border-color: var(--color-violet) !important;
+}
+.hud-bracket-violet::after {
+  border-color: var(--color-violet) !important;
+}
+
+.audio-bar {
+  animation: bar-dance 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes bar-dance {
+  0% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.4); }
+}
+
+.radar-sweep-beam {
+  animation: radar-spin 4s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes radar-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .font-display { font-family: var(--font-display), sans-serif; }

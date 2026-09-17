@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import ShadowGame, { Crewmate } from "./game/ShadowGame"
 import { WalletConnect } from "./components/WalletConnect"
 import { FeedbackModal } from "./components/FeedbackModal"
 import { CadetOnboarding } from "./components/CadetOnboarding"
 import { PreprodDirectory } from "./components/PreprodDirectory"
 import { WalletRequiredModal } from "./components/WalletRequiredModal"
+import { ZkAlibiSimulator } from "./components/ZkAlibiSimulator"
+import { AegisStationShowcase } from "./components/AegisStationShowcase"
 import type { FeedbackSubmission } from "./data/preprodUsers"
 
 /* ---------------------------------- data ---------------------------------- */
@@ -31,6 +33,10 @@ const ROLES = [
     secret: "Eliminate 2 Protocol players.",
     abilities: ["Assassinate", "Hide identity", "Sabotage"],
     hue: "#e0392b",
+    image: "/assets/role_assassin.jpg",
+    stats: { primary: "Stealth: 98%", secondary: "Lethality: 95%", tertiary: "Deception: 100%" },
+    lore: "Infiltrated Aegis Station under deep cover. Armed with phase-daggers and neural scramblers, their directive is the quiet collapse of the Protocol.",
+    cardClass: "cyber-card-danger",
   },
   {
     key: "guardian",
@@ -42,6 +48,10 @@ const ROLES = [
     secret: "Protect at least 2 players.",
     abilities: ["Protect", "Investigate", "Counterattack"],
     hue: "#5ee45b",
+    image: "/assets/role_guardian.jpg",
+    stats: { primary: "Defense: 100%", secondary: "Interception: 94%", tertiary: "Vigilance: 92%" },
+    lore: "Elite Aegis security operative deployed with kinetic energy shields. Sworn to guard innocent crewmates against nocturnal assassinations.",
+    cardClass: "cyber-card-signal",
   },
   {
     key: "investigator",
@@ -53,17 +63,25 @@ const ROLES = [
     secret: "Correctly identify the Assassin.",
     abilities: ["Investigate a player", "Obtain a private clue"],
     hue: "#f55dc0",
+    image: "/assets/role_investigator.jpg",
+    stats: { primary: "Forensics: 99%", secondary: "Deduction: 96%", tertiary: "Scrutiny: 90%" },
+    lore: "Cryptographic forensic detective. Analyzes zero-knowledge trace telemetry to unmask anomalies and reveal the Assassin's identity.",
+    cardClass: "cyber-card-violet",
   },
   {
     key: "civilian",
     glyph: "👤",
     name: "Civilian",
     team: "protocol" as const,
-    color: "#9aa2cf",
+    color: "#f59e0b",
     goal: "Survive, complete tasks, and help unmask the Assassin.",
     secret: "Survive 4 rounds.",
     abilities: ["Complete tasks", "Collect evidence", "Vote"],
     hue: "#2f6bff",
+    image: "/assets/role_civilian.jpg",
+    stats: { primary: "Repair Speed: 96%", secondary: "Station Lore: 92%", tertiary: "Resilience: 88%" },
+    lore: "Station engineer and life-support technician. Calibrates station systems and completes critical maintenance to force public emergency meetings.",
+    cardClass: "cyber-card-gold",
   },
 ] as const
 
@@ -247,6 +265,7 @@ export default function App() {
   const [activePhase, setActivePhase] = useState(0)
   const [activeScreen, setActiveScreen] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [showSecretObjective, setShowSecretObjective] = useState(false)
 
   // Wallet & Modals State
   const [wallet, setWallet] = useState<WalletState>({
@@ -299,12 +318,14 @@ export default function App() {
             <span className="grid h-8 w-8 place-items-center rounded-md border border-[var(--color-cyan)]/40 bg-[var(--color-panel)] font-display text-sm text-[var(--color-cyan)] text-glow transition duration-500 group-hover:rotate-180">◐</span>
             <span className="font-display text-[15px] font-semibold tracking-[0.14em] text-glow">SHADOW PROTOCOL</span>
           </a>
-          <nav className="hidden items-center gap-7 font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-muted)] lg:flex">
+          <nav className="hidden items-center gap-6 font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-muted)] xl:flex">
             <a className="transition hover:text-[var(--color-ink)]" href="#roles">ROLES</a>
             <a className="transition hover:text-[var(--color-ink)]" href="#loop">LOOP</a>
-            <a className="transition hover:text-[var(--color-ink)]" href="#screens">SCREENS</a>
+            <a className="transition hover:text-[var(--color-ink)]" href="#station">STATION</a>
+            <a className="transition hover:text-[var(--color-ink)]" href="#zk-prover-lab">ZK PROVER</a>
             <a className="transition hover:text-[var(--color-ink)]" href="#privacy">PRIVACY</a>
             <a className="transition hover:text-[var(--color-ink)]" href="#win">WIN</a>
+            <a className="transition hover:text-[var(--color-ink)]" href="#preprod-directory">70 USERS</a>
             <a className="transition hover:text-[var(--color-ink)]" href="#roadmap">ROADMAP</a>
           </nav>
           <div className="flex items-center gap-3">
@@ -364,45 +385,60 @@ export default function App() {
       <section id="top" className="relative mx-auto max-w-6xl px-6 pb-24 pt-16 md:pt-24">
         <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <MonoTag color="var(--color-signal)">PRIVACY-NATIVE · Built on Midnight · Gaming</MonoTag>
-            <h1 className="mt-6 font-display text-[clamp(2.6rem,6.5vw,5.2rem)] font-bold leading-[0.98] tracking-tight">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-signal)]/30 bg-[var(--color-signal)]/10 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-signal)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--color-signal)] animate-pulse" />
+              <span>PRIVACY-NATIVE · Built on Midnight · Gaming</span>
+            </div>
+            <h1 className="mt-6 font-display text-[clamp(2.7rem,6.2vw,5.2rem)] font-bold leading-[0.98] tracking-tight text-white">
               Deception you can{" "}
               <span className="bg-clip-text text-transparent text-glow" style={{ backgroundImage: "linear-gradient(100deg, var(--color-cyan), var(--color-violet), var(--color-magenta))", backgroundSize: "200% 100%", animation: "gradient-shift 6s ease infinite" }}>prove.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-[var(--color-muted)]">
+            <p className="mt-6 max-w-xl text-[16px] leading-relaxed text-[var(--color-muted)]">
               A multiplayer social-deduction strategy game where secret identities, private objectives and hidden
               actions stay concealed — while Midnight cryptographically verifies that every move was legitimate.
-              Players can keep secrets, but they <em className="not-italic text-[var(--color-ink)]">cannot forge game actions.</em>
+              Players can keep secrets, but they <em className="not-italic font-semibold text-[var(--color-ink)]">cannot forge game actions.</em>
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <button
                 onClick={handleEnterLobby}
-                className="group relative overflow-hidden rounded-md px-6 py-3 font-display text-[14px] font-semibold tracking-wide text-[#0b0713] transition hover:brightness-110"
-                style={{ background: "linear-gradient(120deg, var(--color-cyan), var(--color-violet))", boxShadow: "0 0 30px -6px var(--color-cyan)" }}
+                className="group relative overflow-hidden rounded-xl px-7 py-3.5 font-display text-[15px] font-bold tracking-wide text-[#0b0713] transition hover:brightness-110 shadow-lg shadow-[var(--color-cyan)]/25"
+                style={{ background: "linear-gradient(120deg, var(--color-cyan), var(--color-violet))" }}
               >
                 <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-white/40 blur-md" style={{ animation: "sweep-x 3.5s linear infinite" }} />
-                <span className="relative">Create a Match →</span>
+                <span className="relative flex items-center gap-2">
+                  <span>Create a Match</span>
+                  <span className="text-lg font-normal">→</span>
+                </span>
               </button>
-              <a href="#loop" className="rounded-md border border-[var(--color-hairline)] px-6 py-3 font-display text-[14px] font-semibold tracking-wide transition hover:border-[var(--color-cyan)] hover:text-[var(--color-cyan)] hover:neon-border">How a round works</a>
+              <a href="#zk-prover-lab" className="rounded-xl border border-[var(--color-cyan)]/40 bg-[var(--color-panel)] px-6 py-3.5 font-display text-[14px] font-semibold tracking-wide text-[var(--color-cyan)] transition hover:border-[var(--color-cyan)] hover:bg-[var(--color-cyan)]/10">
+                ⚡ Test ZK Prover
+              </a>
+              <a href="#station" className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-midnight)]/70 px-5 py-3.5 font-display text-[14px] font-medium text-[var(--color-muted)] transition hover:border-white/20 hover:text-white">
+                🚀 Station Map
+              </a>
             </div>
-            <div className="mt-10 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-xl border border-[var(--color-hairline)] bg-[var(--color-hairline)]">
-              {[
-                ["6–12", "players"],
-                ["15–25", "minutes"],
-                ["Protocol", "vs Shadow"],
-              ].map(([a, b]) => (
-                <div key={b} className="bg-[var(--color-panel)] px-4 py-4 text-center">
-                  <div className="font-display text-xl font-semibold">{a}</div>
-                  <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--color-muted)]">{b}</div>
-                </div>
-              ))}
+
+            {/* 3 Metric Bento Cards */}
+            <div className="mt-9 grid grid-cols-3 gap-3">
+              <div className="cyber-card rounded-2xl p-4 text-center">
+                <div className="font-display text-2xl font-bold text-white">6–12</div>
+                <div className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--color-muted)]">Players / Match</div>
+              </div>
+              <div className="cyber-card rounded-2xl p-4 text-center">
+                <div className="font-display text-2xl font-bold text-[var(--color-cyan)]">1.12s</div>
+                <div className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--color-muted)]">ZK Prover Speed</div>
+              </div>
+              <div className="cyber-card rounded-2xl p-4 text-center">
+                <div className="font-display text-2xl font-bold text-[var(--color-signal)]">70 / 70</div>
+                <div className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--color-muted)]">Preprod Cadets</div>
+              </div>
             </div>
 
             {/* 6-Player Live Agent Roster preview */}
-            <div className="mt-8 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-panel)]/60 p-4">
+            <div className="mt-6 rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-panel)]/60 p-4">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-muted)]">Active Match Roster · 6 Players</span>
-                <span className="font-mono text-[10px] text-[var(--color-signal)]">All Systems Nominal</span>
+                <span className="font-mono text-[10px] text-[var(--color-signal)]">● All Systems Nominal</span>
               </div>
               <div className="mt-3 grid grid-cols-6 gap-2">
                 {CREW_ROSTER.map((agent) => (
@@ -416,42 +452,56 @@ export default function App() {
             </div>
           </div>
 
-          {/* Dossier card */}
+          {/* Right Column: Hero Centerpiece - Cinematic Cyber Command Deck Card */}
           <div className="relative">
-            <div className="absolute -inset-3 -z-10 rounded-2xl blur-2xl" style={{ background: "linear-gradient(135deg, color-mix(in oklab, var(--color-cyan) 30%, transparent), color-mix(in oklab, var(--color-violet) 30%, transparent))", animation: "flicker 6s infinite" }} />
-            <div className="scanlines relative overflow-hidden rounded-2xl border border-[var(--color-cyan)]/25 glass p-6 shadow-2xl neon-border">
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-16 opacity-30" style={{ background: "linear-gradient(var(--color-signal), transparent)", animation: "scan 4.5s linear infinite" }} />
-              <div className="flex items-center justify-between border-b border-[var(--color-hairline)] pb-4">
-                <MonoTag color="var(--color-danger)">Classified Dossier</MonoTag>
-                <span className="font-mono text-[11px] text-[var(--color-muted)]">#SP-A8F92</span>
-              </div>
-              <div className="mt-5 flex items-center gap-4">
-                <div className="grid h-16 w-16 place-items-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-midnight)] p-1">
-                  <Crewmate hue={role.hue} size={48} floating />
+            <div className="absolute -inset-4 -z-10 rounded-3xl blur-3xl opacity-40" style={{ background: "radial-gradient(circle, var(--color-cyan), var(--color-violet), transparent 70%)" }} />
+            <div className="cyber-card hud-bracket relative overflow-hidden rounded-3xl border border-[var(--color-cyan)]/30 group">
+              <div className="relative h-[480px] sm:h-[520px] w-full overflow-hidden">
+                <img
+                  src="/assets/hero_cyber_deck.jpg"
+                  alt="Aegis Station Command Deck"
+                  className="h-full w-full object-cover object-center transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-void)] via-transparent to-black/50" />
+                <div className="scanlines absolute inset-0 pointer-events-none opacity-30" />
+
+                {/* Radar Sweep Animated Badge */}
+                <div className="pointer-events-none absolute right-6 top-6 h-20 w-20 rounded-full border border-[var(--color-cyan)]/40 bg-[var(--color-cyan)]/10 overflow-hidden shadow-[0_0_20px_rgba(51,221,208,0.25)]">
+                  <div className="radar-sweep-beam h-full w-full" style={{ background: "conic-gradient(from 0deg, transparent 0deg, rgba(51, 221, 208, 0.45) 360deg)" }} />
+                  <div className="absolute inset-0 grid place-items-center">
+                    <span className="h-2 w-2 rounded-full bg-[var(--color-cyan)] animate-ping" />
+                  </div>
                 </div>
-                <div>
-                  <div className="font-display text-xl font-semibold" style={{ color: role.color }}>{role.name}</div>
-                  <div className="font-mono text-[11px] uppercase tracking-[0.2em]" style={{ color: TEAMS[role.team].color }}>Team · {TEAMS[role.team].name}</div>
+
+                {/* Floating Telemetry Tag: Top Left */}
+                <div className="absolute top-6 left-6 flex items-center gap-2 rounded-full border border-white/15 bg-black/65 backdrop-blur-md px-3.5 py-1.5 font-mono text-[11px] text-[var(--color-cyan)]">
+                  <span className="h-2 w-2 rounded-full bg-[var(--color-cyan)] animate-pulse" />
+                  <span>#SP-A8F92 · DECK 01</span>
                 </div>
-              </div>
-              <p className="mt-5 text-sm leading-relaxed text-[var(--color-muted)]">{role.goal}</p>
-              <div className="mt-5 flex flex-wrap gap-1.5">
-                {role.abilities.map((a) => (
-                  <span key={a} className="rounded border border-[var(--color-hairline)] bg-[var(--color-midnight)]/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-muted)]">{a}</span>
-                ))}
-              </div>
-              <div className="mt-5 rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-midnight)]/60 p-4">
-                <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[var(--color-muted)]">Secret Objective</div>
-                <div className="mt-1.5 font-display text-sm text-[var(--color-ink)]">{role.secret}</div>
-              </div>
-              <div className="mt-5 flex items-center justify-between font-mono text-[11px] text-[var(--color-muted)]">
-                <span>role.visible_to_table</span>
-                <span className="rounded bg-[var(--color-danger)]/15 px-2 py-0.5 text-[var(--color-danger)]">⊘ HIDDEN</span>
-              </div>
-              <div className="mt-4 flex gap-1.5">
-                {ROLES.map((r, i) => (
-                  <button key={r.key} onClick={() => setActiveRole(i)} aria-label={`View ${r.name}`} className="h-1.5 flex-1 rounded-full transition" style={{ background: i === activeRole ? role.color : "var(--color-hairline)" }} />
-                ))}
+
+                {/* Floating Telemetry Tag: Mid-left */}
+                <div className="absolute bottom-24 left-6 flex items-center gap-2 rounded-full border border-[var(--color-signal)]/35 bg-black/75 backdrop-blur-md px-3.5 py-1.5 font-mono text-[11px] text-[var(--color-signal)] shadow-lg">
+                  <span>🛡 ZK ROLLUP PROVER: ONLINE (1.12s)</span>
+                </div>
+
+                {/* Floating Telemetry Tag: Mid-right */}
+                <div className="absolute bottom-24 right-6 flex items-center gap-2 rounded-full border border-[var(--color-danger)]/35 bg-black/75 backdrop-blur-md px-3.5 py-1.5 font-mono text-[11px] text-[var(--color-danger)] shadow-lg">
+                  <span>⚠ 1 SHADOW DETECTED</span>
+                </div>
+
+                {/* Bottom Bar Info & Launch Action */}
+                <div className="absolute bottom-0 inset-x-0 border-t border-white/10 bg-black/80 backdrop-blur-md p-5 flex items-center justify-between">
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-muted)]">Aegis Command Telemetry</div>
+                    <div className="font-display text-sm font-semibold text-white">Midnight Zero-Knowledge Layer Active</div>
+                  </div>
+                  <button
+                    onClick={handleEnterLobby}
+                    className="rounded-xl bg-gradient-to-r from-[var(--color-cyan)] to-[var(--color-violet)] px-4 py-2 font-display text-xs font-bold text-[#090c18] hover:brightness-110 transition shadow-md"
+                  >
+                    Enter Match
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -472,7 +522,7 @@ export default function App() {
               { k: "Public actions", v: "no deception", d: "You can't bluff a claim the whole table already watched happen." },
               { k: "Public votes", v: "no fair vote", d: "Early ballots visibly steer everyone who votes after them." },
             ].map((c) => (
-              <div key={c.k} className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-panel)]/70 p-6">
+              <div key={c.k} className="cyber-card rounded-2xl p-6">
                 <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)]">{c.k}</div>
                 <div className="mt-2 font-display text-xl font-semibold text-[var(--color-danger)]">→ {c.v}</div>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted)]">{c.d}</p>
@@ -485,37 +535,186 @@ export default function App() {
         </div>
       </section>
 
-      {/* Roles */}
+      {/* Roles: Pinterest/Dribbble Bento Grid & Terminal */}
       <section id="roles" className="mx-auto max-w-6xl px-6 py-24">
-        <SectionHead kicker="The Cast · MVP" title="Two teams. Four hidden roles." sub="Each match secretly deals every player one identity. You know only your own. The Protocol defends; the Shadow deceives." />
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {ROLES.map((r, i) => (
-            <button
-              key={r.key}
-              onClick={() => setActiveRole(i)}
-              className="group relative overflow-hidden rounded-xl border p-5 text-left transition"
-              style={{ borderColor: i === activeRole ? r.color : "var(--color-hairline)", background: i === activeRole ? "var(--color-panel-2)" : "transparent" }}
-            >
-              <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" style={{ background: r.color, transform: i === activeRole ? "scaleX(1)" : undefined }} />
-              <div className="flex items-start justify-between">
-                <Crewmate hue={r.hue} size={36} floating delay={i * 0.2} />
-                <span className="rounded px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]" style={{ color: TEAMS[r.team].color, background: "color-mix(in oklab, " + TEAMS[r.team].color + " 12%, transparent)" }}>{TEAMS[r.team].name}</span>
+        <SectionHead
+          kicker="The Cast · Four Classified Roles"
+          title="Two teams. Four hidden roles."
+          sub="Each match secretly deals every player one identity. You know only your own. The Protocol defends; the Shadow deceives."
+        />
+
+        {/* 4 Character Cards Bento Grid */}
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {ROLES.map((r, i) => {
+            const isSelected = i === activeRole
+            return (
+              <div
+                key={r.key}
+                onClick={() => {
+                  setActiveRole(i)
+                  setShowSecretObjective(false)
+                }}
+                className={`cyber-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${r.cardClass} ${
+                  isSelected
+                    ? 'border-[2px] shadow-2xl scale-[1.02]'
+                    : 'border-white/10 opacity-85 hover:opacity-100 hover:scale-[1.01]'
+                }`}
+                style={{ borderColor: isSelected ? r.color : undefined }}
+              >
+                {/* Character Portrait */}
+                <div className="relative h-48 w-full overflow-hidden bg-black">
+                  <img
+                    src={r.image}
+                    alt={r.name}
+                    className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-panel)] via-transparent to-transparent" />
+                  <div className="absolute top-3 left-3">
+                    <span
+                      className="rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase font-bold tracking-wider"
+                      style={{
+                        color: TEAMS[r.team].color,
+                        background: 'rgba(0,0,0,0.7)',
+                        border: `1px solid ${TEAMS[r.team].color}`,
+                      }}
+                    >
+                      {TEAMS[r.team].name}
+                    </span>
+                  </div>
+                  <div className="absolute top-3 right-3 text-lg">
+                    {r.glyph}
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display text-xl font-bold" style={{ color: r.color }}>
+                      {r.name}
+                    </h3>
+                    <span className="font-mono text-[10px] text-[var(--color-muted)]">ACTIVE</span>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted)] line-clamp-2">
+                    {r.goal}
+                  </p>
+
+                  {/* Character Stats Bar */}
+                  <div className="mt-4 pt-3 border-t border-white/10 space-y-1.5 font-mono text-[10px]">
+                    <div className="flex items-center justify-between text-white/90">
+                      <span>{r.stats.primary}</span>
+                      <span className="text-[var(--color-cyan)]">●</span>
+                    </div>
+                    <div className="flex items-center justify-between text-white/70">
+                      <span>{r.stats.secondary}</span>
+                      <span className="text-[var(--color-violet)]">●</span>
+                    </div>
+                  </div>
+
+                  {/* Ability Badges */}
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {r.abilities.map((a) => (
+                      <span key={a} className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-midnight)]/80 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[var(--color-muted)]">
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="mt-4 font-display text-lg font-semibold" style={{ color: r.color }}>{r.name}</div>
-              <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-muted)]">{r.goal}</p>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {r.abilities.map((a) => (
-                  <span key={a} className="rounded border border-[var(--color-hairline)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[var(--color-muted)]">{a}</span>
-                ))}
-              </div>
-            </button>
-          ))}
+            )
+          })}
         </div>
-        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-panel)]/40 px-5 py-4">
-          <MonoTag color="var(--color-violet)">Level 6+ expansion</MonoTag>
+
+        {/* Active Role Detailed Inspection Terminal */}
+        <div className="mt-10 cyber-card hud-bracket rounded-3xl p-7 lg:p-10 border border-[var(--color-cyan)]/25">
+          <div className="grid gap-8 lg:grid-cols-[280px_1fr] items-center">
+            {/* Left: High-Res Portrait Frame */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-black h-[320px] shadow-2xl">
+              <img
+                src={role.image}
+                alt={role.name}
+                className="h-full w-full object-cover object-top"
+              />
+              <div className="scanlines absolute inset-0 pointer-events-none opacity-40" />
+              <div className="absolute top-3 left-3">
+                <MonoTag color={role.color}>Classified Dossier</MonoTag>
+              </div>
+              <div className="absolute bottom-3 left-3 right-3 rounded-lg bg-black/75 backdrop-blur-md p-2.5 font-mono text-[10px] text-[var(--color-muted)] flex items-center justify-between">
+                <span>IDENTITY COMMITMENT</span>
+                <span className="text-[var(--color-danger)] font-bold">⊘ SEALED</span>
+              </div>
+            </div>
+
+            {/* Right: Role Details, Audio Frequency, and Secret Objective */}
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <span className="font-mono text-xs uppercase tracking-[0.2em]" style={{ color: TEAMS[role.team].color }}>
+                    Faction: {TEAMS[role.team].name} Syndicate
+                  </span>
+                  <h3 className="font-display text-3xl font-extrabold text-white mt-1" style={{ color: role.color }}>
+                    {role.glyph} {role.name}
+                  </h3>
+                </div>
+                {/* Audio Frequency Waveform */}
+                <div className="flex items-center gap-1 h-6 px-3 rounded-full bg-white/5 border border-white/10">
+                  <span className="font-mono text-[9px] uppercase text-[var(--color-muted)] mr-1">Voiceprint</span>
+                  <span className="audio-bar w-1 bg-[var(--color-cyan)] rounded-full h-full" />
+                  <span className="audio-bar w-1 bg-[var(--color-cyan)] rounded-full h-full" style={{ animationDelay: '0.2s' }} />
+                  <span className="audio-bar w-1 bg-[var(--color-cyan)] rounded-full h-full" style={{ animationDelay: '0.4s' }} />
+                  <span className="audio-bar w-1 bg-[var(--color-cyan)] rounded-full h-full" style={{ animationDelay: '0.1s' }} />
+                  <span className="audio-bar w-1 bg-[var(--color-cyan)] rounded-full h-full" style={{ animationDelay: '0.3s' }} />
+                </div>
+              </div>
+
+              <p className="mt-4 text-sm leading-relaxed text-white/80">
+                {role.lore}
+              </p>
+
+              {/* Secret Objective Box with Toggle */}
+              <div className="mt-6 rounded-2xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-midnight)]/90 p-5">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                    Classified Personal Mission
+                  </div>
+                  <button
+                    onClick={() => setShowSecretObjective(!showSecretObjective)}
+                    className="font-mono text-xs text-[var(--color-cyan)] hover:underline"
+                  >
+                    {showSecretObjective ? 'Hide Objective ⊘' : 'Reveal Objective 👁️'}
+                  </button>
+                </div>
+                <div className="mt-2 font-display text-base text-white">
+                  {showSecretObjective ? (
+                    <span className="text-[var(--color-cyan)] font-semibold">{role.secret}</span>
+                  ) : (
+                    <span className="font-mono text-xs text-[var(--color-muted)] tracking-widest">
+                      ••••••••••••••••••••••••••••• [CLICK REVEAL TO DECRYPT]
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Cryptographic Verifier Line */}
+              <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-[var(--color-muted)]">
+                <div>
+                  zk-snark::verify_role_integrity(commitment) → <span className="text-[var(--color-signal)]">✓ VALID</span>
+                </div>
+                <div className="text-[var(--color-muted)]">
+                  Visibility to table: <span className="text-[var(--color-danger)] font-bold">⊘ HIDDEN UNTIL END</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Level 6+ Expansion Roles */}
+        <div className="mt-8 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-panel)]/40 px-6 py-4">
+          <MonoTag color="var(--color-violet)">Level 6+ Expansion</MonoTag>
           <div className="flex flex-wrap gap-2">
             {EXPANSION_ROLES.map((r) => (
-              <span key={r} className="rounded-full border border-[var(--color-hairline)] px-3 py-1 font-mono text-[11px] text-[var(--color-muted)]">{r}</span>
+              <span key={r} className="rounded-full border border-[var(--color-hairline)] bg-[var(--color-midnight)]/60 px-3.5 py-1 font-mono text-[11px] text-[var(--color-muted)]">
+                {r}
+              </span>
             ))}
           </div>
         </div>
@@ -585,6 +784,9 @@ export default function App() {
         </div>
       </section>
 
+      {/* Aegis Station Tactical Schematics & Minigames */}
+      <AegisStationShowcase />
+
       {/* Screens */}
       <section id="screens" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHead kicker="The Interface" title="Seven screens, one match." sub="From wallet to results — a walkthrough of the player journey." />
@@ -602,7 +804,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="relative overflow-hidden rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-panel)] p-8">
+          <div className="cyber-card relative overflow-hidden rounded-2xl p-8">
             <div className="pointer-events-none absolute -right-16 -top-16 h-52 w-52 rounded-full opacity-30 blur-3xl" style={{ background: "radial-gradient(circle, var(--color-violet-dim), transparent 70%)" }} />
             <div className="relative">
               <div className="font-mono text-[11px] uppercase tracking-[0.24em] text-[var(--color-muted)]">Screen {SCREENS[activeScreen].step}</div>
@@ -623,7 +825,7 @@ export default function App() {
         <div className="mx-auto max-w-6xl px-6 py-24">
           <SectionHead kicker="The Privacy Boundary" title="What stays sealed. What the table sees." sub="The chain provides verifiable execution while sensitive information stays confidential — a clean line between private and public state." />
           <div className="mt-14 grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr]">
-            <div className="rounded-2xl border border-dashed border-[var(--color-danger)]/40 bg-[var(--color-panel)]/70 p-7">
+            <div className="cyber-card rounded-2xl border border-dashed border-[var(--color-danger)]/40 p-7">
               <MonoTag color="var(--color-danger)">Private · ⊘ sealed</MonoTag>
               <ul className="mt-5 space-y-3 text-sm text-[var(--color-ink)]">
                 {PRIVATE_STATE.map((x) => (<li key={x} className="flex items-center gap-3"><span className="text-[var(--color-danger)]">◦</span>{x}</li>))}
@@ -634,7 +836,7 @@ export default function App() {
               <div className="text-center font-mono text-[10px] uppercase leading-relaxed tracking-[0.2em] text-[var(--color-muted)]">Midnight<br />verifies</div>
               <div className="rounded bg-[var(--color-signal)]/12 px-2.5 py-1 font-mono text-[11px] text-[var(--color-signal)]">valid ✓</div>
             </div>
-            <div className="rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-panel)]/70 p-7">
+            <div className="cyber-card rounded-2xl p-7">
               <MonoTag color="var(--color-signal)">Public game state</MonoTag>
               <ul className="mt-5 space-y-3 text-sm text-[var(--color-ink)]">
                 {PUBLIC_STATE.map((x) => (<li key={x} className="flex items-center gap-3"><span className="text-[var(--color-signal)]">◦</span>{x}</li>))}
@@ -644,7 +846,7 @@ export default function App() {
 
           {/* Anti-cheat + verifiable claim */}
           <div className="mt-12 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-void)] p-7">
+            <div className="cyber-card rounded-2xl p-7">
               <MonoTag color="var(--color-violet)">Anti-cheat by design</MonoTag>
               <p className="mt-4 font-display text-2xl font-semibold leading-snug">
                 Players can keep secrets — but they <span className="text-[var(--color-signal)]">cannot forge game actions.</span>
@@ -653,7 +855,7 @@ export default function App() {
                 The engine never trusts the frontend. A Civilian can't submit an investigation; a dead player can't act; nobody can change a committed choice after seeing another's move. Commit → reveal locks the night.
               </p>
             </div>
-            <div className="grid gap-4 rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-midnight)]/60 p-7">
+            <div className="cyber-card grid gap-4 rounded-2xl p-7">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[var(--color-muted)]">Private input</div>
                 <pre className="mt-2 whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-muted)]">{`role   = Guardian
@@ -669,6 +871,9 @@ round  = 4`}</pre>
           </div>
         </div>
       </section>
+
+      {/* Interactive Zero-Knowledge Alibi Simulator */}
+      <ZkAlibiSimulator />
 
       {/* Win conditions */}
       <section id="win" className="mx-auto max-w-6xl px-6 py-24">

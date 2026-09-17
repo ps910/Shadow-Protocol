@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 
 /* --------------------------------------------------------------------------
    Shadow Protocol — Level 4 playable prototype, Among Us styling.
