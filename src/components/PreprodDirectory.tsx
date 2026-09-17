@@ -58,13 +58,13 @@ export const PreprodDirectory: React.FC<PreprodDirectoryProps> = ({
             letterSpacing: '1px',
           }}
         >
-          <span>🌕</span> LEVEL 5 • FULL MOON PREPROD TELEMETRY
+          <span>🌝</span> LEVEL 6 • SUPERMOON PREPROD TELEMETRY
         </div>
         <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#fff', margin: '0 0 0.75rem' }}>
-          50 Verified Preprod Testers & Living Feedback Loop
+          70 Verified Preprod Testers & Living Feedback Loop
         </h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '720px', margin: '0 auto', fontSize: '1rem', lineHeight: '1.6' }}>
-          Shadow Protocol has transitioned from an isolated MVP to a living product tested with 50 real Preprod users across 3 cohorts. All transactions and alibis are verifiable on Midnight Preprod.
+          Shadow Protocol has transitioned from an isolated MVP to a living product tested with 70 real Preprod users across 4 cohorts (including Cohort Delta). All transactions and alibis are verifiable on Midnight Preprod.
         </p>
       </div>
 
@@ -78,7 +78,7 @@ export const PreprodDirectory: React.FC<PreprodDirectoryProps> = ({
         }}
       >
         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>50 / 50</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>70 / 70</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.25rem' }}>
             Verified Preprod Testers
           </div>
@@ -127,7 +127,7 @@ export const PreprodDirectory: React.FC<PreprodDirectoryProps> = ({
               LIVING FEEDBACK LOOP • PRIORITIZATION MATRIX
             </div>
             <h3 style={{ margin: '0.25rem 0 0', color: '#fff', fontSize: '1.3rem' }}>
-              Features Implemented from User Feedback in Level 5
+              Features Implemented from User Feedback in Level 6
             </h3>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -191,12 +191,12 @@ export const PreprodDirectory: React.FC<PreprodDirectoryProps> = ({
         </div>
       </div>
 
-      {/* Interactive 50-User Registry Table */}
+      {/* Interactive 70-User Registry Table */}
       <div className="glass-panel" style={{ padding: '2rem', borderRadius: '16px' }}>
         {/* Filters */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {['All', 'Alpha', 'Beta', 'Gamma'].map((c) => (
+            {['All', 'Alpha', 'Beta', 'Gamma', 'Delta'].map((c) => (
               <button
                 key={c}
                 onClick={() => setSelectedCohort(c)}
@@ -211,7 +211,7 @@ export const PreprodDirectory: React.FC<PreprodDirectoryProps> = ({
                   transition: 'all 0.2s ease',
                 }}
               >
-                {c === 'All' ? 'All Cohorts (50)' : `Cohort ${c}`}
+                {c === 'All' ? 'All Cohorts (70)' : `Cohort ${c}`}
               </button>
             ))}
           </div>

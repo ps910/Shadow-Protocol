@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { PREPROD_USERS, getPreprodStats, FeedbackSubmission } from '../data/preprodUsers';
 
-describe('Level 5: 50 Preprod Users & Living Feedback Loop', () => {
+describe('Level 6: 70 Preprod Users & Living Feedback Loop', () => {
   describe('Preprod User Registry Integrity', () => {
-    it('contains exactly 50 verified Preprod testers', () => {
-      expect(PREPROD_USERS).toHaveLength(50);
+    it('contains exactly 70 verified Preprod testers', () => {
+      expect(PREPROD_USERS).toHaveLength(70);
     });
 
     it('all wallet addresses are uniquely formatted with Midnight Preprod prefix', () => {
       const addresses = PREPROD_USERS.map(u => u.walletAddress);
       const uniqueAddresses = new Set(addresses);
 
-      expect(uniqueAddresses.size).toBe(50);
+      expect(uniqueAddresses.size).toBe(70);
       addresses.forEach(addr => {
         expect(addr.startsWith('mn_addr_preprod1')).toBe(true);
         expect(addr.length).toBeGreaterThanOrEqual(50);
@@ -22,7 +22,7 @@ describe('Level 5: 50 Preprod Users & Living Feedback Loop', () => {
       const cardanoAddrs = PREPROD_USERS.map(u => u.cardanoAddress);
       const uniqueCardano = new Set(cardanoAddrs);
 
-      expect(uniqueCardano.size).toBe(50);
+      expect(uniqueCardano.size).toBe(70);
       cardanoAddrs.forEach(addr => {
         expect(addr.startsWith('addr_test1')).toBe(true);
       });
@@ -32,26 +32,27 @@ describe('Level 5: 50 Preprod Users & Living Feedback Loop', () => {
       const txHashes = PREPROD_USERS.map(u => u.transactionHash);
       const uniqueTxs = new Set(txHashes);
 
-      expect(uniqueTxs.size).toBe(50);
+      expect(uniqueTxs.size).toBe(70);
       txHashes.forEach(tx => {
         expect(tx.startsWith('0x')).toBe(true);
         expect(tx).toHaveLength(66);
       });
     });
 
-    it('has realistic and non-empty cohort distributions', () => {
+    it('has realistic and non-empty cohort distributions across all 4 cohorts', () => {
       const stats = getPreprodStats();
       expect(stats.cohorts.alpha).toBeGreaterThan(0);
       expect(stats.cohorts.beta).toBeGreaterThan(0);
       expect(stats.cohorts.gamma).toBeGreaterThan(0);
-      expect(stats.cohorts.alpha + stats.cohorts.beta + stats.cohorts.gamma).toBe(50);
+      expect(stats.cohorts.delta).toBeGreaterThan(0);
+      expect(stats.cohorts.alpha + stats.cohorts.beta + stats.cohorts.gamma + stats.cohorts.delta).toBe(70);
     });
 
     it('computes accurate playtest statistics and SUS score', () => {
       const stats = getPreprodStats();
       expect(Number(stats.avgRating)).toBeGreaterThanOrEqual(4.0);
       expect(Number(stats.avgRating)).toBeLessThanOrEqual(5.0);
-      expect(stats.susScore).toBe(87.4);
+      expect(stats.susScore).toBe(88.9);
       expect(stats.interactions.joinGame).toBeGreaterThan(0);
       expect(stats.interactions.submitTaskCompletion).toBeGreaterThan(0);
       expect(stats.interactions.proveAlibi).toBeGreaterThan(0);

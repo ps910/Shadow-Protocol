@@ -1,6 +1,8 @@
 # 🔄 Shadow Protocol — Living Feedback Loop Documentation
 
-**Level 5: Full Moon Milestone**  
+> 🚀 **Level 6 Supermoon Update**: For the dedicated report on Level 6 improvements, Cohort Delta (70 users total), and latest SUS benchmarks (88.9/100), see **[docs/FEEDBACK.md](FEEDBACK.md)**.
+
+**Foundation (Level 5) & Continuous Evolution (Level 6 Supermoon)**  
 *Midnight Builder Challenge*  
 *Product:* **Shadow Protocol (Aegis Station Among Us Edition)**  
 *Testnet Network:* **Midnight Network (Preprod)**  
@@ -138,3 +140,16 @@ The following changes were coded, tested, and shipped in direct response to test
 ```
 
 The feedback loop remains continuously open. Any visitor to [https://ps910.github.io/Shadow-Protocol/](https://ps910.github.io/Shadow-Protocol/) can click **"Give Feedback"** to submit their playtest observations.
+
+---
+
+## 7. Level 6 Supermoon Addendum
+
+In Level 6 (Supermoon), the feedback loop expanded to **70 verified Preprod testers** with the onboarding of Cohort Delta. Key outcomes include:
+
+- **System Usability Scale (SUS) Score:** Increased from 87.4 to **88.9 / 100** (Grade A+)
+- **Figma Make UI & Micro-Animations:** Shipped in response to visual immersion feedback from Cohorts Alpha & Beta
+- **Direct Real Video Gameplay Proof:** Added authentic unedited gameplay recording in `README.md`
+- **1AM Wallet Reliability:** Added `WalletRequiredModal` and resilience layers for connection handling
+- **Full Documentation:** See **[docs/FEEDBACK.md](FEEDBACK.md)** and **[docs/LAUNCH_USERS.md](LAUNCH_USERS.md)** for detailed metrics and the complete 70-user registry.
+

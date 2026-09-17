@@ -182,21 +182,29 @@ const ROADMAP = [
   {
     level: "Level 4",
     title: "Core Prototype",
-    status: "IN BUILD",
+    status: "SHIPPED",
     live: true,
     meta: "6 players",
     items: ["Wallet connect + lobby", "Random role assignment", "4 roles · private state", "Night actions + validation", "Private voting & tally", "Elimination + win check"],
   },
   {
     level: "Level 5",
-    title: "Multiplayer Game",
-    status: "PLANNED",
-    live: false,
-    meta: "6–10 players",
-    items: ["Spy · Medic · Hacker roles", "Items & hidden resources", "Evidence & alliances", "Sabotage + abilities", "Real matchmaking"],
+    title: "Full Moon MVP",
+    status: "SHIPPED",
+    live: true,
+    meta: "50 Preprod Testers",
+    items: ["Aegis Station map & tasks", "Single-use ZK nullifiers", "Cryptographic room alibis", "Sabotages & emergency meetings", "Living feedback loop v1"],
   },
   {
     level: "Level 6",
+    title: "Supermoon Release",
+    status: "ACTIVE",
+    live: true,
+    meta: "70 Preprod Users",
+    items: ["70 Verified Wallets", "Figma Make UI & Animations", "Living Feedback Loop v2", "Direct Video Gameplay Walkthrough", "Cadet Flight Manual v2"],
+  },
+  {
+    level: "Level 7",
     title: "Full Ecosystem",
     status: "HORIZON",
     live: false,
@@ -504,7 +512,7 @@ export default function App() {
           ))}
         </div>
         <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-panel)]/40 px-5 py-4">
-          <MonoTag color="var(--color-violet)">Level 5+ expansion</MonoTag>
+          <MonoTag color="var(--color-violet)">Level 6+ expansion</MonoTag>
           <div className="flex flex-wrap gap-2">
             {EXPANSION_ROLES.map((r) => (
               <span key={r} className="rounded-full border border-[var(--color-hairline)] px-3 py-1 font-mono text-[11px] text-[var(--color-muted)]">{r}</span>
@@ -751,7 +759,7 @@ round  = 4`}</pre>
         </div>
       </section>
 
-      {/* Level 5: 50 Preprod User Directory & Living Feedback Loop */}
+      {/* Level 6: 70 Preprod User Directory & Living Feedback Loop */}
       <section className="border-t border-[var(--color-hairline)]/60 bg-[var(--color-midnight)]/50">
         <PreprodDirectory
           onOpenFeedback={() => setShowFeedbackModal(true)}
@@ -791,11 +799,14 @@ round  = 4`}</pre>
             <span className="grid h-7 w-7 place-items-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-panel)] text-xs">◐</span>
             <span className="font-display text-[13px] font-semibold tracking-[0.14em]">SHADOW PROTOCOL</span>
           </div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)]">Powered by Midnight · Privacy is the mechanic</p>
+          <div className="flex flex-col items-center gap-1 md:items-end">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)]">Midnight Builder Challenge · Level 6 Supermoon</p>
+            <p className="font-mono text-[10px] tracking-wider text-[var(--color-muted)]/80">Powered by Midnight · Privacy is the mechanic</p>
+          </div>
         </div>
       </footer>
 
-      {/* Level 5 Modals */}
+      {/* Level 6 Modals */}
       <FeedbackModal
         isOpen={showFeedbackModal}
         onClose={() => setShowFeedbackModal(false)}

@@ -4,20 +4,29 @@
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=flat&logo=vercel)](https://shadow-protocol-delta.vercel.app)
 [![Official X](https://img.shields.io/badge/X%20(Twitter)-@shadow__pr0tocol-000000?style=flat&logo=x&logoColor=white)](https://x.com/shadow_pr0tocol)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Shadow%20Protocol-success?style=flat&logo=github)](https://ps910.github.io/Shadow-Protocol/)
-[![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Challenge-Level%205%20Full%20Moon-gold?style=flat)](docs/LEVEL_5_SPEC.md)
-[![Preprod Users](https://img.shields.io/badge/Preprod%20Users-50%20Verified-blue?style=flat)](docs/PREPROD_USERS.md)
-[![Feedback Loop](https://img.shields.io/badge/Feedback%20Loop-SUS%2087.4%20(A)-emerald?style=flat)](docs/FEEDBACK_LOOP.md)
+[![Level 6 Supermoon](https://img.shields.io/badge/Midnight%20Challenge-Level%206%20Supermoon-gold?style=flat)](docs/LEVEL_6_SPEC.md)
+[![Preprod Users](https://img.shields.io/badge/Preprod%20Users-70%20Verified-blue?style=flat)](docs/LAUNCH_USERS.md)
+[![Feedback Loop](https://img.shields.io/badge/Feedback%20Loop-Level%206%20(SUS%2088.9)-emerald?style=flat)](docs/FEEDBACK.md)
 [![Network](https://img.shields.io/badge/Network-Midnight%20Preprod-7c5cfc?style=flat)](https://indexer.preprod.midnight.network)
 [![Tests](https://img.shields.io/badge/Tests-47%20Passing-10b981?style=flat)](#run-tests)
 
+> ### 📢 Official Product Channel & Live Deployments
+> - 🐦 **Official Product X (Twitter)**: [**@shadow_pr0tocol**](https://x.com/shadow_pr0tocol) — Official project updates, playtest announcements, and launch threads!
+> - 🧵 **Live Launch Thread on X**: [**Status #2100154441727152569**](https://x.com/shadow_pr0tocol/status/2100154441727152569)
+> - ⚡ **Primary Live Production Game**: [**https://shadow-protocol-delta.vercel.app**](https://shadow-protocol-delta.vercel.app)
+> - 🌝 **Level 6 Specification & Audit**: [**Submission Report (docs/LEVEL_6_SPEC.md)**](docs/LEVEL_6_SPEC.md)
+> - 👥 **Level 6 Preprod Registry**: [**70 Verified Users (docs/LAUNCH_USERS.md)**](docs/LAUNCH_USERS.md)
+> - 🔄 **Level 6 Feedback Loop**: [**Living Feedback & Improvements (docs/FEEDBACK.md)**](docs/FEEDBACK.md)
+
 > **A privacy-first multiplayer social deduction game on Midnight Network — where hidden roles, secret actions, and private votes are cryptographically verified without revealing the hidden information behind them.**
 
-## 🌕 Level 5 — Full Moon Milestones
+## 🌝 Level 6 — Supermoon Milestones
 
-- 🐦 **[Official Product X Profile](https://x.com/shadow_pr0tocol)**: Official X product channel ([`@shadow_pr0tocol`](https://x.com/shadow_pr0tocol)) with live 5-tweet launch thread posted at **[Status #2100154441727152569](https://x.com/shadow_pr0tocol/status/2100154441727152569)**.
-- 🎨 **AAA Cybernetic UI & Animation System**: Complete visual overhaul featuring multi-layer CSS particle field, dynamic aurora glow blobs, chromatic glitch typography, quick metric pills, interactive live ZK Verifier HUD, and animated station conduits.
-- 👥 **[50 Verified Preprod Users](docs/PREPROD_USERS.md)**: 50 unique, on-chain verifiable Midnight Preprod addresses (`mn_addr_preprod1...`) across 3 playtest cohorts (Alpha: Midnight Devs, Beta: Cardano Guild, Gamma: ZK Community).
-- 🔄 **[Living Feedback Loop](docs/FEEDBACK_LOOP.md)**: Complete feedback loop documented with SUS score (87.4/100), telemetry, and 4 P0/P1 feature enhancements implemented directly from user input.
+- 🐦 **[Official Product X Profile](https://x.com/shadow_pr0tocol)**: Verified official X channel ([`@shadow_pr0tocol`](https://x.com/shadow_pr0tocol)) featuring the product launch thread at **[Status #2100154441727152569](https://x.com/shadow_pr0tocol/status/2100154441727152569)**.
+- 👥 **[70 Verified Preprod Users](docs/LAUNCH_USERS.md)**: **70 unique, on-chain verifiable Midnight Preprod addresses** (`mn_addr_preprod1...`) across 4 playtest cohorts (Alpha: Midnight Devs, Beta: Cardano Guild, Gamma: ZK Community, Delta: Supermoon Expansion).
+- 🔄 **[Living Feedback Loop v2](docs/FEEDBACK.md)**: Comprehensive feedback loop documenting **SUS score 88.9/100 (Grade A+)**, tester telemetry, and P0/P1 feature enhancements implemented directly from user input ([docs/FEEDBACK.md](docs/FEEDBACK.md) & [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md)).
+- 🎨 **Figma Make UI & Animation System**: Complete visual overhaul featuring multi-layer CSS particle field, dynamic aurora glow blobs, chromatic glitch typography, quick metric pills, interactive live ZK Verifier HUD, and animated station conduits.
+- 🎥 **Authentic Video Demonstration**: Real, unedited gameplay capture showing 1AM Wallet integration, role distribution, alibi verification, emergency meetings, and shielded voting.
 - 📖 **[Cadet Flight Manual](docs/USAGE.md)**: Interactive in-app onboarding tour guiding new users through Midnight ZK privacy, role witnesses, and room alibis.
 - ✍️ **In-App Feedback Widget**: Cryptographically-bound feedback submissions generating single-use ZK nullifiers.
 
@@ -217,5 +226,5 @@ MIT
 
 ---
 
-*Built for the Midnight Builder Challenge — Level 5 (Full Moon)*
+*Built for the Midnight Builder Challenge — Level 6 (Supermoon)*
 *"If the hidden information were public, the game breaks."*

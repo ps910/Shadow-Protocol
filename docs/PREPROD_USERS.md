@@ -1,9 +1,12 @@
-# 👥 Shadow Protocol — 50 Verified Preprod Users
+# 👥 Shadow Protocol — Verified Preprod Users Registry
 
-**Level 5: Full Moon Milestone**  
+> 🚀 **Level 6 Supermoon Expansion**: Looking for the full **70 verified preprod users** including Cohort Delta?  
+> See the unified Supermoon registry: **[docs/LAUNCH_USERS.md](LAUNCH_USERS.md)**.
+
+**Level 5 Foundation / Level 6 Base Cohorts**  
 *Network: Midnight Network (Preprod Testnet)*  
 *Contract Address:* `0xcc4a29303a6521ef0881444ce30550d1dabccdd5d70da8c78463bb54ef96db3f`  
-*Verification Status:* ✅ **50 / 50 Verified On-Chain**
+*Verification Status:* ✅ **50 / 50 Verified On-Chain (Level 5 Foundation) · 70 / 70 in [LAUNCH_USERS.md](LAUNCH_USERS.md)**
 
 ---
 

@@ -239,7 +239,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               Feedback Verified & Logged!
             </h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
-              Your feedback has been committed to the Level 5 Community Playtest ledger with verified ZK nullifier.
+              Your feedback has been committed to the Level 6 Community Playtest ledger with verified ZK nullifier.
             </p>
             <div
               style={{
