@@ -43,7 +43,11 @@ const SECTORS = [
   },
 ];
 
-export const AegisStationShowcase: React.FC = () => {
+interface AegisStationShowcaseProps {
+  onLaunch3D?: () => void;
+}
+
+export const AegisStationShowcase: React.FC<AegisStationShowcaseProps> = ({ onLaunch3D }) => {
   const [selectedSector, setSelectedSector] = useState(0);
   const sector = SECTORS[selectedSector];
 
@@ -154,6 +158,20 @@ export const AegisStationShowcase: React.FC = () => {
                 Every task completed by crewmates advances the station countdown, triggers cryptographic alibis, and forces the Assassin to risk unmasking themselves.
               </p>
             </div>
+
+            {/* 3D Blacksite Arena Launcher */}
+            {onLaunch3D && (
+              <button
+                onClick={onLaunch3D}
+                className="w-full group relative overflow-hidden rounded-2xl py-3.5 px-4 font-display text-xs font-bold uppercase tracking-wider text-black transition hover:brightness-110 shadow-lg shadow-[var(--color-cyan)]/25 flex items-center justify-center gap-2"
+                style={{
+                  background: 'linear-gradient(135deg, var(--color-cyan), var(--color-signal))',
+                }}
+              >
+                <span className="text-base animate-pulse">🎮</span>
+                <span>Enter Sector in 3D (Blacksite-01)</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

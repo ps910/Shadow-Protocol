@@ -7,6 +7,7 @@ import { PreprodDirectory } from "./components/PreprodDirectory"
 import { WalletRequiredModal } from "./components/WalletRequiredModal"
 import { ZkAlibiSimulator } from "./components/ZkAlibiSimulator"
 import { AegisStationShowcase } from "./components/AegisStationShowcase"
+import { Shadow3DScene } from "./game/3d/Shadow3DScene"
 import type { FeedbackSubmission } from "./data/preprodUsers"
 
 /* ---------------------------------- data ---------------------------------- */
@@ -266,6 +267,7 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [showSecretObjective, setShowSecretObjective] = useState(false)
+  const [show3DArena, setShow3DArena] = useState(false)
 
   // Wallet & Modals State
   const [wallet, setWallet] = useState<WalletState>({
@@ -290,6 +292,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--color-void)] font-body text-[var(--color-ink)] antialiased">
+      {/* 3D Blacksite Arena Fullscreen Client */}
+      {show3DArena && (
+        <div className="fixed inset-0 z-50">
+          <Shadow3DScene
+            onExit={() => setShow3DArena(false)}
+            playerRole={role.key as any}
+            playerName="Cadet Alice"
+          />
+        </div>
+      )}
+
       {/* Playable Prototype Modal */}
       {playing && <ShadowGame onExit={() => setPlaying(false)} />}
 
@@ -365,6 +378,16 @@ export default function App() {
               ✍️ Feedback
             </button>
 
+            {/* 3D Blacksite Arena Button */}
+            <button
+              onClick={() => setShow3DArena(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-md border border-[var(--color-cyan)]/70 bg-[var(--color-panel)] px-3 py-1.5 font-mono text-[11px] font-semibold text-[var(--color-cyan)] shadow-[0_0_15px_rgba(51,221,208,0.25)] transition hover:brightness-125"
+              title="Launch 3D Blacksite-01 Facility Client"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-cyan)] animate-ping" />
+              <span>🎮 3D ARENA</span>
+            </button>
+
             {/* 1AM Wallet */}
             <WalletConnect wallet={wallet} setWallet={setWallet} onWalletApi={() => {}} />
 
@@ -399,6 +422,13 @@ export default function App() {
               Players can keep secrets, but they <em className="not-italic font-semibold text-[var(--color-ink)]">cannot forge game actions.</em>
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
+              <button
+                onClick={() => setShow3DArena(true)}
+                className="rounded-xl border border-[var(--color-cyan)] bg-gradient-to-r from-[var(--color-cyan)]/30 via-[var(--color-violet)]/30 to-transparent px-6 py-3.5 font-display text-[14px] font-bold tracking-wide text-white transition hover:brightness-125 shadow-[0_0_24px_rgba(51,221,208,0.35)] flex items-center gap-2"
+              >
+                <span className="text-base animate-pulse">🎮</span>
+                <span>Launch 3D Blacksite-01</span>
+              </button>
               <button
                 onClick={handleEnterLobby}
                 className="group relative overflow-hidden rounded-xl px-7 py-3.5 font-display text-[15px] font-bold tracking-wide text-[#0b0713] transition hover:brightness-110 shadow-lg shadow-[var(--color-cyan)]/25"
@@ -785,7 +815,7 @@ export default function App() {
       </section>
 
       {/* Aegis Station Tactical Schematics & Minigames */}
-      <AegisStationShowcase />
+      <AegisStationShowcase onLaunch3D={() => setShow3DArena(true)} />
 
       {/* Screens */}
       <section id="screens" className="mx-auto max-w-6xl px-6 py-24">
